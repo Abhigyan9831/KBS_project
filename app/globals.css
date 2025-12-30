@@ -1,8 +1,20 @@
 @import "tailwindcss";
 
+/* Custom Font - new-science-extended */
+@font-face {
+  font-family: 'new-science-extended';
+  src: url('/fonts/new-science-extended.woff2') format('woff2'),
+       url('/fonts/new-science-extended.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #FCF9EA;
+  --cream: #F5F0E6;
+  --font-new-science: 'new-science-extended', sans-serif;
 }
 
 @theme inline {
@@ -12,15 +24,178 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+  overflow-x: hidden;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'new-science-extended', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Hero Title Styles - Stacked "Go" / "Beyond" layout */
+.hero-title {
+  font-family: 'new-science-extended', sans-serif;
+  font-size: clamp(70px, 14vw, 200px);
+  line-height: 0.9;
+  color: #FFFFFF;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+/* Word by Word Reveal Animation */
+.word-reveal {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.word-reveal-inner {
+  display: inline-block;
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.word-reveal-inner.revealed {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Staggered animation delays */
+.word-delay-0 {
+  transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1) 0.2s, 
+              opacity 0.8s ease-out 0.2s;
+}
+
+.word-delay-1 {
+  transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1) 0.4s, 
+              opacity 0.8s ease-out 0.4s;
+}
+
+/* Video Container */
+.video-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Hero Section Entry Animation */
+@keyframes heroEntry {
+  0% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hero-entry {
+  animation: heroEntry 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Scroll Indicator Animation */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-6px);
+  }
+  60% {
+    transform: translateY(-3px);
+  }
+}
+
+.scroll-indicator {
+  animation: bounce 2s infinite;
+}
+
+/* Section 3 Text Reveal Animation */
+.section3-heading {
+  font-family: 'new-science-extended', sans-serif;
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1;
+  color: #000000;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.section3-title {
+  font-family: 'new-science-extended', sans-serif;
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 500;
+  line-height: 1.15;
+  color: #000000;
+  letter-spacing: -0.02em;
+}
+
+.section3-description {
+  font-family: 'new-science-extended', sans-serif;
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 400;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.section3-reveal-inner {
+  display: block;
+  opacity: 0;
+  transition: opacity 1.2s ease-out;
+}
+
+.section3-reveal-inner.revealed {
+  opacity: 1;
+}
+
+/* Smooth transitions for all animated elements */
+.smooth-transition {
+  transition: all 0.1s linear;
+  will-change: transform, width, height, top, left, border-radius, opacity;
+}
+
+/* Responsive Hero Title */
+@media (max-width: 1400px) {
+  .hero-title {
+    font-size: clamp(60px, 15vw, 200px);
+  }
+}
+
+@media (max-width: 1024px) {
+  .hero-title {
+    font-size: clamp(50px, 12vw, 150px);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: clamp(40px, 14vw, 100px);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: clamp(32px, 16vw, 80px);
+  }
 }
