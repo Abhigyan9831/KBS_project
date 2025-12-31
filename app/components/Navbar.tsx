@@ -216,14 +216,15 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
           display: menuOpen ? 'none' : 'block',
         }}
       >
-        <div className="flex items-center justify-between h-full">
+        <div className="flex items-center justify-between">
           {/* Left Section - Menu & Logo */}
-          <div className={`flex items-center ${isMobile ? 'gap-2' : isTablet ? 'gap-4' : 'gap-6'}`}>
+          <div className={`flex items-center ${isMobile ? 'gap-3' : isTablet ? 'gap-4' : 'gap-6'}`}>
             {/* Hamburger Menu */}
             <button
-              className={`flex flex-col justify-center items-center ${isMobile ? 'gap-[5px] w-8 h-8' : 'gap-1.5 w-10 h-10'} hover:opacity-70 transition-opacity`}
+              className={`flex flex-col justify-center ${isMobile ? 'gap-[5px]' : 'gap-1.5'} hover:opacity-70 transition-opacity`}
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
+              style={{ padding: isMobile ? '6px' : '8px' }}
             >
               <span
                 className={`block ${isMobile ? 'w-[18px]' : 'w-6'} h-[2px]`}
@@ -237,7 +238,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
 
             {/* Logo - KBS */}
             <div
-              className={`font-medium ${isMobile ? 'text-sm' : 'text-lg'} tracking-wide leading-none`}
+              className={`font-medium ${isMobile ? 'text-base' : 'text-lg'} tracking-wide`}
               style={{ color: textColor }}
             >
               KBS
