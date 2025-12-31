@@ -319,8 +319,17 @@ const EmptySection: React.FC<EmptySectionProps> = ({
           {/* Mobile Layout */}
           {isMobile ? (
             <>
-              {/* Title at top on mobile */}
-              <div className="pt-20 pb-4 px-4 z-30">
+              {/* Title at top on mobile - visible in the space below navbar */}
+              <div
+                className="z-30 flex items-center justify-center"
+                style={{
+                  paddingTop: '100px',
+                  paddingBottom: '16px',
+                  paddingLeft: '16px',
+                  paddingRight: '16px',
+                  minHeight: '140px',
+                }}
+              >
                 <h2 className="section3-title-container flex flex-row items-baseline gap-3 justify-center">
                   <span className="section3-word-reveal">
                     <span
