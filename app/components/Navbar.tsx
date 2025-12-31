@@ -216,28 +216,28 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
           display: menuOpen ? 'none' : 'block',
         }}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between h-full">
           {/* Left Section - Menu & Logo */}
-          <div className={`flex items-center ${isMobile ? 'gap-3' : isTablet ? 'gap-4' : 'gap-6'}`}>
+          <div className={`flex items-center ${isMobile ? 'gap-2' : isTablet ? 'gap-4' : 'gap-6'}`}>
             {/* Hamburger Menu */}
             <button
-              className={`flex flex-col ${isMobile ? 'gap-1 p-1.5' : 'gap-1.5 p-2'} hover:opacity-70 transition-opacity`}
+              className={`flex flex-col justify-center items-center ${isMobile ? 'gap-[5px] w-8 h-8' : 'gap-1.5 w-10 h-10'} hover:opacity-70 transition-opacity`}
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
             >
               <span
-                className={`block ${isMobile ? 'w-5' : 'w-6'} h-0.5`}
+                className={`block ${isMobile ? 'w-[18px]' : 'w-6'} h-[2px]`}
                 style={{ backgroundColor: textColor }}
               />
               <span
-                className={`block ${isMobile ? 'w-5' : 'w-6'} h-0.5`}
+                className={`block ${isMobile ? 'w-[18px]' : 'w-6'} h-[2px]`}
                 style={{ backgroundColor: textColor }}
               />
             </button>
 
             {/* Logo - KBS */}
             <div
-              className={`font-medium ${isMobile ? 'text-base' : 'text-lg'} tracking-wide`}
+              className={`font-medium ${isMobile ? 'text-sm' : 'text-lg'} tracking-wide leading-none`}
               style={{ color: textColor }}
             >
               KBS
