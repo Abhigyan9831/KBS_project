@@ -7,6 +7,48 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
 
 // Product data with more details
+// Review interface
+interface Review {
+  id: string;
+  author: string;
+  rating: number;
+  date: string;
+  title: string;
+  content: string;
+  verified: boolean;
+}
+
+// Product reviews data
+const productReviews: { [key: string]: Review[] } = {
+  'product-01': [
+    { id: 'r1', author: 'John D.', rating: 5, date: '2024-12-15', title: 'Excellent product!', content: 'This product exceeded my expectations. The quality is outstanding and it arrived quickly.', verified: true },
+    { id: 'r2', author: 'Sarah M.', rating: 4, date: '2024-12-10', title: 'Great value', content: 'Very happy with this purchase. Works as described and looks great.', verified: true },
+    { id: 'r3', author: 'Mike R.', rating: 5, date: '2024-12-05', title: 'Highly recommend', content: 'Best purchase I have made this year. Will definitely buy again.', verified: false },
+  ],
+  'product-02': [
+    { id: 'r4', author: 'Emily L.', rating: 5, date: '2024-12-18', title: 'Love it!', content: 'Perfect for my kitchen. Heats up super fast and looks modern.', verified: true },
+    { id: 'r5', author: 'David K.', rating: 4, date: '2024-12-12', title: 'Good quality', content: 'Solid build quality. The auto shut-off feature is very useful.', verified: true },
+  ],
+  'product-03': [
+    { id: 'r6', author: 'Jessica T.', rating: 5, date: '2024-12-20', title: 'Game changer!', content: 'Makes the best crispy fries without all the oil. Highly recommend!', verified: true },
+    { id: 'r7', author: 'Robert W.', rating: 5, date: '2024-12-14', title: 'Amazing appliance', content: 'Use it almost every day. Easy to clean and food comes out perfect.', verified: true },
+    { id: 'r8', author: 'Lisa H.', rating: 4, date: '2024-12-08', title: 'Great for healthy cooking', content: 'Loving the healthy meals I can make with this. Only wish it was a bit larger.', verified: false },
+  ],
+  'product-04': [
+    { id: 'r9', author: 'Tom B.', rating: 5, date: '2024-12-16', title: 'Best coffee ever', content: 'The built-in grinder makes a huge difference. Coffee tastes amazing!', verified: true },
+    { id: 'r10', author: 'Anna S.', rating: 4, date: '2024-12-11', title: 'Great features', content: 'Love the programmable timer. Wakes up to fresh coffee every morning.', verified: true },
+  ],
+  'product-05': [
+    { id: 'r11', author: 'Chris P.', rating: 4, date: '2024-12-19', title: 'Perfect toast every time', content: 'Variable browning control works great. No more burnt toast!', verified: true },
+    { id: 'r12', author: 'Karen M.', rating: 5, date: '2024-12-13', title: 'Sleek design', content: 'Looks amazing on my counter and works perfectly.', verified: false },
+  ],
+  'product-06': [
+    { id: 'r13', author: 'Steve J.', rating: 5, date: '2024-12-21', title: 'Powerful and versatile', content: 'Handles everything I throw at it. The multiple attachments are very useful.', verified: true },
+    { id: 'r14', author: 'Nancy D.', rating: 5, date: '2024-12-17', title: 'Kitchen essential', content: 'Cannot imagine my kitchen without this now. Makes meal prep so easy!', verified: true },
+    { id: 'r15', author: 'Paul G.', rating: 4, date: '2024-12-09', title: 'Great value for money', content: 'Excellent quality at this price point. Very happy with my purchase.', verified: true },
+  ],
+};
+
 const products = [
   {
     id: 'product-01',
@@ -137,6 +179,7 @@ function StoreContent() {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [shouldOpenCart, setShouldOpenCart] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
+  const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLDivElement>(null);
   
@@ -978,13 +1021,68 @@ function StoreContent() {
               {/* Description & Reviews Tabs */}
               <div className="details-panel__tabs">
                 <div className="details-panel__tab-headers">
-                  <button className="details-panel__tab-btn active">Description</button>
+                  <button
+                    className={`details-panel__tab-btn ${activeTab === 'description' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('description')}
+                  >
+                    Description
+                  </button>
                   <span className="details-panel__tab-divider">|</span>
-                  <button className="details-panel__tab-btn">Reviews</button>
+                  <button
+                    className={`details-panel__tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('reviews')}
+                  >
+                    Reviews ({productReviews[selectedProduct.id]?.length || 0})
+                  </button>
                 </div>
                 <div className="details-panel__tab-content">
-                  <p>{selectedProduct.description}</p>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                  {activeTab === 'description' ? (
+                    <>
+                      <p>{selectedProduct.description}</p>
+                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </>
+                  ) : (
+                    <div className="reviews-section">
+                      {/* Reviews Summary */}
+                      <div className="reviews-summary">
+                        <div className="reviews-summary__rating">
+                          <span className="reviews-summary__number">{selectedProduct.rating}</span>
+                          <div className="reviews-summary__stars">
+                            {renderStars(selectedProduct.rating)}
+                          </div>
+                          <span className="reviews-summary__count">Based on {selectedProduct.reviews} reviews</span>
+                        </div>
+                      </div>
+                      
+                      {/* Reviews List */}
+                      <div className="reviews-list">
+                        {(productReviews[selectedProduct.id] || []).map((review) => (
+                          <div key={review.id} className="review-item">
+                            <div className="review-item__header">
+                              <div className="review-item__author-info">
+                                <span className="review-item__author">{review.author}</span>
+                                {review.verified && (
+                                  <span className="review-item__verified">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                      <polyline points="22 4 12 14.01 9 11.01"/>
+                                    </svg>
+                                    Verified Purchase
+                                  </span>
+                                )}
+                              </div>
+                              <span className="review-item__date">{new Date(review.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                            </div>
+                            <div className="review-item__rating">
+                              {renderStars(review.rating)}
+                            </div>
+                            <h4 className="review-item__title">{review.title}</h4>
+                            <p className="review-item__content">{review.content}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1091,13 +1189,22 @@ function StoreContent() {
                 Delivery fee and tax<br />
                 calculated at checkout
               </div>
-              <button
-                className={`cart-total__checkout-btn button ${cartItems.length === 0 ? 'disabled' : ''}`}
-                onClick={handleCheckout}
-                disabled={cartItems.length === 0}
-              >
-                Checkout
-              </button>
+              <div className="cart-total__buttons">
+                <button
+                  className={`cart-total__buy-now-btn button ${cartItems.length === 0 ? 'disabled' : ''}`}
+                  onClick={handleCheckout}
+                  disabled={cartItems.length === 0}
+                >
+                  Buy Now
+                </button>
+                <button
+                  className={`cart-total__checkout-btn button ${cartItems.length === 0 ? 'disabled' : ''}`}
+                  onClick={handleCheckout}
+                  disabled={cartItems.length === 0}
+                >
+                  Checkout
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1916,6 +2023,10 @@ function StoreContent() {
           color: #111;
         }
 
+        .details-panel__tab-btn:hover {
+          color: #666;
+        }
+
         .details-panel__tab-divider {
           color: #ccc;
         }
@@ -1928,6 +2039,123 @@ function StoreContent() {
 
         .details-panel__tab-content p {
           margin-bottom: clamp(12px, 1.5vw, 16px);
+        }
+
+        /* Reviews Section Styles */
+        .reviews-section {
+          padding-top: clamp(8px, 1.5vw, 16px);
+        }
+
+        .reviews-summary {
+          display: flex;
+          align-items: center;
+          gap: clamp(16px, 2vw, 24px);
+          padding-bottom: clamp(16px, 2.5vw, 24px);
+          border-bottom: 1px solid #e5e5e5;
+          margin-bottom: clamp(16px, 2.5vw, 24px);
+        }
+
+        .reviews-summary__rating {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: clamp(4px, 0.8vw, 8px);
+        }
+
+        .reviews-summary__number {
+          font-size: clamp(32px, 5vw, 48px);
+          font-weight: 600;
+          color: #111;
+          line-height: 1;
+        }
+
+        .reviews-summary__stars {
+          display: flex;
+          gap: 2px;
+        }
+
+        .reviews-summary__count {
+          font-size: clamp(11px, 1.3vw, 13px);
+          color: #666;
+        }
+
+        .reviews-list {
+          display: flex;
+          flex-direction: column;
+          gap: clamp(16px, 2.5vw, 24px);
+        }
+
+        .review-item {
+          padding-bottom: clamp(16px, 2.5vw, 24px);
+          border-bottom: 1px solid #f0f0f0;
+        }
+
+        .review-item:last-child {
+          border-bottom: none;
+        }
+
+        .review-item__header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: clamp(6px, 1vw, 8px);
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .review-item__author-info {
+          display: flex;
+          align-items: center;
+          gap: clamp(8px, 1.2vw, 12px);
+          flex-wrap: wrap;
+        }
+
+        .review-item__author {
+          font-weight: 600;
+          color: #111;
+          font-size: clamp(13px, 1.5vw, 15px);
+        }
+
+        .review-item__verified {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: clamp(10px, 1.2vw, 12px);
+          color: #2d8a2d;
+        }
+
+        .review-item__verified svg {
+          width: clamp(12px, 1.4vw, 14px);
+          height: clamp(12px, 1.4vw, 14px);
+        }
+
+        .review-item__date {
+          font-size: clamp(11px, 1.3vw, 13px);
+          color: #999;
+        }
+
+        .review-item__rating {
+          display: flex;
+          gap: 2px;
+          margin-bottom: clamp(6px, 1vw, 8px);
+        }
+
+        .review-item__rating .star {
+          font-size: clamp(12px, 1.4vw, 14px);
+        }
+
+        .review-item__title {
+          font-size: clamp(14px, 1.6vw, 16px);
+          font-weight: 500;
+          color: #111;
+          margin: 0 0 clamp(4px, 0.6vw, 6px) 0;
+        }
+
+        .review-item__content {
+          font-size: clamp(12px, 1.4vw, 14px);
+          line-height: 1.6;
+          color: #555;
+          margin: 0;
         }
 
         /* Similar Products - Responsive */
@@ -2263,8 +2491,33 @@ function StoreContent() {
           color: #666;
         }
 
+        .cart-total__buttons {
+          grid-column: 1 / -1;
+          display: flex;
+          gap: clamp(10px, 1.5vw, 16px);
+          margin-top: clamp(8px, 1.2vw, 12px);
+        }
+
+        .cart-total__buy-now-btn {
+          flex: 1;
+          background: #E8A87C;
+          color: #111;
+          min-height: 44px;
+          font-weight: 600;
+        }
+
+        .cart-total__buy-now-btn:hover:not(.disabled) {
+          background: #d4956b;
+        }
+
+        .cart-total__buy-now-btn.disabled {
+          background: #ccc;
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
+
         .cart-total__checkout-btn {
-          justify-self: end;
+          flex: 1;
           background: #111;
           color: #fff;
           min-height: 44px;
@@ -2425,8 +2678,14 @@ function StoreContent() {
             gap: 10px;
           }
           
-          .cart-total__checkout-btn {
+          .cart-total__buttons {
+            flex-direction: column;
+          }
+          
+          .cart-total__checkout-btn,
+          .cart-total__buy-now-btn {
             padding: 14px 20px;
+            width: 100%;
           }
         }
 
