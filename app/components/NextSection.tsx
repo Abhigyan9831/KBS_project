@@ -125,98 +125,52 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           }}
         >
           <div className="w-full max-w-[1400px] mx-auto">
-            {/* Mobile Layout - 2x2 grid with video space in center */}
+            {/* Mobile Layout - Only 2 cards at bottom (removed leftCard1 and rightCard1) */}
             {isMobile ? (
               <div
-                className="grid grid-cols-2 gap-3"
+                className="flex flex-col"
                 style={{
                   paddingBottom: '200px', // Space for bottom content
+                  height: '100%',
+                  justifyContent: 'flex-end',
                 }}
               >
-                {/* Top row - 2 cards - Animate completely OFF SCREEN on mobile */}
-                {/* Left Card 1 - slides off to the LEFT */}
-                <div
-                  className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
-                  style={{
-                    opacity: cardsVisible && scrollProgress > 0.9 ? 1 : 0,
-                    // Slide from far left (-150%) to normal position
-                    transform: cardsVisible && scrollProgress > 0.9
-                      ? 'translateX(0)'
-                      : 'translateX(-150%)',
-                    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
-                  }}
-                >
-                  <Image
-                    src={cardImages.leftCard1}
-                    alt="Product Card 1"
-                    fill
-                    sizes="50vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8b9aad 0%, #6b7d8c 50%, #4a5a6a 100%)' }} />
-                </div>
-                {/* Right Card 1 - slides off to the RIGHT */}
-                <div
-                  className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
-                  style={{
-                    opacity: cardsVisible && scrollProgress > 0.9 ? 1 : 0,
-                    // Slide from far right (150%) to normal position
-                    transform: cardsVisible && scrollProgress > 0.9
-                      ? 'translateX(0)'
-                      : 'translateX(150%)',
-                    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.15s',
-                  }}
-                >
-                  <Image
-                    src={cardImages.rightCard1}
-                    alt="Product Card 2"
-                    fill
-                    sizes="50vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #87CEEB 0%, #FFB366 50%, #FF6B6B 75%, #2c3e50 100%)' }} />
-                </div>
-                
-                {/* Center space for video card on mobile */}
-                <div
-                  className="col-span-2"
-                  style={{ height: `${Math.min(300, vh * 0.35)}px` }}
-                />
-                
-                {/* Bottom row - 2 cards - slide up from below */}
-                <div
-                  className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
-                  style={{
-                    opacity: cardsVisible && scrollProgress > 0.9 ? 1 : 0,
-                    transform: cardsVisible && scrollProgress > 0.9 ? 'translateY(0)' : 'translateY(100px)',
-                    transition: 'all 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.2s',
-                  }}
-                >
-                  <Image
-                    src={cardImages.leftCard2}
-                    alt="Product Card 3"
-                    fill
-                    sizes="50vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #c4b8a8 0%, #a89888 50%, #8c7868 100%)' }} />
-                </div>
-                <div
-                  className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
-                  style={{
-                    opacity: cardsVisible && scrollProgress > 0.9 ? 1 : 0,
-                    transform: cardsVisible && scrollProgress > 0.9 ? 'translateY(0)' : 'translateY(100px)',
-                    transition: 'all 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.25s',
-                  }}
-                >
-                  <Image
-                    src={cardImages.rightCard2}
-                    alt="Product Card 4"
-                    fill
-                    sizes="50vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8B7355 0%, #D2B48C 50%, #654321 100%)' }} />
+                {/* Bottom row - 2 cards only - slide up from below */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div
+                    className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
+                    style={{
+                      opacity: cardsVisible && scrollProgress > 0.9 ? 1 : 0,
+                      transform: cardsVisible && scrollProgress > 0.9 ? 'translateY(0)' : 'translateY(100px)',
+                      transition: 'all 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
+                    }}
+                  >
+                    <Image
+                      src={cardImages.leftCard2}
+                      alt="Product Card 1"
+                      fill
+                      sizes="50vw"
+                      style={{ objectFit: 'cover' }}
+                    />
+                    <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #c4b8a8 0%, #a89888 50%, #8c7868 100%)' }} />
+                  </div>
+                  <div
+                    className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
+                    style={{
+                      opacity: cardsVisible && scrollProgress > 0.9 ? 1 : 0,
+                      transform: cardsVisible && scrollProgress > 0.9 ? 'translateY(0)' : 'translateY(100px)',
+                      transition: 'all 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.15s',
+                    }}
+                  >
+                    <Image
+                      src={cardImages.rightCard2}
+                      alt="Product Card 2"
+                      fill
+                      sizes="50vw"
+                      style={{ objectFit: 'cover' }}
+                    />
+                    <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8B7355 0%, #D2B48C 50%, #654321 100%)' }} />
+                  </div>
                 </div>
               </div>
             ) : (
