@@ -50,19 +50,34 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
   const { vh, vw, isMobile, isTablet } = dimensions;
 
   
+  // For mobile: reveal title immediately when scrollProgress starts
+  // For desktop/tablet: use original delayed reveal
   useEffect(() => {
-    if (scrollProgress > 0.6 && !titleRevealedRef.current) {
-      const timer = setTimeout(() => {
+    if (isMobile) {
+      // On mobile, reveal immediately when scrollProgress > 0.3
+      if (scrollProgress > 0.3 && !titleRevealedRef.current) {
         titleRevealedRef.current = true;
         setTitleRevealed(true);
-      }, 200);
-      return () => clearTimeout(timer);
+      }
+      if (scrollProgress < 0.2 && titleRevealedRef.current) {
+        titleRevealedRef.current = false;
+        queueMicrotask(() => setTitleRevealed(false));
+      }
+    } else {
+      // Desktop/tablet: original behavior
+      if (scrollProgress > 0.6 && !titleRevealedRef.current) {
+        const timer = setTimeout(() => {
+          titleRevealedRef.current = true;
+          setTitleRevealed(true);
+        }, 200);
+        return () => clearTimeout(timer);
+      }
+      if (scrollProgress < 0.3 && titleRevealedRef.current) {
+        titleRevealedRef.current = false;
+        queueMicrotask(() => setTitleRevealed(false));
+      }
     }
-    if (scrollProgress < 0.3 && titleRevealedRef.current) {
-      titleRevealedRef.current = false;
-      queueMicrotask(() => setTitleRevealed(false));
-    }
-  }, [scrollProgress]);
+  }, [scrollProgress, isMobile]);
 
   
   const cardsOpacity = Math.min(Math.max((scrollProgress - 0.3) / 0.4, 0), 1);
@@ -118,13 +133,17 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                   paddingBottom: '200px', // Space for bottom content
                 }}
               >
-                {/* Top row - 2 cards */}
+                {/* Top row - 2 cards - Animate completely OFF SCREEN on mobile */}
+                {/* Left Card 1 - slides off to the LEFT */}
                 <div
                   className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
                   style={{
-                    opacity: cardsVisible && scrollProgress > 0.85 ? 1 : 0,
-                    transform: cardsVisible && scrollProgress > 0.85 ? 'translateY(0)' : 'translateY(30px)',
-                    transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
+                    opacity: cardsVisible && scrollProgress > 0.9 ? 1 : 0,
+                    // Slide from far left (-150%) to normal position
+                    transform: cardsVisible && scrollProgress > 0.9
+                      ? 'translateX(0)'
+                      : 'translateX(-150%)',
+                    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
                   }}
                 >
                   <Image
@@ -136,12 +155,16 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                   />
                   <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8b9aad 0%, #6b7d8c 50%, #4a5a6a 100%)' }} />
                 </div>
+                {/* Right Card 1 - slides off to the RIGHT */}
                 <div
                   className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
                   style={{
-                    opacity: cardsVisible && scrollProgress > 0.85 ? 1 : 0,
-                    transform: cardsVisible && scrollProgress > 0.85 ? 'translateY(0)' : 'translateY(30px)',
-                    transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.15s',
+                    opacity: cardsVisible && scrollProgress > 0.9 ? 1 : 0,
+                    // Slide from far right (150%) to normal position
+                    transform: cardsVisible && scrollProgress > 0.9
+                      ? 'translateX(0)'
+                      : 'translateX(150%)',
+                    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.15s',
                   }}
                 >
                   <Image
@@ -160,13 +183,13 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                   style={{ height: `${Math.min(300, vh * 0.35)}px` }}
                 />
                 
-                {/* Bottom row - 2 cards */}
+                {/* Bottom row - 2 cards - slide up from below */}
                 <div
                   className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
                   style={{
-                    opacity: cardsVisible && scrollProgress > 0.85 ? 1 : 0,
-                    transform: cardsVisible && scrollProgress > 0.85 ? 'translateY(0)' : 'translateY(30px)',
-                    transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s',
+                    opacity: cardsVisible && scrollProgress > 0.9 ? 1 : 0,
+                    transform: cardsVisible && scrollProgress > 0.9 ? 'translateY(0)' : 'translateY(100px)',
+                    transition: 'all 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.2s',
                   }}
                 >
                   <Image
@@ -181,9 +204,9 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                 <div
                   className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
                   style={{
-                    opacity: cardsVisible && scrollProgress > 0.85 ? 1 : 0,
-                    transform: cardsVisible && scrollProgress > 0.85 ? 'translateY(0)' : 'translateY(30px)',
-                    transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.25s',
+                    opacity: cardsVisible && scrollProgress > 0.9 ? 1 : 0,
+                    transform: cardsVisible && scrollProgress > 0.9 ? 'translateY(0)' : 'translateY(100px)',
+                    transition: 'all 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.25s',
                   }}
                 >
                   <Image
@@ -310,14 +333,16 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
 
         {/* Bottom Content - Responsive layout */}
         {/* On mobile, position content in center of screen overlaying the video area */}
+        {/* Show content immediately when scrollProgress > 0.3 on mobile */}
         <div
           className={isMobile ? "absolute inset-0 flex items-center justify-center" : "absolute bottom-0 left-0 right-0"}
           style={{
-            opacity: isMobile ? (scrollProgress > 0.5 ? cardsOpacity : 0) : cardsOpacity,
+            opacity: isMobile ? (scrollProgress > 0.3 ? Math.min((scrollProgress - 0.3) * 3, 1) : 0) : cardsOpacity,
             paddingBottom: isMobile ? '0' : isTablet ? '32px' : '64px',
             paddingLeft: isMobile ? '16px' : isTablet ? '24px' : '48px',
             paddingRight: isMobile ? '16px' : isTablet ? '24px' : '48px',
-            pointerEvents: isMobile && scrollProgress <= 0.5 ? 'none' : 'auto',
+            pointerEvents: isMobile && scrollProgress <= 0.3 ? 'none' : 'auto',
+            zIndex: isMobile ? 10 : 'auto',
           }}
         >
           {/* Mobile Layout - Centered in screen overlaying video */}
@@ -326,14 +351,14 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
               className="flex flex-col items-center gap-4 text-center"
               style={{
                 // Position in the center area where video is
-                marginTop: '-10vh',
+                marginTop: '-5vh',
               }}
             >
-              {/* Title centered on mobile */}
+              {/* Title centered on mobile - appears immediately */}
               <h2 className="section2-title-container text-center">
                 <span className="section2-word-reveal">
                   <span
-                    className={`section2-word-reveal-inner section2-word-delay-0 ${titleRevealed && scrollProgress > 0.5 ? 'revealed' : ''}`}
+                    className={`section2-word-reveal-inner section2-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
                   >
                     Our
                   </span>
@@ -341,22 +366,22 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                 {' '}
                 <span className="section2-word-reveal">
                   <span
-                    className={`section2-word-reveal-inner section2-word-delay-1 ${titleRevealed && scrollProgress > 0.5 ? 'revealed' : ''}`}
+                    className={`section2-word-reveal-inner section2-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
                   >
                     Products
                   </span>
                 </span>
               </h2>
               
-              {/* Description centered on mobile */}
-              <p className={`section2-description section2-word-reveal-inner section2-word-delay-2 text-center max-w-[320px] ${titleRevealed && scrollProgress > 0.5 ? 'revealed' : ''}`}>
+              {/* Description centered on mobile - appears immediately */}
+              <p className={`section2-description section2-word-reveal-inner section2-word-delay-2 text-center max-w-[320px] ${titleRevealed ? 'revealed' : ''}`}>
                 We believe in creating products that transform everyday moments into extraordinary experiences.
               </p>
               
-              {/* Button - Centered and easily accessible */}
+              {/* Button - Centered and easily accessible - appears immediately */}
               <Link
                 href="/store"
-                className={`section2-explore-btn ${titleRevealed && scrollProgress > 0.5 ? 'revealed' : ''}`}
+                className={`section2-explore-btn ${titleRevealed ? 'revealed' : ''}`}
                 onMouseEnter={() => setIsButtonHovered(true)}
                 onMouseLeave={() => setIsButtonHovered(false)}
                 style={{
