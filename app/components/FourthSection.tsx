@@ -184,36 +184,32 @@ const FourthSection: React.FC<FourthSectionProps> = ({ transitionProgress }) => 
               padding: isMobile ? '16px' : isTablet ? '24px' : '0',
             }}
           >
-            {/* Mobile Layout - Bottom positioned, doesn't block face */}
+            {/* Mobile Layout - Same style as Section 2 "Our Products" */}
             {isMobile ? (
-              <div className="absolute inset-x-0 bottom-0 flex flex-col">
-                {/* About Us Title - Left aligned, at bottom */}
-                <div className="px-4 mb-3">
-                  <h2 className="section5-title-mobile">
-                    <span className="section5-word-reveal">
-                      <span
-                        className={`section5-word-reveal-inner section5-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
-                      >
-                        About
-                      </span>
+              <div className="absolute inset-x-0 bottom-0 flex flex-col items-center pb-8 px-4">
+                {/* Title - Centered (matching Section 2 style) */}
+                <h2 className="section5-title-mobile-centered text-center mb-3">
+                  <span className="section5-word-reveal">
+                    <span
+                      className={`section5-word-reveal-inner section5-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      About
                     </span>
-                    {' '}
-                    <span className="section5-word-reveal">
-                      <span
-                        className={`section5-word-reveal-inner section5-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
-                      >
-                        Us
-                      </span>
+                  </span>
+                  {' '}
+                  <span className="section5-word-reveal">
+                    <span
+                      className={`section5-word-reveal-inner section5-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      Us
                     </span>
-                  </h2>
-                </div>
+                  </span>
+                </h2>
 
-                {/* Description Text - Full width card at bottom */}
-                <div className="bg-white/95 backdrop-blur-md px-4 py-5 safe-area-bottom">
-                  <p className="section5-desc-mobile text-black/80">
-                    KBS is a global brand specializing in intelligent bread makers that combine advanced technology, premium materials, and modern design.
-                  </p>
-                </div>
+                {/* Description Text - Centered (matching Section 2 style) */}
+                <p className={`section5-desc-mobile-centered text-center max-w-[300px] section5-word-reveal-inner section5-word-delay-2 ${titleRevealed ? 'revealed' : ''}`}>
+                  KBS is a global brand specializing in intelligent bread makers that combine advanced technology, premium materials, and modern design.
+                </p>
               </div>
             ) : isTablet ? (
               /* Tablet Layout - Side by side but closer together */
@@ -351,12 +347,33 @@ const FourthSection: React.FC<FourthSectionProps> = ({ transitionProgress }) => 
           text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
         
+        /* Mobile-specific title - centered style (matching Section 2) */
+        .section5-title-mobile-centered {
+          font-family: sans-serif;
+          font-size: 36px;
+          line-height: 1;
+          color: #ffffff;
+          font-weight: 300;
+          letter-spacing: -0.02em;
+          text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
         /* Mobile-specific description - auto-adjusts to screen */
         .section5-desc-mobile {
           font-family: sans-serif;
           font-size: clamp(13px, 3.5vw, 16px);
           line-height: 1.5;
           font-weight: 400;
+        }
+        
+        /* Mobile-specific description - centered style (matching Section 2) */
+        .section5-desc-mobile-centered {
+          font-family: sans-serif;
+          font-size: 15px;
+          line-height: 1.5;
+          color: rgba(255, 255, 255, 0.9);
+          font-weight: 400;
+          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
         }
 
         /* Word by Word Reveal Animation for Section 5 */
@@ -386,6 +403,11 @@ const FourthSection: React.FC<FourthSectionProps> = ({ transitionProgress }) => 
         .section5-word-delay-1 {
           transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1) 0.4s,
                       opacity 0.8s ease-out 0.4s;
+        }
+
+        .section5-word-delay-2 {
+          transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1) 0.5s,
+                      opacity 0.8s ease-out 0.5s;
         }
 
         /* Responsive Section 5 Styles - Tablet */
