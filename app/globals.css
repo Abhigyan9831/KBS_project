@@ -70,6 +70,18 @@ html {
   overflow-x: hidden;
 }
 
+/* Smooth scrolling for touch devices */
+@media (hover: none) and (pointer: coarse) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -202,6 +214,44 @@ body {
 
 .section3-reveal-inner.revealed {
   opacity: 1;
+}
+
+/* Mobile-specific section 3 styles */
+.section3-title-mobile {
+  font-family: 'new-science-extended', sans-serif;
+  font-size: clamp(16px, 4.5vw, 22px);
+  font-weight: 600;
+  line-height: 1.2;
+  color: #000000;
+  letter-spacing: -0.01em;
+}
+
+.section3-desc-mobile {
+  font-family: 'new-science-extended', sans-serif;
+  font-size: clamp(12px, 3vw, 14px);
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+/* Hide scrollbar for horizontal scroll on mobile */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Smooth scroll snap for mobile cards */
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-snap-start {
+  scroll-snap-align: start;
 }
 
 /* Smooth transitions for all animated elements */

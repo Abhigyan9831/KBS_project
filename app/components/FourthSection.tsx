@@ -184,32 +184,34 @@ const FourthSection: React.FC<FourthSectionProps> = ({ transitionProgress }) => 
               padding: isMobile ? '16px' : isTablet ? '24px' : '0',
             }}
           >
-            {/* Mobile Layout - Stacked vertically */}
+            {/* Mobile Layout - Bottom positioned, doesn't block face */}
             {isMobile ? (
-              <div className="absolute inset-x-4 bottom-8 flex flex-col gap-4">
-                {/* About Us Title - Centered on mobile */}
-                <h2 className="section5-title-container text-center">
-                  <span className="section5-word-reveal">
-                    <span
-                      className={`section5-word-reveal-inner section5-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
-                    >
-                      About
+              <div className="absolute inset-x-0 bottom-0 flex flex-col">
+                {/* About Us Title - Left aligned, at bottom */}
+                <div className="px-4 mb-3">
+                  <h2 className="section5-title-mobile">
+                    <span className="section5-word-reveal">
+                      <span
+                        className={`section5-word-reveal-inner section5-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
+                      >
+                        About
+                      </span>
                     </span>
-                  </span>
-                  {' '}
-                  <span className="section5-word-reveal">
-                    <span
-                      className={`section5-word-reveal-inner section5-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
-                    >
-                      Us
+                    {' '}
+                    <span className="section5-word-reveal">
+                      <span
+                        className={`section5-word-reveal-inner section5-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
+                      >
+                        Us
+                      </span>
                     </span>
-                  </span>
-                </h2>
+                  </h2>
+                </div>
 
-                {/* Description Text - Centered on mobile */}
-                <div className="text-center bg-black/30 backdrop-blur-sm rounded-xl p-4">
-                  <p className="section5-description">
-                    KBS is a global brand specializing in intelligent bread makers that combine advanced technology, premium materials, and modern design—delivering precise, effortless, and customizable home baking for today's kitchens.
+                {/* Description Text - Full width card at bottom */}
+                <div className="bg-white/95 backdrop-blur-md px-4 py-5 safe-area-bottom">
+                  <p className="section5-desc-mobile text-black/80">
+                    KBS is a global brand specializing in intelligent bread makers that combine advanced technology, premium materials, and modern design.
                   </p>
                 </div>
               </div>
@@ -319,22 +321,41 @@ const FourthSection: React.FC<FourthSectionProps> = ({ transitionProgress }) => 
 
       {/* Section 5 Styles */}
       <style jsx global>{`
-        /* Section 5 Title Styles - "About Us" */
+        /* Section 5 Title Styles - "About Us" - Desktop */
         .section5-title-container {
           font-family: sans-serif;
-          font-size: 72px;
+          font-size: clamp(48px, 6vw, 72px);
           line-height: 0.95;
-          color: #ffffffff;
+          color: #ffffff;
           font-weight: 300;
           letter-spacing: -0.02em;
         }
 
-        /* Section 5 Description Styles */
+        /* Section 5 Description Styles - Desktop */
         .section5-description {
           font-family: sans-serif;
-          font-size: 24px;
+          font-size: clamp(16px, 2vw, 24px);
           line-height: 1.6;
-          color: #ffffffff;
+          color: #ffffff;
+          font-weight: 400;
+        }
+        
+        /* Mobile-specific title - auto-adjusts to screen */
+        .section5-title-mobile {
+          font-family: sans-serif;
+          font-size: clamp(28px, 8vw, 40px);
+          line-height: 1;
+          color: #ffffff;
+          font-weight: 300;
+          letter-spacing: -0.02em;
+          text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Mobile-specific description - auto-adjusts to screen */
+        .section5-desc-mobile {
+          font-family: sans-serif;
+          font-size: clamp(13px, 3.5vw, 16px);
+          line-height: 1.5;
           font-weight: 400;
         }
 
@@ -367,54 +388,20 @@ const FourthSection: React.FC<FourthSectionProps> = ({ transitionProgress }) => 
                       opacity 0.8s ease-out 0.4s;
         }
 
-        /* Responsive Section 5 Styles */
+        /* Responsive Section 5 Styles - Tablet */
         @media (max-width: 1024px) {
           .section5-title-container {
-            font-size: 52px;
+            font-size: clamp(40px, 6vw, 52px);
           }
           .section5-description {
-            font-size: 18px;
+            font-size: clamp(15px, 2vw, 18px);
             line-height: 1.5;
           }
         }
 
-        @media (max-width: 768px) {
-          .section5-title-container {
-            font-size: 42px;
-          }
-          .section5-description {
-            font-size: 16px;
-            line-height: 1.5;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .section5-title-container {
-            font-size: 36px;
-            gap: 8px;
-          }
-          .section5-description {
-            font-size: 15px;
-            line-height: 1.6;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .section5-title-container {
-            font-size: 32px;
-          }
-          .section5-description {
-            font-size: 14px;
-          }
-        }
-
-        @media (max-width: 360px) {
-          .section5-title-container {
-            font-size: 28px;
-          }
-          .section5-description {
-            font-size: 13px;
-          }
+        /* Safe area bottom for notched phones */
+        .safe-area-bottom {
+          padding-bottom: max(20px, env(safe-area-inset-bottom));
         }
       `}</style>
     </>

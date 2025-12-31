@@ -138,63 +138,95 @@ const ThirdSection: React.FC<ThirdSectionProps> = ({ transitionProgress, section
               overflowY: isMobile ? 'auto' : 'visible',
             }}
           >
-            {/* Mobile Layout - Stacked vertically with scroll */}
+            {/* Mobile Layout - Cards at bottom, face visible in center */}
             {isMobile ? (
-              <div className="flex flex-col gap-6 pt-20 pb-32">
-                {/* Why Us? - Top on mobile */}
-                <div className="text-center mb-4">
+              <div className="h-full flex flex-col justify-between">
+                {/* Why Us? - Top left corner on mobile */}
+                <div className="pt-20 pl-4">
                   <h2 className={`section3-heading section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                      style={{ transitionDelay: '0s' }}>
+                      style={{ transitionDelay: '0s', textAlign: 'left', fontSize: 'clamp(24px, 7vw, 36px)' }}>
                     Why Us?
                   </h2>
                 </div>
 
-                {/* Premium Quality */}
-                <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4">
-                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                      style={{ transitionDelay: '0.1s' }}>
-                    Premium Quality, Always
-                  </h3>
-                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                     style={{ transitionDelay: '0.2s', marginTop: '8px' }}>
-                    Every product is carefully built to meet the highest quality standards.
-                  </p>
-                </div>
+                {/* Horizontal scrollable cards at bottom - doesn't cover face */}
+                <div className="pb-6">
+                  <div
+                    className="flex gap-3 overflow-x-auto px-4 pb-4 snap-x snap-mandatory"
+                    style={{
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none',
+                      WebkitOverflowScrolling: 'touch',
+                    }}
+                  >
+                    {/* Premium Quality Card */}
+                    <div
+                      className="flex-shrink-0 bg-amber-100/90 backdrop-blur-sm rounded-2xl p-4 snap-start"
+                      style={{ width: 'clamp(200px, 70vw, 280px)', minHeight: '120px' }}
+                    >
+                      <h3 className={`section3-title-mobile section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                          style={{ transitionDelay: '0.1s' }}>
+                        Premium Quality
+                      </h3>
+                      <p className={`section3-desc-mobile section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                         style={{ transitionDelay: '0.2s', marginTop: '6px' }}>
+                        Carefully built to highest standards.
+                      </p>
+                    </div>
 
-                {/* Fast & Reliable Delivery */}
-                <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4">
-                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                      style={{ transitionDelay: '0.15s' }}>
-                    Fast & Reliable Delivery
-                  </h3>
-                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                     style={{ transitionDelay: '0.25s', marginTop: '8px' }}>
-                    Get your orders delivered quickly with real-time tracking.
-                  </p>
-                </div>
+                    {/* Fast Delivery Card */}
+                    <div
+                      className="flex-shrink-0 bg-amber-100/90 backdrop-blur-sm rounded-2xl p-4 snap-start"
+                      style={{ width: 'clamp(200px, 70vw, 280px)', minHeight: '120px' }}
+                    >
+                      <h3 className={`section3-title-mobile section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                          style={{ transitionDelay: '0.15s' }}>
+                        Fast Delivery
+                      </h3>
+                      <p className={`section3-desc-mobile section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                         style={{ transitionDelay: '0.25s', marginTop: '6px' }}>
+                        Quick orders with real-time tracking.
+                      </p>
+                    </div>
 
-                {/* Secure Payments */}
-                <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4">
-                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                      style={{ transitionDelay: '0.2s' }}>
-                    Secure Payments
-                  </h3>
-                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                     style={{ transitionDelay: '0.3s', marginTop: '8px' }}>
-                    Shop with confidence using 100% safe and encrypted payment methods.
-                  </p>
-                </div>
+                    {/* Secure Payments Card */}
+                    <div
+                      className="flex-shrink-0 bg-gray-200/90 backdrop-blur-sm rounded-2xl p-4 snap-start"
+                      style={{ width: 'clamp(200px, 70vw, 280px)', minHeight: '120px' }}
+                    >
+                      <h3 className={`section3-title-mobile section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                          style={{ transitionDelay: '0.2s' }}>
+                        Secure Payments
+                      </h3>
+                      <p className={`section3-desc-mobile section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                         style={{ transitionDelay: '0.3s', marginTop: '6px' }}>
+                        100% safe encrypted methods.
+                      </p>
+                    </div>
 
-                {/* Easy Returns */}
-                <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4">
-                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                      style={{ transitionDelay: '0.25s' }}>
-                    Easy Returns & Hassle-Free Experience
-                  </h3>
-                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                     style={{ transitionDelay: '0.35s', marginTop: '8px' }}>
-                    Simple returns designed to keep shopping stress-free.
-                  </p>
+                    {/* Easy Returns Card */}
+                    <div
+                      className="flex-shrink-0 bg-gray-300/90 backdrop-blur-sm rounded-2xl p-4 snap-start"
+                      style={{ width: 'clamp(200px, 70vw, 280px)', minHeight: '120px' }}
+                    >
+                      <h3 className={`section3-title-mobile section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                          style={{ transitionDelay: '0.25s' }}>
+                        Easy Returns
+                      </h3>
+                      <p className={`section3-desc-mobile section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                         style={{ transitionDelay: '0.35s', marginTop: '6px' }}>
+                        Hassle-free stress-free shopping.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Scroll indicator dots */}
+                  <div className="flex justify-center gap-2 mt-2">
+                    <div className="w-2 h-2 rounded-full bg-black/40"></div>
+                    <div className="w-2 h-2 rounded-full bg-black/20"></div>
+                    <div className="w-2 h-2 rounded-full bg-black/20"></div>
+                    <div className="w-2 h-2 rounded-full bg-black/20"></div>
+                  </div>
                 </div>
               </div>
             ) : isTablet ? (
