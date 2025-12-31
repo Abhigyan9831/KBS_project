@@ -97,6 +97,9 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
     return null;
   }
 
+  // Calculate mobile content opacity - appears when scrollProgress > 0.3 (video shrunk enough)
+  const mobileContentOpacity = isMobile ? Math.min(Math.max((scrollProgress - 0.3) / 0.4, 0), 1) : 0;
+
   return (
     <>
       <section
@@ -235,29 +238,27 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           </div>
         )}
 
-        {/* Mobile Content - Title/Description centered on video (WHITE text), Button below video */}
+        {/* Mobile Content - Title/Description BELOW video (BLACK text on cream bg), Button at bottom */}
         {isMobile && (
           <>
-            {/* Title and Description - Centered on video area with WHITE text */}
+            {/* Title and Description - Positioned BELOW the video area */}
             <div
-              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              className="absolute left-0 right-0 flex flex-col items-center px-4"
               style={{
-                opacity: scrollProgress > 0.1 ? Math.min((scrollProgress - 0.1) * 5, 1) : 0,
-                zIndex: 10,
+                // Position below video: video top (80px) + video height (~55vh or 400px max)
+                top: `calc(80px + min(55vh, 400px) + 24px)`,
+                opacity: mobileContentOpacity,
+                transform: `translateY(${mobileContentOpacity > 0 ? 0 : 20}px)`,
+                transition: 'opacity 0.5s ease-out, transform 0.5s ease-out',
               }}
             >
-              <div
-                className="flex flex-col items-center gap-3 text-center px-4"
-                style={{
-                  marginTop: '-15vh', // Position in center of video area
-                }}
-              >
-                {/* Title in WHITE */}
+              <div className="flex flex-col items-center gap-3 text-center">
+                {/* Title in BLACK */}
                 <h2 className="section2-title-container-mobile text-center">
                   <span className="section2-word-reveal">
                     <span
                       className={`section2-word-reveal-inner section2-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
-                      style={{ color: '#ffffff' }}
+                      style={{ color: '#000000' }}
                     >
                       Our
                     </span>
@@ -266,31 +267,32 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                   <span className="section2-word-reveal">
                     <span
                       className={`section2-word-reveal-inner section2-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
-                      style={{ color: '#ffffff' }}
+                      style={{ color: '#000000' }}
                     >
                       Products
                     </span>
                   </span>
                 </h2>
                 
-                {/* Description in WHITE */}
+                {/* Description in BLACK */}
                 <p
                   className={`section2-description-mobile section2-word-reveal-inner section2-word-delay-2 text-center max-w-[300px] ${titleRevealed ? 'revealed' : ''}`}
-                  style={{ color: '#ffffff' }}
+                  style={{ color: '#333333' }}
                 >
                   We believe in creating products that transform everyday moments into extraordinary experiences.
                 </p>
               </div>
             </div>
             
-            {/* Explore Us Button - Below the video with black borders only */}
+            {/* Explore Us Button - At the bottom with black borders only */}
             <div
               className="absolute left-0 right-0 flex justify-center"
               style={{
-                bottom: '15%',
-                opacity: scrollProgress > 0.2 ? Math.min((scrollProgress - 0.2) * 4, 1) : 0,
-                zIndex: 10,
-                pointerEvents: scrollProgress > 0.2 ? 'auto' : 'none',
+                bottom: '12%',
+                opacity: mobileContentOpacity,
+                transform: `translateY(${mobileContentOpacity > 0 ? 0 : 10}px)`,
+                transition: 'opacity 0.5s ease-out 0.2s, transform 0.5s ease-out 0.2s',
+                pointerEvents: mobileContentOpacity > 0.5 ? 'auto' : 'none',
               }}
             >
               <Link
@@ -520,24 +522,22 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           transform: translateY(2px);
         }
 
-        /* Mobile-specific title styles (WHITE text on video) */
+        /* Mobile-specific title styles (BLACK text on cream bg) */
         .section2-title-container-mobile {
           font-family: sans-serif;
           font-size: 36px;
           line-height: 1;
-          color: #ffffff;
+          color: #000000;
           font-weight: 300;
           letter-spacing: -0.02em;
-          text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .section2-description-mobile {
           font-family: sans-serif;
           font-size: 15px;
           line-height: 1.5;
-          color: #ffffff;
+          color: #333333;
           font-weight: 400;
-          text-shadow: 0 1px 5px rgba(0,0,0,0.3);
         }
 
         /* Mobile Explore Us Button - black border only */
