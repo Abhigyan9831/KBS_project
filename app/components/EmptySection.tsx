@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -12,6 +12,34 @@ interface EmptySectionProps {
   bgColor?: string;
   bgColorStyle?: string;
 }
+
+// Responsive hook for device detection
+const useResponsive = () => {
+  const [dimensions, setDimensions] = useState({
+    vh: 900,
+    vw: 1200,
+    isMobile: false,
+    isTablet: false,
+  });
+
+  useLayoutEffect(() => {
+    const updateDimensions = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      setDimensions({
+        vh,
+        vw,
+        isMobile: vw < 640,
+        isTablet: vw >= 640 && vw < 1024,
+      });
+    };
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  return dimensions;
+};
 
 // Slide data - Update the 'src' paths to use your local images
 // Place your images in the public/images folder and update paths like: '/images/your-image.jpg'
@@ -178,6 +206,7 @@ const EmptySection: React.FC<EmptySectionProps> = ({
   const [current, setCurrent] = useState(0);
   const [titleRevealed, setTitleRevealed] = useState(false);
   const titleRevealedRef = useRef(false);
+  const { isMobile, isTablet } = useResponsive();
 
   // Trigger title reveal animation when section becomes visible
   useEffect(() => {
@@ -278,75 +307,146 @@ const EmptySection: React.FC<EmptySectionProps> = ({
           style={{ backgroundColor: 'rgb(245, 240, 230)' }}
         />
 
-        {/* Main Content Container - Two column layout */}
+        {/* Main Content Container - Responsive layout */}
         <div
-          className="absolute inset-0 w-full h-full flex"
-          style={{ opacity: contentOpacity }}
+          className="absolute inset-0 w-full h-full"
+          style={{
+            opacity: contentOpacity,
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+          }}
         >
-          {/* Left Column - Title "New Arrivals" */}
-          <div
-            className="w-[35%] h-full flex items-center pl-[5%] z-30"
-          >
-            <h2 className="section3-title-container flex flex-col items-start">
-              {/* "New" word - first line */}
-              <span className="section3-word-reveal">
-                <span
-                  className={`section3-word-reveal-inner section3-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
-                >
-                  New
-                </span>
-              </span>
-              
-              {/* "Arrivals" word - second line */}
-              <span className="section3-word-reveal">
-                <span
-                  className={`section3-word-reveal-inner section3-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
-                >
-                  Arrivals
-                </span>
-              </span>
-            </h2>
-          </div>
-
-          {/* Right Column - Slider */}
-          <div
-            className="w-[65%] h-full overflow-hidden"
-            style={{
-              transform: `scale(${imageScale}) rotate(${imageRotation}deg)`,
-              transformOrigin: 'center center',
-            }}
-          >
-            {/* Slider Container */}
-            <div
-              className="relative z-10 h-full w-full flex items-center justify-center"
-            >
-            <div className="slider" aria-label="Example Slider">
-              <ul className="slider__wrapper" style={wrapperTransform}>
-                {slideData.map(slide => (
-                  <Slide
-                    key={slide.index}
-                    slide={slide}
-                    current={current}
-                    handleSlideClick={handleSlideClick}
-                  />
-                ))}
-              </ul>
-
-              <div className="slider__controls">
-                <SliderControl
-                  type="previous"
-                  title="Go to previous slide"
-                  handleClick={handlePreviousClick}
-                />
-                <SliderControl
-                  type="next"
-                  title="Go to next slide"
-                  handleClick={handleNextClick}
-                />
+          {/* Mobile Layout */}
+          {isMobile ? (
+            <>
+              {/* Title at top on mobile */}
+              <div className="pt-20 pb-4 px-4 z-30">
+                <h2 className="section3-title-container flex flex-row items-baseline gap-3 justify-center">
+                  <span className="section3-word-reveal">
+                    <span
+                      className={`section3-word-reveal-inner section3-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      New
+                    </span>
+                  </span>
+                  <span className="section3-word-reveal">
+                    <span
+                      className={`section3-word-reveal-inner section3-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      Arrivals
+                    </span>
+                  </span>
+                </h2>
               </div>
-            </div>
-          </div>
-        </div>
+
+              {/* Slider below title on mobile */}
+              <div
+                className="flex-1 overflow-hidden"
+                style={{
+                  transform: `scale(${imageScale}) rotate(${imageRotation}deg)`,
+                  transformOrigin: 'center center',
+                }}
+              >
+                <div className="relative z-10 h-full w-full flex items-center justify-center">
+                  <div className="slider slider--mobile" aria-label="Product Slider">
+                    <ul className="slider__wrapper" style={wrapperTransform}>
+                      {slideData.map(slide => (
+                        <Slide
+                          key={slide.index}
+                          slide={slide}
+                          current={current}
+                          handleSlideClick={handleSlideClick}
+                        />
+                      ))}
+                    </ul>
+
+                    <div className="slider__controls">
+                      <SliderControl
+                        type="previous"
+                        title="Go to previous slide"
+                        handleClick={handlePreviousClick}
+                      />
+                      <SliderControl
+                        type="next"
+                        title="Go to next slide"
+                        handleClick={handleNextClick}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Left Column - Title "New Arrivals" */}
+              <div
+                className="h-full flex items-center z-30"
+                style={{
+                  width: isTablet ? '30%' : '35%',
+                  paddingLeft: isTablet ? '3%' : '5%',
+                }}
+              >
+                <h2 className="section3-title-container flex flex-col items-start">
+                  {/* "New" word - first line */}
+                  <span className="section3-word-reveal">
+                    <span
+                      className={`section3-word-reveal-inner section3-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      New
+                    </span>
+                  </span>
+                  
+                  {/* "Arrivals" word - second line */}
+                  <span className="section3-word-reveal">
+                    <span
+                      className={`section3-word-reveal-inner section3-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      Arrivals
+                    </span>
+                  </span>
+                </h2>
+              </div>
+
+              {/* Right Column - Slider */}
+              <div
+                className="h-full overflow-hidden"
+                style={{
+                  width: isTablet ? '70%' : '65%',
+                  transform: `scale(${imageScale}) rotate(${imageRotation}deg)`,
+                  transformOrigin: 'center center',
+                }}
+              >
+                {/* Slider Container */}
+                <div className="relative z-10 h-full w-full flex items-center justify-center">
+                  <div className={`slider ${isTablet ? 'slider--tablet' : ''}`} aria-label="Product Slider">
+                    <ul className="slider__wrapper" style={wrapperTransform}>
+                      {slideData.map(slide => (
+                        <Slide
+                          key={slide.index}
+                          slide={slide}
+                          current={current}
+                          handleSlideClick={handleSlideClick}
+                        />
+                      ))}
+                    </ul>
+
+                    <div className="slider__controls">
+                      <SliderControl
+                        type="previous"
+                        title="Go to previous slide"
+                        handleClick={handlePreviousClick}
+                      />
+                      <SliderControl
+                        type="next"
+                        title="Go to next slide"
+                        handleClick={handleNextClick}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
@@ -362,6 +462,18 @@ const EmptySection: React.FC<EmptySectionProps> = ({
           margin: 0 auto;
           position: relative;
           width: var(--slide-size);
+        }
+
+        /* Mobile slider adjustments */
+        .slider--mobile {
+          --slide-size: min(75vw, 320px);
+          --slide-margin: 3vmin;
+        }
+
+        /* Tablet slider adjustments */
+        .slider--tablet {
+          --slide-size: 55vmin;
+          --slide-margin: 3vmin;
         }
 
         .slider__wrapper {
@@ -617,19 +729,84 @@ const EmptySection: React.FC<EmptySectionProps> = ({
         /* Responsive Section 3 Title */
         @media (max-width: 1024px) {
           .section3-title-container {
-            font-size: 56px;
+            font-size: 52px;
+          }
+          .slider {
+            --slide-size: 55vmin;
+          }
+          .slide__headline {
+            font-size: 20px;
           }
         }
 
         @media (max-width: 768px) {
           .section3-title-container {
-            font-size: 48px;
+            font-size: 42px;
+          }
+          .slider {
+            --slide-size: 50vmin;
+          }
+          .slide__headline {
+            font-size: 18px;
+          }
+          .slide__content--headline {
+            margin-top: -8rem;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .section3-title-container {
+            font-size: 36px;
+          }
+          .slider {
+            --slide-size: min(75vw, 280px);
+            --slide-margin: 2vmin;
+          }
+          .slide__headline {
+            font-size: 16px;
+          }
+          .slide__content--headline {
+            margin-top: -6rem;
+          }
+          .slide__action {
+            padding: 0.75rem 1.5rem;
+            font-size: 13px;
+          }
+          .slider-btn {
+            --size: 2.5rem;
+          }
+          .slide__button-wrapper {
+            bottom: 6%;
           }
         }
 
         @media (max-width: 480px) {
           .section3-title-container {
-            font-size: 36px;
+            font-size: 32px;
+          }
+          .slider {
+            --slide-size: min(80vw, 260px);
+          }
+          .slide__headline {
+            font-size: 15px;
+          }
+          .slide__content {
+            padding: 3vmin;
+          }
+          .slide__content--headline {
+            margin-top: -5rem;
+          }
+        }
+
+        @media (max-width: 360px) {
+          .section3-title-container {
+            font-size: 28px;
+          }
+          .slider {
+            --slide-size: min(85vw, 240px);
+          }
+          .slide__headline {
+            font-size: 14px;
           }
         }
       `}</style>

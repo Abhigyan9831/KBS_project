@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import Image from 'next/image';
 
 interface FourthSectionProps {
@@ -10,6 +10,30 @@ interface FourthSectionProps {
 const FourthSection: React.FC<FourthSectionProps> = ({ transitionProgress }) => {
   const [titleRevealed, setTitleRevealed] = useState(false);
   const titleRevealedRef = useRef(false);
+  const [dimensions, setDimensions] = useState({
+    vh: 900,
+    vw: 1200,
+    isMobile: false,
+    isTablet: false,
+  });
+
+  useLayoutEffect(() => {
+    const updateDimensions = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      setDimensions({
+        vh,
+        vw,
+        isMobile: vw < 640,
+        isTablet: vw >= 640 && vw < 1024,
+      });
+    };
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  const { isMobile, isTablet } = dimensions;
   
   // Custom wallpaper state - stores the uploaded image URL
   // To use: Place your image in public/images/ folder and update the path below
@@ -152,42 +176,105 @@ const FourthSection: React.FC<FourthSectionProps> = ({ transitionProgress }) => 
             <div className="absolute inset-0 w-full h-full bg-black/20" />
           </div>
 
-          {/* Content */}
+          {/* Content - Responsive Layout */}
           <div
             className="relative z-10 h-full w-full"
             style={{
               opacity: contentOpacity,
+              padding: isMobile ? '16px' : isTablet ? '24px' : '0',
             }}
           >
-            {/* About Us Title - Left side, moved up - single line */}
-            <div className="absolute left-12 bottom-32">
-              <h2 className="section5-title-container flex flex-row items-baseline gap-4">
-                {/* "About" word */}
-                <span className="section5-word-reveal">
-                  <span
-                    className={`section5-word-reveal-inner section5-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
-                  >
-                    About
+            {/* Mobile Layout - Stacked vertically */}
+            {isMobile ? (
+              <div className="absolute inset-x-4 bottom-8 flex flex-col gap-4">
+                {/* About Us Title - Centered on mobile */}
+                <h2 className="section5-title-container text-center">
+                  <span className="section5-word-reveal">
+                    <span
+                      className={`section5-word-reveal-inner section5-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      About
+                    </span>
                   </span>
-                </span>
-                
-                {/* "Us" word */}
-                <span className="section5-word-reveal">
-                  <span
-                    className={`section5-word-reveal-inner section5-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
-                  >
-                    Us
+                  {' '}
+                  <span className="section5-word-reveal">
+                    <span
+                      className={`section5-word-reveal-inner section5-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      Us
+                    </span>
                   </span>
-                </span>
-              </h2>
-            </div>
+                </h2>
 
-            {/* Description Text - Right side, moved up */}
-            <div className="absolute right-12 bottom-24 max-w-xl text-right">
-              <p className="section5-description">
-                KBS is a global brand specializing in intelligent bread makers that combine advanced technology, premium materials, and modern design—delivering precise, effortless, and customizable home baking for today's kitchens.
-              </p>
-            </div>
+                {/* Description Text - Centered on mobile */}
+                <div className="text-center bg-black/30 backdrop-blur-sm rounded-xl p-4">
+                  <p className="section5-description">
+                    KBS is a global brand specializing in intelligent bread makers that combine advanced technology, premium materials, and modern design—delivering precise, effortless, and customizable home baking for today's kitchens.
+                  </p>
+                </div>
+              </div>
+            ) : isTablet ? (
+              /* Tablet Layout - Side by side but closer together */
+              <div className="absolute inset-x-6 bottom-12 flex flex-col sm:flex-row justify-between items-end gap-6">
+                {/* About Us Title */}
+                <h2 className="section5-title-container flex flex-row items-baseline gap-3">
+                  <span className="section5-word-reveal">
+                    <span
+                      className={`section5-word-reveal-inner section5-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      About
+                    </span>
+                  </span>
+                  <span className="section5-word-reveal">
+                    <span
+                      className={`section5-word-reveal-inner section5-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      Us
+                    </span>
+                  </span>
+                </h2>
+
+                {/* Description Text */}
+                <div className="max-w-md text-right">
+                  <p className="section5-description">
+                    KBS is a global brand specializing in intelligent bread makers that combine advanced technology, premium materials, and modern design—delivering precise, effortless, and customizable home baking for today's kitchens.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              /* Desktop Layout - Original absolute positioning */
+              <>
+                {/* About Us Title - Left side, moved up - single line */}
+                <div className="absolute left-12 bottom-32">
+                  <h2 className="section5-title-container flex flex-row items-baseline gap-4">
+                    {/* "About" word */}
+                    <span className="section5-word-reveal">
+                      <span
+                        className={`section5-word-reveal-inner section5-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
+                      >
+                        About
+                      </span>
+                    </span>
+                    
+                    {/* "Us" word */}
+                    <span className="section5-word-reveal">
+                      <span
+                        className={`section5-word-reveal-inner section5-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
+                      >
+                        Us
+                      </span>
+                    </span>
+                  </h2>
+                </div>
+
+                {/* Description Text - Right side, moved up */}
+                <div className="absolute right-12 bottom-24 max-w-xl text-right">
+                  <p className="section5-description">
+                    KBS is a global brand specializing in intelligent bread makers that combine advanced technology, premium materials, and modern design—delivering precise, effortless, and customizable home baking for today's kitchens.
+                  </p>
+                </div>
+              </>
+            )}
 
             {/* Custom Wallpaper Upload Placeholder */}
             {/*
@@ -283,28 +370,50 @@ const FourthSection: React.FC<FourthSectionProps> = ({ transitionProgress }) => 
         /* Responsive Section 5 Styles */
         @media (max-width: 1024px) {
           .section5-title-container {
-            font-size: 56px;
+            font-size: 52px;
+          }
+          .section5-description {
+            font-size: 18px;
+            line-height: 1.5;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .section5-title-container {
+            font-size: 42px;
+          }
+          .section5-description {
+            font-size: 16px;
+            line-height: 1.5;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .section5-title-container {
+            font-size: 36px;
+            gap: 8px;
+          }
+          .section5-description {
+            font-size: 15px;
+            line-height: 1.6;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .section5-title-container {
+            font-size: 32px;
           }
           .section5-description {
             font-size: 14px;
           }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 360px) {
           .section5-title-container {
-            font-size: 48px;
+            font-size: 28px;
           }
           .section5-description {
             font-size: 13px;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .section5-title-container {
-            font-size: 36px;
-          }
-          .section5-description {
-            font-size: 12px;
           }
         }
       `}</style>

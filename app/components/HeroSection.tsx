@@ -11,13 +11,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
   const [isLoaded, setIsLoaded] = useState(false);
   const [wordsRevealed, setWordsRevealed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
+  const [dimensions, setDimensions] = useState<{ width: number; height: number; isMobile: boolean; isTablet: boolean } | null>(null);
 
   useLayoutEffect(() => {
     const updateDimensions = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
       setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width,
+        height,
+        isMobile: width < 640,
+        isTablet: width >= 640 && width < 1024,
       });
     };
 
@@ -43,15 +47,38 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
 
   const vw = dimensions?.width ?? 1440;
   const vh = dimensions?.height ?? 900;
+  const isMobile = dimensions?.isMobile ?? false;
+  const isTablet = dimensions?.isTablet ?? false;
 
-  // Calculate video container styles based on scroll progress
+  // Calculate video container styles based on scroll progress - RESPONSIVE
   const getVideoStyles = () => {
-    // Target dimensions for the shrunk video card
-    const targetWidth = Math.min(550, vw * 0.38);
-    const targetHeight = Math.min(650, vh * 0.72);
-    const targetTop = 120;
+    // Responsive target dimensions for the shrunk video card
+    let targetWidth: number;
+    let targetHeight: number;
+    let targetTop: number;
+    let targetBorderRadius: number;
+    
+    if (isMobile) {
+      // Mobile: video card takes more screen width, less height
+      targetWidth = Math.min(vw - 24, vw * 0.92);
+      targetHeight = Math.min(vh * 0.55, 400);
+      targetTop = 80;
+      targetBorderRadius = 16;
+    } else if (isTablet) {
+      // Tablet: medium sizing
+      targetWidth = Math.min(450, vw * 0.55);
+      targetHeight = Math.min(550, vh * 0.65);
+      targetTop = 100;
+      targetBorderRadius = 18;
+    } else {
+      // Desktop: original behavior
+      targetWidth = Math.min(550, vw * 0.38);
+      targetHeight = Math.min(650, vh * 0.72);
+      targetTop = 120;
+      targetBorderRadius = 20;
+    }
+    
     const targetLeft = (vw - targetWidth) / 2;
-    const targetBorderRadius = 20;
 
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
     const progress = easeOutCubic(scrollProgress);
@@ -126,16 +153,16 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
           />
         </div>
 
-        {}
+        {/* Title Container - Responsive positioning */}
         <div
-          className="absolute left-0 bottom-[15%] px-[5%]"
+          className={`absolute left-0 ${isMobile ? 'bottom-[12%] px-4' : isTablet ? 'bottom-[14%] px-[4%]' : 'bottom-[15%] px-[5%]'}`}
           style={{
             opacity: titleOpacity,
-            transform: `translateY(${scrollProgress * 30}px)`,
+            transform: `translateY(${scrollProgress * (isMobile ? 20 : 30)}px)`,
             pointerEvents: titleOpacity < 0.3 ? 'none' : 'auto',
           }}
         >
-          <h1 className="hero-title flex flex-row items-baseline gap-[0.3em]">
+          <h1 className={`hero-title flex ${isMobile ? 'flex-col gap-0' : 'flex-row items-baseline gap-[0.3em]'}`}>
             {/* "Go" word */}
             <span className="word-reveal">
               <span
@@ -145,7 +172,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
               </span>
             </span>
             
-            {/* "Further" word - same line (matching Lightship exactly) */}
+            {/* "Beyond" word - stacked on mobile, same line on desktop */}
             <span className="word-reveal">
               <span
                 className={`word-reveal-inner word-delay-1 ${wordsRevealed ? 'revealed' : ''}`}
@@ -157,33 +184,36 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
         </div>
       </div>
 
-      {/* Scroll Indicator - Bottom Left */}
+      {/* Scroll Indicator - Bottom Left - Responsive */}
       <div
-        className="fixed bottom-8 left-8 flex items-center gap-2 z-20"
-        style={{ 
+        className={`fixed ${isMobile ? 'bottom-4 left-4' : isTablet ? 'bottom-6 left-6' : 'bottom-8 left-8'} flex items-center gap-2 z-20`}
+        style={{
           opacity: indicatorsOpacity,
           pointerEvents: indicatorsOpacity < 0.3 ? 'none' : 'auto',
         }}
       >
         <div className="flex flex-col items-center scroll-indicator">
-          <span className="text-white text-xl">↓</span>
+          <span className={`text-white ${isMobile ? 'text-lg' : 'text-xl'}`}>↓</span>
         </div>
       </div>
 
-      {/* Scroll to Explore - Bottom Right */}
+      {/* Scroll to Explore - Bottom Right - Responsive (hidden on very small mobile) */}
       <div
-        className="fixed bottom-8 right-8 flex items-center gap-3 z-20"
-        style={{ 
+        className={`fixed ${isMobile ? 'bottom-4 right-4' : isTablet ? 'bottom-6 right-6' : 'bottom-8 right-8'} flex items-center gap-3 z-20`}
+        style={{
           opacity: indicatorsOpacity,
           pointerEvents: indicatorsOpacity < 0.3 ? 'none' : 'auto',
         }}
       >
-        <span className="text-white text-sm tracking-wider">Scroll to</span>
-        <div className="w-10 h-10 rounded-full border border-white/40 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+        {/* Hide text on mobile for cleaner look */}
+        {!isMobile && (
+          <span className={`text-white ${isTablet ? 'text-xs' : 'text-sm'} tracking-wider`}>Scroll to</span>
+        )}
+        <div className={`${isMobile ? 'w-9 h-9' : 'w-10 h-10'} rounded-full border border-white/40 flex items-center justify-center bg-black/30 backdrop-blur-sm`}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
+            width={isMobile ? "16" : "18"}
+            height={isMobile ? "16" : "18"}
             viewBox="0 0 24 24"
             fill="none"
             stroke="white"

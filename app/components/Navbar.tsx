@@ -19,21 +19,29 @@ interface User {
 const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) => {
   const router = useRouter();
   const [vw, setVw] = useState(1440);
+  const [vh, setVh] = useState(900);
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null); // null = not logged in
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    const updateWidth = () => {
-      setVw(window.innerWidth);
+    const updateDimensions = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      setVw(width);
+      setVh(height);
+      setIsMobile(width < 640);
+      setIsTablet(width >= 640 && width < 1024);
     };
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
   // Focus the input when search expands
@@ -63,24 +71,53 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
   const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
   const progress = easeOutCubic(scrollProgress);
 
-  // Calculate navbar styles based on scroll progress
+  // Calculate navbar styles based on scroll progress - RESPONSIVE
   const getNavbarStyles = () => {
-    // Target values for pill shape
-    const targetWidth = Math.min(600, vw * 0.42);
-    const targetPadding = 12;
-    const targetTop = 20;
+    // Responsive target values for pill shape based on viewport
+    let targetWidth: number;
+    let targetPadding: number;
+    let targetTop: number;
+    let startPadding: number;
+    let startPaddingX: number;
+    let targetPaddingX: number;
+    
+    if (isMobile) {
+      // Mobile: pill takes more width, smaller padding
+      targetWidth = Math.min(vw - 24, vw * 0.92);
+      targetPadding = 8;
+      targetTop = 12;
+      startPadding = 16;
+      startPaddingX = 16;
+      targetPaddingX = 12;
+    } else if (isTablet) {
+      // Tablet: medium pill size
+      targetWidth = Math.min(500, vw * 0.65);
+      targetPadding = 10;
+      targetTop = 16;
+      startPadding = 20;
+      startPaddingX = 28;
+      targetPaddingX = 16;
+    } else {
+      // Desktop: original behavior
+      targetWidth = Math.min(600, vw * 0.42);
+      targetPadding = 12;
+      targetTop = 20;
+      startPadding = 24;
+      startPaddingX = 40;
+      targetPaddingX = 20;
+    }
+    
     const targetBorderRadius = 50;
 
     // Starting values (full width)
     const startWidth = vw;
-    const startPadding = 24;
     const startTop = 0;
     const startBorderRadius = 0;
 
     // Interpolate
     const currentWidth = startWidth - (startWidth - targetWidth) * progress;
     const currentPaddingY = startPadding - (startPadding - targetPadding) * progress;
-    const currentPaddingX = 40 - (40 - 20) * progress;
+    const currentPaddingX = startPaddingX - (startPaddingX - targetPaddingX) * progress;
     const currentTop = startTop + (targetTop - startTop) * progress;
     const currentBorderRadius = startBorderRadius + (targetBorderRadius - startBorderRadius) * progress;
 
@@ -181,51 +218,55 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
       >
         <div className="flex items-center justify-between">
           {/* Left Section - Menu & Logo */}
-          <div className="flex items-center gap-6">
+          <div className={`flex items-center ${isMobile ? 'gap-3' : isTablet ? 'gap-4' : 'gap-6'}`}>
             {/* Hamburger Menu */}
-            <button 
-              className="flex flex-col gap-1.5 p-2 hover:opacity-70 transition-opacity"
+            <button
+              className={`flex flex-col ${isMobile ? 'gap-1 p-1.5' : 'gap-1.5 p-2'} hover:opacity-70 transition-opacity`}
               onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
             >
-              <span 
-                className="block w-6 h-0.5"
+              <span
+                className={`block ${isMobile ? 'w-5' : 'w-6'} h-0.5`}
                 style={{ backgroundColor: textColor }}
               />
-              <span 
-                className="block w-6 h-0.5"
+              <span
+                className={`block ${isMobile ? 'w-5' : 'w-6'} h-0.5`}
                 style={{ backgroundColor: textColor }}
               />
             </button>
 
-            {/* Logo - AE.1 */}
-            <div 
-              className="font-medium text-lg tracking-wide"
+            {/* Logo - KBS */}
+            <div
+              className={`font-medium ${isMobile ? 'text-base' : 'text-lg'} tracking-wide`}
               style={{ color: textColor }}
             >
               KBS
             </div>
           </div>
 
-          {/* Center Section - Search Icon with Expandable Text Box */}
-          <div className="search-container flex items-center">
-            <div 
+          {/* Center Section - Search Icon with Expandable Text Box (hidden on very small mobile) */}
+          <div className={`search-container flex items-center ${isMobile && searchExpanded ? 'absolute left-1/2 -translate-x-1/2 z-10' : ''}`}>
+            <div
               className="flex items-center overflow-hidden transition-all duration-300 ease-out rounded-full"
               style={{
-                width: searchExpanded ? '220px' : '40px',
-                backgroundColor: searchExpanded 
-                  ? (progress > 0.5 ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)') 
+                width: searchExpanded
+                  ? (isMobile ? `${Math.min(vw - 120, 200)}px` : isTablet ? '180px' : '220px')
+                  : (isMobile ? '36px' : '40px'),
+                backgroundColor: searchExpanded
+                  ? (progress > 0.5 ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)')
                   : 'transparent',
-                padding: searchExpanded ? '4px 12px' : '0',
+                padding: searchExpanded ? (isMobile ? '2px 10px' : '4px 12px') : '0',
               }}
             >
-              <button 
-                className="p-2 hover:opacity-70 transition-opacity flex-shrink-0"
+              <button
+                className={`${isMobile ? 'p-1.5' : 'p-2'} hover:opacity-70 transition-opacity flex-shrink-0`}
                 onClick={() => setSearchExpanded(!searchExpanded)}
+                aria-label={searchExpanded ? 'Close search' : 'Open search'}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
+                  width={isMobile ? "18" : "20"}
+                  height={isMobile ? "18" : "20"}
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke={textColor}
@@ -246,8 +287,8 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search..."
-                    className="w-full bg-transparent border-none outline-none text-sm"
-                    style={{ 
+                    className={`w-full bg-transparent border-none outline-none ${isMobile ? 'text-xs' : 'text-sm'}`}
+                    style={{
                       color: textColor,
                       caretColor: textColor,
                     }}
@@ -258,17 +299,18 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
           </div>
 
           {/* Right Section - Cart Icon & User Login/Signup Icon */}
-          <div className="flex items-center gap-4">
+          <div className={`flex items-center ${isMobile ? 'gap-2' : isTablet ? 'gap-3' : 'gap-4'}`}>
             {/* Cart Icon */}
             <button
-              className="p-2 hover:opacity-70 transition-opacity relative"
+              className={`${isMobile ? 'p-1.5' : 'p-2'} hover:opacity-70 transition-opacity relative`}
               title="Cart"
               onClick={handleCartClick}
+              aria-label="Shopping cart"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
+                width={isMobile ? "20" : "22"}
+                height={isMobile ? "20" : "22"}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke={textColor}
@@ -282,9 +324,9 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                 <path d="M6.1 14H21"></path>
               </svg>
               {/* Cart Badge */}
-              <span 
-                className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-xs flex items-center justify-center"
-                style={{ 
+              <span
+                className={`absolute ${isMobile ? '-top-0.5 -right-0.5 w-3.5 h-3.5 text-[10px]' : '-top-1 -right-1 w-4 h-4 text-xs'} rounded-full flex items-center justify-center`}
+                style={{
                   backgroundColor: progress > 0.5 ? '#1a1a1a' : '#fff',
                   color: progress > 0.5 ? '#fff' : '#1a1a1a',
                 }}
@@ -296,14 +338,15 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
             {/* User Login/Signup Icon with Dropdown */}
             <div className="user-dropdown-container relative">
               <button
-                className="p-2 hover:opacity-70 transition-opacity"
+                className={`${isMobile ? 'p-1.5' : 'p-2'} hover:opacity-70 transition-opacity relative`}
                 title={user ? user.name : "Login / Sign up"}
                 onClick={handleUserIconClick}
+                aria-label={user ? "User menu" : "Login or sign up"}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="22"
-                  height="22"
+                  width={isMobile ? "20" : "22"}
+                  height={isMobile ? "20" : "22"}
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke={textColor}
@@ -317,7 +360,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                 {/* Logged in indicator */}
                 {user && (
                   <span
-                    className="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full border-2"
+                    className={`absolute ${isMobile ? 'bottom-0.5 right-0.5 w-2 h-2' : 'bottom-1 right-1 w-2.5 h-2.5'} rounded-full border-2`}
                     style={{
                       backgroundColor: '#4ade80',
                       borderColor: progress > 0.5 ? '#f5f0e6' : '#0a0a0a'
@@ -326,30 +369,41 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                 )}
               </button>
 
-              {/* User Dropdown */}
+              {/* User Dropdown - Responsive */}
               <div
                 ref={userDropdownRef}
                 className={`user-dropdown ${userDropdownOpen ? 'open' : ''}`}
                 style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 12px)',
-                  right: 0,
-                  width: '280px',
-                  background: 'rgba(255, 255, 255, 0.92)',
+                  position: isMobile ? 'fixed' : 'absolute',
+                  top: isMobile ? 'auto' : 'calc(100% + 12px)',
+                  bottom: isMobile ? '0' : 'auto',
+                  right: isMobile ? '0' : '0',
+                  left: isMobile ? '0' : 'auto',
+                  width: isMobile ? '100%' : isTablet ? '260px' : '280px',
+                  maxHeight: isMobile ? '80vh' : 'none',
+                  background: 'rgba(255, 255, 255, 0.98)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
-                  borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+                  borderRadius: isMobile ? '20px 20px 0 0' : '16px',
+                  border: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.3)',
+                  boxShadow: isMobile ? '0 -8px 32px rgba(0, 0, 0, 0.15)' : '0 8px 32px rgba(0, 0, 0, 0.12)',
                   opacity: userDropdownOpen ? 1 : 0,
-                  transform: userDropdownOpen ? 'translateY(0) scale(1)' : 'translateY(-10px) scale(0.95)',
+                  transform: userDropdownOpen
+                    ? 'translateY(0) scale(1)'
+                    : (isMobile ? 'translateY(100%)' : 'translateY(-10px) scale(0.95)'),
                   pointerEvents: userDropdownOpen ? 'auto' : 'none',
-                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                  transformOrigin: 'top right',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transformOrigin: isMobile ? 'bottom center' : 'top right',
                   zIndex: 300,
-                  overflow: 'hidden',
+                  overflow: isMobile ? 'auto' : 'hidden',
                 }}
               >
+                {/* Mobile drag indicator */}
+                {isMobile && (
+                  <div className="flex justify-center pt-3 pb-2">
+                    <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
+                  </div>
+                )}
                 {user ? (
                   /* Logged In State */
                   <>
@@ -496,7 +550,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
         </div>
       </nav>
 
-      {/* Dropdown Styles */}
+      {/* Dropdown Styles - Responsive */}
       <style jsx global>{`
         .dropdown-item {
           display: flex;
@@ -512,9 +566,24 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
           transition: background-color 0.2s ease;
           text-decoration: none;
         }
+        
+        /* Touch-friendly tap targets on mobile */
+        @media (max-width: 639px) {
+          .dropdown-item {
+            padding: 16px 20px;
+            min-height: 52px;
+          }
+        }
 
         .dropdown-item:hover {
           background: rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Active state for touch devices */
+        @media (hover: none) {
+          .dropdown-item:active {
+            background: rgba(0, 0, 0, 0.08);
+          }
         }
 
         .dropdown-item svg {
@@ -527,6 +596,20 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
 
         .dropdown-item.text-red-500:hover {
           background: rgba(239, 68, 68, 0.08);
+        }
+        
+        /* Mobile overlay backdrop */
+        @media (max-width: 639px) {
+          .user-dropdown.open::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -1;
+          }
         }
       `}</style>
     </>

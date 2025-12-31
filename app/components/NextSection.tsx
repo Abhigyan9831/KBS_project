@@ -7,11 +7,11 @@ import Link from 'next/link';
 
 const cardImages = {
   // Left Column Cards
-  leftCard1: '/images/5_1.jpg',      
-  leftCard2: '/images/6_2.jpg',      
+  leftCard1: '/images/5_1.jpg',
+  leftCard2: '/images/6_2.jpg',
   // Right Column Cards
-  rightCard1: '/images/10_1.jpg',     
-  rightCard2: '/images/16_2.jpg',     
+  rightCard1: '/images/10_1.jpg',
+  rightCard2: '/images/16_2.jpg',
 };
 
 
@@ -21,19 +21,33 @@ interface NextSectionProps {
 }
 
 const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Progress }) => {
-  const [vh, setVh] = useState(900);
+  const [dimensions, setDimensions] = useState({
+    vh: 900,
+    vw: 1200,
+    isMobile: false,
+    isTablet: false,
+  });
   const [titleRevealed, setTitleRevealed] = useState(false);
   const [isButtonHovered, setIsButtonHovered] = useState(false);
   const titleRevealedRef = useRef(false);
 
   useLayoutEffect(() => {
-    const updateHeight = () => {
-      setVh(window.innerHeight);
+    const updateDimensions = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      setDimensions({
+        vh,
+        vw,
+        isMobile: vw < 640,
+        isTablet: vw >= 640 && vw < 1024,
+      });
     };
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
   }, []);
+
+  const { vh, vw, isMobile, isTablet } = dimensions;
 
   
   useEffect(() => {
@@ -81,161 +95,375 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           opacity: sectionOpacity,
         }}
       >
-        {/* Cards Grid Layout - Matching Lightship RV */}
+        {/* Cards Grid Layout - Responsive for all devices */}
         <div
-          className="absolute inset-0 flex items-start justify-center pt-20 px-8"
+          className="absolute inset-0 flex items-start justify-center"
           style={{
             opacity: cardsOpacity,
+            paddingTop: isMobile ? '80px' : isTablet ? '100px' : '80px',
+            paddingLeft: isMobile ? '12px' : isTablet ? '24px' : '32px',
+            paddingRight: isMobile ? '12px' : isTablet ? '24px' : '32px',
+            overflowY: isMobile ? 'auto' : 'hidden',
+            overflowX: 'hidden',
           }}
         >
           <div className="w-full max-w-[1400px] mx-auto">
-            <div className="grid grid-cols-3 gap-5 items-start">
-              {/* Left Column */}
-              <div className="flex flex-col gap-5 pt-24">
-                {/* Left Card 1 - Update cardImages.leftCard1 above to use your image */}
+            {/* Mobile Layout - 2x2 grid with video space in center */}
+            {isMobile ? (
+              <div
+                className="grid grid-cols-2 gap-3"
+                style={{
+                  paddingBottom: '200px', // Space for bottom content
+                }}
+              >
+                {/* Top row - 2 cards */}
                 <div
-                  className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
+                  className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
                   style={{
                     opacity: cardsVisible ? 1 : 0,
-                    transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
-                    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
+                    transform: cardsVisible ? 'translateY(0)' : 'translateY(30px)',
+                    transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
                   }}
                 >
                   <Image
                     src={cardImages.leftCard1}
                     alt="Product Card 1"
                     fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="50vw"
                     style={{ objectFit: 'cover' }}
                   />
-                  {/* Fallback gradient if image doesn't load */}
                   <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8b9aad 0%, #6b7d8c 50%, #4a5a6a 100%)' }} />
                 </div>
-                
-                {/* Left Card 2 - Update cardImages.leftCard2 above to use your image */}
                 <div
-                  className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
+                  className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
                   style={{
                     opacity: cardsVisible ? 1 : 0,
-                    transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
-                    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s',
-                  }}
-                >
-                  <Image
-                    src={cardImages.leftCard2}
-                    alt="Product Card 2"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                  {/* Fallback gradient if image doesn't load */}
-                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #c4b8a8 0%, #a89888 50%, #8c7868 100%)' }} />
-                </div>
-              </div>
-
-              {/* Center Column - Space for video card */}
-              <div className="flex flex-col items-center pt-0">
-                {/* This is where the video card lands - just a spacer */}
-                <div style={{ height: `${Math.min(650, vh * 0.72) + 120}px` }} />
-              </div>
-
-              {/* Right Column */}
-              <div className="flex flex-col gap-5 pt-48">
-                {/* Right Card 1 - Update cardImages.rightCard1 above to use your image */}
-                <div
-                  className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
-                  style={{
-                    opacity: cardsVisible ? 1 : 0,
-                    transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
-                    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.15s',
+                    transform: cardsVisible ? 'translateY(0)' : 'translateY(30px)',
+                    transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.15s',
                   }}
                 >
                   <Image
                     src={cardImages.rightCard1}
-                    alt="Product Card 3"
+                    alt="Product Card 2"
                     fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="50vw"
                     style={{ objectFit: 'cover' }}
                   />
-                  {/* Fallback gradient if image doesn't load */}
                   <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #87CEEB 0%, #FFB366 50%, #FF6B6B 75%, #2c3e50 100%)' }} />
                 </div>
                 
-                {/* Right Card 2 - Update cardImages.rightCard2 above to use your image */}
+                {/* Center space for video card on mobile */}
                 <div
-                  className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
+                  className="col-span-2"
+                  style={{ height: `${Math.min(300, vh * 0.35)}px` }}
+                />
+                
+                {/* Bottom row - 2 cards */}
+                <div
+                  className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
                   style={{
                     opacity: cardsVisible ? 1 : 0,
-                    transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
-                    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s',
+                    transform: cardsVisible ? 'translateY(0)' : 'translateY(30px)',
+                    transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s',
+                  }}
+                >
+                  <Image
+                    src={cardImages.leftCard2}
+                    alt="Product Card 3"
+                    fill
+                    sizes="50vw"
+                    style={{ objectFit: 'cover' }}
+                  />
+                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #c4b8a8 0%, #a89888 50%, #8c7868 100%)' }} />
+                </div>
+                <div
+                  className="rounded-xl overflow-hidden aspect-[4/3] shadow-lg relative"
+                  style={{
+                    opacity: cardsVisible ? 1 : 0,
+                    transform: cardsVisible ? 'translateY(0)' : 'translateY(30px)',
+                    transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.25s',
                   }}
                 >
                   <Image
                     src={cardImages.rightCard2}
                     alt="Product Card 4"
                     fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="50vw"
                     style={{ objectFit: 'cover' }}
                   />
-                  {/* Fallback gradient if image doesn't load */}
                   <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8B7355 0%, #D2B48C 50%, #654321 100%)' }} />
                 </div>
               </div>
-            </div>
+            ) : (
+              /* Desktop/Tablet Layout - 3 column grid */
+              <div
+                className="grid gap-4 items-start"
+                style={{
+                  gridTemplateColumns: isTablet ? '1fr 1.2fr 1fr' : '1fr 1fr 1fr',
+                  gap: isTablet ? '16px' : '20px',
+                }}
+              >
+                {/* Left Column */}
+                <div
+                  className="flex flex-col"
+                  style={{
+                    gap: isTablet ? '16px' : '20px',
+                    paddingTop: isTablet ? '60px' : '96px',
+                  }}
+                >
+                  {/* Left Card 1 */}
+                  <div
+                    className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
+                    style={{
+                      opacity: cardsVisible ? 1 : 0,
+                      transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
+                      transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
+                    }}
+                  >
+                    <Image
+                      src={cardImages.leftCard1}
+                      alt="Product Card 1"
+                      fill
+                      sizes="(max-width: 1024px) 33vw, 400px"
+                      style={{ objectFit: 'cover' }}
+                    />
+                    <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8b9aad 0%, #6b7d8c 50%, #4a5a6a 100%)' }} />
+                  </div>
+                  
+                  {/* Left Card 2 */}
+                  <div
+                    className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
+                    style={{
+                      opacity: cardsVisible ? 1 : 0,
+                      transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
+                      transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s',
+                    }}
+                  >
+                    <Image
+                      src={cardImages.leftCard2}
+                      alt="Product Card 2"
+                      fill
+                      sizes="(max-width: 1024px) 33vw, 400px"
+                      style={{ objectFit: 'cover' }}
+                    />
+                    <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #c4b8a8 0%, #a89888 50%, #8c7868 100%)' }} />
+                  </div>
+                </div>
+
+                {/* Center Column - Space for video card */}
+                <div className="flex flex-col items-center pt-0">
+                  <div style={{ height: `${Math.min(isTablet ? 500 : 650, vh * 0.72) + (isTablet ? 80 : 120)}px` }} />
+                </div>
+
+                {/* Right Column */}
+                <div
+                  className="flex flex-col"
+                  style={{
+                    gap: isTablet ? '16px' : '20px',
+                    paddingTop: isTablet ? '120px' : '192px',
+                  }}
+                >
+                  {/* Right Card 1 */}
+                  <div
+                    className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
+                    style={{
+                      opacity: cardsVisible ? 1 : 0,
+                      transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
+                      transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.15s',
+                    }}
+                  >
+                    <Image
+                      src={cardImages.rightCard1}
+                      alt="Product Card 3"
+                      fill
+                      sizes="(max-width: 1024px) 33vw, 400px"
+                      style={{ objectFit: 'cover' }}
+                    />
+                    <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #87CEEB 0%, #FFB366 50%, #FF6B6B 75%, #2c3e50 100%)' }} />
+                  </div>
+                  
+                  {/* Right Card 2 */}
+                  <div
+                    className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
+                    style={{
+                      opacity: cardsVisible ? 1 : 0,
+                      transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
+                      transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s',
+                    }}
+                  >
+                    <Image
+                      src={cardImages.rightCard2}
+                      alt="Product Card 4"
+                      fill
+                      sizes="(max-width: 1024px) 33vw, 400px"
+                      style={{ objectFit: 'cover' }}
+                    />
+                    <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8B7355 0%, #D2B48C 50%, #654321 100%)' }} />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Bottom Content - "Our Products" title on left, description on right, button centered */}
+        {/* Bottom Content - Responsive layout */}
         <div
-          className="absolute bottom-0 left-0 right-0 pb-16 px-12"
+          className="absolute bottom-0 left-0 right-0"
           style={{
             opacity: cardsOpacity,
+            paddingBottom: isMobile ? '24px' : isTablet ? '32px' : '64px',
+            paddingLeft: isMobile ? '16px' : isTablet ? '24px' : '48px',
+            paddingRight: isMobile ? '16px' : isTablet ? '24px' : '48px',
           }}
         >
-          {/* Left - "Our Products" title */}
-          <div className="absolute left-12 bottom-28">
-            <h2 className="section2-title-container">
-              <span className="section2-word-reveal">
-                <span
-                  className={`section2-word-reveal-inner section2-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
-                >
-                  Our
+          {/* Mobile Layout - Stacked vertically */}
+          {isMobile ? (
+            <div className="flex flex-col items-center gap-4">
+              {/* Title centered on mobile */}
+              <h2 className="section2-title-container text-center">
+                <span className="section2-word-reveal">
+                  <span
+                    className={`section2-word-reveal-inner section2-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
+                  >
+                    Our
+                  </span>
                 </span>
-              </span>
-              {' '}
-              <span className="section2-word-reveal">
-                <span
-                  className={`section2-word-reveal-inner section2-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
-                >
-                  Products
+                {' '}
+                <span className="section2-word-reveal">
+                  <span
+                    className={`section2-word-reveal-inner section2-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
+                  >
+                    Products
+                  </span>
                 </span>
-              </span>
-            </h2>
-          </div>
+              </h2>
+              
+              {/* Description centered on mobile */}
+              <p className={`section2-description section2-word-reveal-inner section2-word-delay-2 text-center max-w-[320px] ${titleRevealed ? 'revealed' : ''}`}>
+                We believe in creating products that transform everyday moments into extraordinary experiences.
+              </p>
+              
+              {/* Button */}
+              <Link
+                href="/store"
+                className={`section2-explore-btn ${titleRevealed ? 'revealed' : ''}`}
+                onMouseEnter={() => setIsButtonHovered(true)}
+                onMouseLeave={() => setIsButtonHovered(false)}
+                style={{
+                  backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
+                  color: '#000000',
+                  borderColor: '#000000',
+                  marginTop: '8px',
+                }}
+              >
+                Explore Us
+              </Link>
+            </div>
+          ) : isTablet ? (
+            /* Tablet Layout - Title and description stacked, button below */
+            <div className="flex flex-col items-center gap-5">
+              <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
+                {/* Title */}
+                <h2 className="section2-title-container">
+                  <span className="section2-word-reveal">
+                    <span
+                      className={`section2-word-reveal-inner section2-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      Our
+                    </span>
+                  </span>
+                  {' '}
+                  <span className="section2-word-reveal">
+                    <span
+                      className={`section2-word-reveal-inner section2-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      Products
+                    </span>
+                  </span>
+                </h2>
+                
+                {/* Description */}
+                <p className={`section2-description section2-word-reveal-inner section2-word-delay-2 max-w-[360px] text-right ${titleRevealed ? 'revealed' : ''}`}>
+                  We believe in creating products that transform everyday moments into extraordinary experiences.
+                </p>
+              </div>
+              
+              {/* Button centered */}
+              <Link
+                href="/store"
+                className={`section2-explore-btn ${titleRevealed ? 'revealed' : ''}`}
+                onMouseEnter={() => setIsButtonHovered(true)}
+                onMouseLeave={() => setIsButtonHovered(false)}
+                style={{
+                  backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
+                  color: '#000000',
+                  borderColor: '#000000',
+                }}
+              >
+                Explore Us
+              </Link>
+            </div>
+          ) : (
+            /* Desktop Layout - Original layout with absolute positioning */
+            <>
+              {/* Left - "Our Products" title */}
+              <div
+                className="absolute"
+                style={{
+                  left: '48px',
+                  bottom: '112px',
+                }}
+              >
+                <h2 className="section2-title-container">
+                  <span className="section2-word-reveal">
+                    <span
+                      className={`section2-word-reveal-inner section2-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      Our
+                    </span>
+                  </span>
+                  {' '}
+                  <span className="section2-word-reveal">
+                    <span
+                      className={`section2-word-reveal-inner section2-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
+                    >
+                      Products
+                    </span>
+                  </span>
+                </h2>
+              </div>
 
-          {/* Right - Description text */}
-          <div className="absolute right-12 bottom-28 max-w-[420px] text-right">
-            <p className={`section2-description section2-word-reveal-inner section2-word-delay-2 ${titleRevealed ? 'revealed' : ''}`}>
-              We believe in creating products that transform everyday moments into extraordinary experiences. Our vision is to bring innovation and quality to every kitchen.
-            </p>
-          </div>
+              {/* Right - Description text */}
+              <div
+                className="absolute max-w-[420px] text-right"
+                style={{
+                  right: '48px',
+                  bottom: '112px',
+                }}
+              >
+                <p className={`section2-description section2-word-reveal-inner section2-word-delay-2 ${titleRevealed ? 'revealed' : ''}`}>
+                  We believe in creating products that transform everyday moments into extraordinary experiences. Our vision is to bring innovation and quality to every kitchen.
+                </p>
+              </div>
 
-          {/* Center - "Explore Us" button - positioned higher */}
-          <div className="flex justify-center" style={{ marginBottom: '60px' }}>
-            <Link
-              href="/store"
-              className={`section2-explore-btn ${titleRevealed ? 'revealed' : ''}`}
-              onMouseEnter={() => setIsButtonHovered(true)}
-              onMouseLeave={() => setIsButtonHovered(false)}
-              style={{
-                backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
-                color: '#000000',
-                borderColor: '#000000',
-              }}
-            >
-              Explore Us
-            </Link>
-          </div>
+              {/* Center - "Explore Us" button - positioned higher */}
+              <div className="flex justify-center" style={{ marginBottom: '60px' }}>
+                <Link
+                  href="/store"
+                  className={`section2-explore-btn ${titleRevealed ? 'revealed' : ''}`}
+                  onMouseEnter={() => setIsButtonHovered(true)}
+                  onMouseLeave={() => setIsButtonHovered(false)}
+                  style={{
+                    backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
+                    color: '#000000',
+                    borderColor: '#000000',
+                  }}
+                >
+                  Explore Us
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
@@ -308,6 +536,11 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           transition: background-color 0.3s ease, transform 0.2s ease;
           opacity: 0;
           transform: translateY(20px);
+          /* Touch-friendly tap target */
+          min-height: 48px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .section2-explore-btn.revealed {
@@ -331,24 +564,46 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           }
           .section2-description {
             font-size: 20px;
+            max-width: 360px;
           }
         }
 
         @media (max-width: 768px) {
           .section2-title-container {
-            font-size: 48px;
+            font-size: 42px;
           }
           .section2-description {
-            font-size: 18px;
+            font-size: 17px;
+            max-width: 320px;
+          }
+          .section2-explore-btn {
+            font-size: 15px;
+            padding: 12px 28px;
           }
         }
 
         @media (max-width: 480px) {
           .section2-title-container {
-            font-size: 36px;
+            font-size: 32px;
           }
           .section2-description {
-            font-size: 16px;
+            font-size: 15px;
+            max-width: 280px;
+            line-height: 1.5;
+          }
+          .section2-explore-btn {
+            font-size: 14px;
+            padding: 12px 24px;
+          }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 360px) {
+          .section2-title-container {
+            font-size: 28px;
+          }
+          .section2-description {
+            font-size: 14px;
           }
         }
       `}</style>

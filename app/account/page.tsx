@@ -413,9 +413,11 @@ function AccountContent() {
           }
         }
 
-        /* Icon Bulge Animation */
+        /* Icon Bulge Animation - Touch-friendly */
         .icon-bulge {
           transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          min-width: 44px;
+          min-height: 44px;
         }
 
         .icon-bulge:hover {
@@ -426,17 +428,17 @@ function AccountContent() {
           transform: scale(0.95);
         }
 
-        /* Back Button */
+        /* Back Button - Responsive */
         .account-back-btn {
           position: fixed;
-          top: 24px;
-          left: 32px;
+          top: clamp(12px, 2vw, 24px);
+          left: clamp(12px, 2vw, 32px);
           z-index: 1000;
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 48px;
-          height: 48px;
+          width: clamp(40px, 5vw, 48px);
+          height: clamp(40px, 5vw, 48px);
           border-radius: 50%;
           background: rgba(255, 255, 255, 0.85);
           backdrop-filter: blur(10px);
@@ -450,6 +452,11 @@ function AccountContent() {
           transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s, background-color 0.3s ease;
         }
 
+        .account-back-btn svg {
+          width: clamp(18px, 2.5vw, 24px);
+          height: clamp(18px, 2.5vw, 24px);
+        }
+
         .account-back-btn.visible {
           opacity: 1;
           transform: translateY(0);
@@ -460,13 +467,13 @@ function AccountContent() {
           transform: translateY(0) scale(1.1);
         }
 
-        /* Account Header */
+        /* Account Header - Responsive */
         .account-header {
           position: fixed;
           top: 0;
           right: 0;
           z-index: 1000;
-          padding: 24px 32px;
+          padding: clamp(12px, 2vw, 24px) clamp(12px, 2vw, 32px);
           opacity: 0;
           transform: translateY(-20px);
           transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
@@ -480,15 +487,15 @@ function AccountContent() {
         .account-header__controls {
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: clamp(8px, 1.5vw, 16px);
         }
 
         .account-header__icon {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 48px;
-          height: 48px;
+          width: clamp(40px, 5vw, 48px);
+          height: clamp(40px, 5vw, 48px);
           border-radius: 50%;
           background: rgba(255, 255, 255, 0.85);
           backdrop-filter: blur(10px);
@@ -499,9 +506,14 @@ function AccountContent() {
           color: #000;
         }
 
-        /* Account Content */
+        .account-header__icon svg {
+          width: clamp(18px, 2.5vw, 24px);
+          height: clamp(18px, 2.5vw, 24px);
+        }
+
+        /* Account Content - Responsive padding */
         .account-content {
-          padding: 60px 80px 80px;
+          padding: clamp(80px, 10vh, 100px) clamp(16px, 6vw, 80px) clamp(40px, 8vh, 80px);
           min-height: 100vh;
           opacity: 0;
           transform: translateY(30px);
@@ -513,23 +525,23 @@ function AccountContent() {
           transform: translateY(0);
         }
 
-        /* Title Section */
+        /* Title Section - Responsive */
         .account-title-section {
-          margin-bottom: 48px;
+          margin-bottom: clamp(24px, 4vw, 48px);
         }
 
         .account-title__container {
           font-family: sans-serif;
-          font-size: 72px;
+          font-size: clamp(32px, 8vw, 72px);
           line-height: 1;
           color: #000;
           font-weight: 300;
           letter-spacing: -0.02em;
-          margin: 0 0 16px 0;
+          margin: 0 0 clamp(8px, 1.5vw, 16px) 0;
         }
 
         .account-subtitle {
-          font-size: 16px;
+          font-size: clamp(14px, 1.6vw, 16px);
           color: #000;
           font-weight: 500;
           margin: 0;
@@ -558,44 +570,45 @@ function AccountContent() {
                       opacity 0.8s ease-out 0.2s;
         }
 
-        /* Main Layout */
+        /* Main Layout - Responsive */
         .account-layout {
           display: grid;
-          grid-template-columns: 1fr 380px;
-          gap: 32px;
+          grid-template-columns: 1fr clamp(280px, 30vw, 380px);
+          gap: clamp(20px, 3vw, 32px);
           align-items: start;
           max-width: 1100px;
         }
 
-        /* Account Cards */
+        /* Account Cards - Responsive */
         .account-card {
           background: #fff;
-          border-radius: 16px;
-          padding: 32px;
+          border-radius: clamp(12px, 1.5vw, 16px);
+          padding: clamp(20px, 3vw, 32px);
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
-        /* Auth Tabs */
+        /* Auth Tabs - Responsive */
         .auth-tabs {
           display: flex;
-          gap: 8px;
-          margin-bottom: 32px;
+          gap: clamp(4px, 0.8vw, 8px);
+          margin-bottom: clamp(20px, 3vw, 32px);
           padding: 4px;
           background: #f5f5f5;
-          border-radius: 12px;
+          border-radius: clamp(10px, 1.2vw, 12px);
         }
 
         .auth-tab {
           flex: 1;
-          padding: 14px 24px;
+          padding: clamp(10px, 1.4vw, 14px) clamp(12px, 2vw, 24px);
           border: none;
           background: transparent;
-          font-size: 15px;
+          font-size: clamp(13px, 1.5vw, 15px);
           font-weight: 500;
           color: #666;
           cursor: pointer;
-          border-radius: 10px;
+          border-radius: clamp(8px, 1vw, 10px);
           transition: all 0.3s ease;
+          min-height: 44px;
         }
 
         .auth-tab:hover {
@@ -615,33 +628,34 @@ function AccountContent() {
         }
 
         .form-group {
-          margin-bottom: 20px;
+          margin-bottom: clamp(16px, 2vw, 20px);
         }
 
         .form-row {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 16px;
+          gap: clamp(12px, 1.5vw, 16px);
         }
 
         .form-label {
           display: block;
-          font-size: 14px;
+          font-size: clamp(12px, 1.4vw, 14px);
           color: #000;
-          margin-bottom: 8px;
+          margin-bottom: clamp(6px, 0.8vw, 8px);
           font-weight: 500;
         }
 
         .form-input {
           width: 100%;
-          padding: 16px;
+          padding: clamp(12px, 1.5vw, 16px);
           border: 1px solid #e5e5e5;
           border-radius: 8px;
-          font-size: 15px;
+          font-size: clamp(14px, 1.5vw, 15px);
           color: #000;
           background: #fff;
           transition: border-color 0.3s ease;
           box-sizing: border-box;
+          min-height: 44px;
         }
 
         .form-input:focus {
@@ -656,16 +670,19 @@ function AccountContent() {
         .form-footer {
           display: flex;
           justify-content: flex-end;
-          margin-bottom: 24px;
+          margin-bottom: clamp(16px, 2.5vw, 24px);
         }
 
         .forgot-password {
           background: none;
           border: none;
           color: #4A90D9;
-          font-size: 14px;
+          font-size: clamp(12px, 1.4vw, 14px);
           cursor: pointer;
           transition: color 0.3s ease;
+          min-height: 44px;
+          display: flex;
+          align-items: center;
         }
 
         .forgot-password:hover {
@@ -675,16 +692,18 @@ function AccountContent() {
         .terms-checkbox {
           display: flex;
           align-items: flex-start;
-          gap: 10px;
-          margin-bottom: 24px;
+          gap: clamp(8px, 1vw, 10px);
+          margin-bottom: clamp(16px, 2.5vw, 24px);
         }
 
         .terms-checkbox input {
           margin-top: 3px;
+          width: 18px;
+          height: 18px;
         }
 
         .terms-checkbox label {
-          font-size: 14px;
+          font-size: clamp(12px, 1.4vw, 14px);
           color: #666;
           line-height: 1.4;
         }
@@ -700,15 +719,16 @@ function AccountContent() {
 
         .auth-submit-btn {
           width: 100%;
-          padding: 18px;
+          padding: clamp(14px, 1.8vw, 18px);
           background: #111;
           color: #fff;
           border: none;
           border-radius: 50px;
-          font-size: 16px;
+          font-size: clamp(14px, 1.6vw, 16px);
           font-weight: 500;
           cursor: pointer;
           transition: background-color 0.3s ease, transform 0.2s ease;
+          min-height: 44px;
         }
 
         .auth-submit-btn:hover {
@@ -719,10 +739,10 @@ function AccountContent() {
         .auth-divider {
           display: flex;
           align-items: center;
-          gap: 16px;
-          margin: 24px 0;
+          gap: clamp(12px, 1.5vw, 16px);
+          margin: clamp(16px, 2.5vw, 24px) 0;
           color: #999;
-          font-size: 14px;
+          font-size: clamp(12px, 1.4vw, 14px);
         }
 
         .auth-divider::before,
@@ -733,10 +753,10 @@ function AccountContent() {
           background: #eee;
         }
 
-        /* Social Login Options */
+        /* Social Login Options - Responsive */
         .social-login-options {
           display: flex;
-          gap: 12px;
+          gap: clamp(8px, 1.2vw, 12px);
         }
 
         .social-btn {
@@ -744,16 +764,22 @@ function AccountContent() {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
-          padding: 14px 24px;
+          gap: clamp(6px, 0.8vw, 8px);
+          padding: clamp(12px, 1.4vw, 14px) clamp(16px, 2vw, 24px);
           background: #f5f5f5;
           border: 1px solid #e5e5e5;
-          border-radius: 12px;
-          font-size: 14px;
+          border-radius: clamp(10px, 1.2vw, 12px);
+          font-size: clamp(12px, 1.4vw, 14px);
           font-weight: 500;
           color: #333;
           cursor: pointer;
           transition: all 0.3s ease;
+          min-height: 44px;
+        }
+
+        .social-btn svg {
+          width: clamp(16px, 2vw, 20px);
+          height: clamp(16px, 2vw, 20px);
         }
 
         .social-btn:hover {
@@ -761,29 +787,34 @@ function AccountContent() {
           border-color: #ddd;
         }
 
-        /* Info Card */
+        /* Info Card - Responsive */
         .info-card {
           position: sticky;
           top: 100px;
         }
 
         .info-icon {
-          width: 80px;
-          height: 80px;
+          width: clamp(60px, 8vw, 80px);
+          height: clamp(60px, 8vw, 80px);
           display: flex;
           align-items: center;
           justify-content: center;
           background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%);
           border-radius: 50%;
-          margin-bottom: 24px;
+          margin-bottom: clamp(16px, 2.5vw, 24px);
           color: #333;
         }
 
+        .info-icon svg {
+          width: clamp(32px, 5vw, 48px);
+          height: clamp(32px, 5vw, 48px);
+        }
+
         .info-title {
-          font-size: 20px;
+          font-size: clamp(16px, 2vw, 20px);
           font-weight: 500;
           color: #000;
-          margin: 0 0 20px 0;
+          margin: 0 0 clamp(14px, 2vw, 20px) 0;
         }
 
         .info-list {
@@ -795,23 +826,41 @@ function AccountContent() {
         .info-list li {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 12px 0;
+          gap: clamp(8px, 1.2vw, 12px);
+          padding: clamp(8px, 1.2vw, 12px) 0;
           color: #444;
-          font-size: 14px;
+          font-size: clamp(12px, 1.4vw, 14px);
         }
 
         .info-list li svg {
           color: #4A90D9;
           flex-shrink: 0;
+          width: clamp(16px, 2vw, 20px);
+          height: clamp(16px, 2vw, 20px);
         }
 
-        /* Responsive Styles */
-        @media (max-width: 1024px) {
-          .account-content {
-            padding: 48px 40px;
+        /* ===== TABLET BREAKPOINT (640px - 1023px) ===== */
+        @media (min-width: 640px) and (max-width: 1023px) {
+          .account-layout {
+            grid-template-columns: 1fr;
+            max-width: 600px;
+            margin: 0 auto;
           }
 
+          .info-card {
+            position: static;
+            order: -1;
+          }
+          
+          .info-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 24px;
+          }
+        }
+
+        /* ===== MOBILE BREAKPOINT (<640px) ===== */
+        @media (max-width: 639px) {
           .account-layout {
             grid-template-columns: 1fr;
           }
@@ -821,40 +870,6 @@ function AccountContent() {
             order: -1;
           }
 
-          .account-title__container {
-            font-size: 56px;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .account-content {
-            padding: 32px 24px;
-          }
-
-          .account-title__container {
-            font-size: 42px;
-          }
-
-          .account-card {
-            padding: 24px;
-          }
-
-          .account-header {
-            padding: 16px;
-          }
-
-          .account-header__icon {
-            width: 44px;
-            height: 44px;
-          }
-
-          .account-back-btn {
-            top: 16px;
-            left: 16px;
-            width: 44px;
-            height: 44px;
-          }
-
           .form-row {
             grid-template-columns: 1fr;
           }
@@ -862,16 +877,51 @@ function AccountContent() {
           .social-login-options {
             flex-direction: column;
           }
+          
+          .social-btn {
+            justify-content: center;
+          }
+          
+          .auth-tabs {
+            flex-direction: row;
+          }
+          
+          .auth-tab {
+            padding: 12px 8px;
+            text-align: center;
+          }
+          
+          .info-list {
+            display: flex;
+            flex-direction: column;
+          }
         }
 
-        @media (max-width: 480px) {
-          .account-title__container {
-            font-size: 32px;
-          }
-
+        /* ===== SMALL MOBILE (<400px) ===== */
+        @media (max-width: 399px) {
           .account-back-btn {
             width: 40px;
             height: 40px;
+          }
+          
+          .account-header__icon {
+            width: 40px;
+            height: 40px;
+          }
+          
+          .auth-tab {
+            font-size: 12px;
+            padding: 10px 6px;
+          }
+          
+          .info-icon {
+            width: 50px;
+            height: 50px;
+          }
+          
+          .info-icon svg {
+            width: 24px;
+            height: 24px;
           }
         }
       `}</style>

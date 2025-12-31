@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useLayoutEffect } from 'react';
 
 interface ThirdSectionProps {
   transitionProgress: number; // Progress of section 2 to section 3 transition
@@ -8,6 +8,30 @@ interface ThirdSectionProps {
 }
 
 const ThirdSection: React.FC<ThirdSectionProps> = ({ transitionProgress, section3to4Progress }) => {
+  const [dimensions, setDimensions] = useState({
+    vh: 900,
+    vw: 1200,
+    isMobile: false,
+    isTablet: false,
+  });
+
+  useLayoutEffect(() => {
+    const updateDimensions = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      setDimensions({
+        vh,
+        vw,
+        isMobile: vw < 640,
+        isTablet: vw >= 640 && vw < 1024,
+      });
+    };
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  const { isMobile, isTablet } = dimensions;
   // Determine if text should be revealed based on transition progress
   const textRevealed = useMemo(() => transitionProgress >= 0.85, [transitionProgress]);
 
@@ -105,92 +129,220 @@ const ThirdSection: React.FC<ThirdSectionProps> = ({ transitionProgress, section
             }}
           />
 
-          {/* Content - Three Text Boxes */}
+          {/* Content - Responsive Layout */}
           <div
             className="relative z-10 h-full w-full"
             style={{
               opacity: contentOpacity,
+              padding: isMobile ? '16px' : isTablet ? '24px' : '0',
+              overflowY: isMobile ? 'auto' : 'visible',
             }}
           >
-            {/* Why Us? - Bottom Center */}
-            <div
-              className="absolute left-1/2"
-              style={{
-                bottom: '80px',
-                transform: 'translateX(-50%)',
-              }}
-            >
-              <h2 className={`section3-heading section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                  style={{ transitionDelay: '0s' }}>
-                Why Us?
-              </h2>
-            </div>
+            {/* Mobile Layout - Stacked vertically with scroll */}
+            {isMobile ? (
+              <div className="flex flex-col gap-6 pt-20 pb-32">
+                {/* Why Us? - Top on mobile */}
+                <div className="text-center mb-4">
+                  <h2 className={`section3-heading section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                      style={{ transitionDelay: '0s' }}>
+                    Why Us?
+                  </h2>
+                </div>
 
-            {/* Violet Box - Top Left */}
-            <div
-              className="absolute"
-              style={{
-                top: '100px',
-                left: '60px',
-                maxWidth: '380px',
-              }}
-            >
-              <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                  style={{ transitionDelay: '0.1s' }}>
-                Premium Quality, Always
-              </h3>
-              <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                 style={{ transitionDelay: '0.25s', marginTop: '12px' }}>
-                Every product is carefully built to meet the highest quality standards.
-              </p>
-            </div>
+                {/* Premium Quality */}
+                <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4">
+                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                      style={{ transitionDelay: '0.1s' }}>
+                    Premium Quality, Always
+                  </h3>
+                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                     style={{ transitionDelay: '0.2s', marginTop: '8px' }}>
+                    Every product is carefully built to meet the highest quality standards.
+                  </p>
+                </div>
 
-            {/* Blue Box - Top Right */}
-            <div
-              className="absolute text-right"
-              style={{
-                top: '100px',
-                right: '60px',
-                maxWidth: '400px',
-              }}
-            >
-              <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                  style={{ transitionDelay: '0.15s' }}>
-                Fast & Reliable Delivery
-              </h3>
-              <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                 style={{ transitionDelay: '0.3s', marginTop: '12px' }}>
-                Get your orders delivered quickly with real-time tracking.
-              </p>
-              
-              <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                  style={{ transitionDelay: '0.2s', marginTop: '32px' }}>
-                Secure Payments
-              </h3>
-              <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                 style={{ transitionDelay: '0.35s', marginTop: '12px' }}>
-                Shop with confidence using 100% safe and encrypted payment methods.
-              </p>
-            </div>
+                {/* Fast & Reliable Delivery */}
+                <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4">
+                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                      style={{ transitionDelay: '0.15s' }}>
+                    Fast & Reliable Delivery
+                  </h3>
+                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                     style={{ transitionDelay: '0.25s', marginTop: '8px' }}>
+                    Get your orders delivered quickly with real-time tracking.
+                  </p>
+                </div>
 
-            {/* Pink Box - Bottom Left */}
-            <div
-              className="absolute"
-              style={{
-                bottom: '120px',
-                left: '60px',
-                maxWidth: '350px',
-              }}
-            >
-              <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                  style={{ transitionDelay: '0.25s' }}>
-                Easy Returns & Hassle-Free Experience
-              </h3>
-              <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
-                 style={{ transitionDelay: '0.4s', marginTop: '12px' }}>
-                Simple returns designed to keep shopping stress-free.
-              </p>
-            </div>
+                {/* Secure Payments */}
+                <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4">
+                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                      style={{ transitionDelay: '0.2s' }}>
+                    Secure Payments
+                  </h3>
+                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                     style={{ transitionDelay: '0.3s', marginTop: '8px' }}>
+                    Shop with confidence using 100% safe and encrypted payment methods.
+                  </p>
+                </div>
+
+                {/* Easy Returns */}
+                <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4">
+                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                      style={{ transitionDelay: '0.25s' }}>
+                    Easy Returns & Hassle-Free Experience
+                  </h3>
+                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                     style={{ transitionDelay: '0.35s', marginTop: '8px' }}>
+                    Simple returns designed to keep shopping stress-free.
+                  </p>
+                </div>
+              </div>
+            ) : isTablet ? (
+              /* Tablet Layout - 2 column grid with centered heading */
+              <div className="h-full flex flex-col">
+                {/* Why Us? - Top Center */}
+                <div className="text-center pt-20 mb-8">
+                  <h2 className={`section3-heading section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                      style={{ transitionDelay: '0s' }}>
+                    Why Us?
+                  </h2>
+                </div>
+
+                {/* 2x2 Grid of content boxes */}
+                <div className="grid grid-cols-2 gap-6 flex-1 px-4">
+                  {/* Top Left */}
+                  <div className="bg-black/20 backdrop-blur-sm rounded-xl p-5">
+                    <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                        style={{ transitionDelay: '0.1s' }}>
+                      Premium Quality, Always
+                    </h3>
+                    <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                       style={{ transitionDelay: '0.2s', marginTop: '10px' }}>
+                      Every product is carefully built to meet the highest quality standards.
+                    </p>
+                  </div>
+
+                  {/* Top Right */}
+                  <div className="bg-black/20 backdrop-blur-sm rounded-xl p-5 text-right">
+                    <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                        style={{ transitionDelay: '0.15s' }}>
+                      Fast & Reliable Delivery
+                    </h3>
+                    <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                       style={{ transitionDelay: '0.25s', marginTop: '10px' }}>
+                      Get your orders delivered quickly with real-time tracking.
+                    </p>
+                  </div>
+
+                  {/* Bottom Left */}
+                  <div className="bg-black/20 backdrop-blur-sm rounded-xl p-5">
+                    <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                        style={{ transitionDelay: '0.25s' }}>
+                      Easy Returns & Hassle-Free Experience
+                    </h3>
+                    <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                       style={{ transitionDelay: '0.35s', marginTop: '10px' }}>
+                      Simple returns designed to keep shopping stress-free.
+                    </p>
+                  </div>
+
+                  {/* Bottom Right */}
+                  <div className="bg-black/20 backdrop-blur-sm rounded-xl p-5 text-right">
+                    <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                        style={{ transitionDelay: '0.2s' }}>
+                      Secure Payments
+                    </h3>
+                    <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                       style={{ transitionDelay: '0.3s', marginTop: '10px' }}>
+                      Shop with confidence using 100% safe and encrypted payment methods.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Desktop Layout - Original absolute positioning */
+              <>
+                {/* Why Us? - Bottom Center */}
+                <div
+                  className="absolute left-1/2"
+                  style={{
+                    bottom: '80px',
+                    transform: 'translateX(-50%)',
+                  }}
+                >
+                  <h2 className={`section3-heading section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                      style={{ transitionDelay: '0s' }}>
+                    Why Us?
+                  </h2>
+                </div>
+
+                {/* Violet Box - Top Left */}
+                <div
+                  className="absolute"
+                  style={{
+                    top: '100px',
+                    left: '60px',
+                    maxWidth: '380px',
+                  }}
+                >
+                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                      style={{ transitionDelay: '0.1s' }}>
+                    Premium Quality, Always
+                  </h3>
+                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                     style={{ transitionDelay: '0.25s', marginTop: '12px' }}>
+                    Every product is carefully built to meet the highest quality standards.
+                  </p>
+                </div>
+
+                {/* Blue Box - Top Right */}
+                <div
+                  className="absolute text-right"
+                  style={{
+                    top: '100px',
+                    right: '60px',
+                    maxWidth: '400px',
+                  }}
+                >
+                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                      style={{ transitionDelay: '0.15s' }}>
+                    Fast & Reliable Delivery
+                  </h3>
+                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                     style={{ transitionDelay: '0.3s', marginTop: '12px' }}>
+                    Get your orders delivered quickly with real-time tracking.
+                  </p>
+                  
+                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                      style={{ transitionDelay: '0.2s', marginTop: '32px' }}>
+                    Secure Payments
+                  </h3>
+                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                     style={{ transitionDelay: '0.35s', marginTop: '12px' }}>
+                    Shop with confidence using 100% safe and encrypted payment methods.
+                  </p>
+                </div>
+
+                {/* Pink Box - Bottom Left */}
+                <div
+                  className="absolute"
+                  style={{
+                    bottom: '120px',
+                    left: '60px',
+                    maxWidth: '350px',
+                  }}
+                >
+                  <h3 className={`section3-title section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                      style={{ transitionDelay: '0.25s' }}>
+                    Easy Returns & Hassle-Free Experience
+                  </h3>
+                  <p className={`section3-description section3-reveal-inner ${textRevealed ? 'revealed' : ''}`}
+                     style={{ transitionDelay: '0.4s', marginTop: '12px' }}>
+                    Simple returns designed to keep shopping stress-free.
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>

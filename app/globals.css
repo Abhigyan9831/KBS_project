@@ -15,6 +15,41 @@
   --foreground: #FCF9EA;
   --cream: #F5F0E6;
   --font-new-science: 'new-science-extended', sans-serif;
+  
+  /* Responsive Spacing Variables */
+  --spacing-xs: clamp(4px, 1vw, 8px);
+  --spacing-sm: clamp(8px, 2vw, 16px);
+  --spacing-md: clamp(16px, 3vw, 24px);
+  --spacing-lg: clamp(24px, 4vw, 40px);
+  --spacing-xl: clamp(32px, 5vw, 60px);
+  --spacing-2xl: clamp(48px, 6vw, 80px);
+  --spacing-3xl: clamp(60px, 8vw, 120px);
+  
+  /* Responsive Container Widths */
+  --container-padding: clamp(16px, 4vw, 48px);
+  --container-max-width: 1400px;
+  
+  /* Responsive Font Sizes */
+  --font-size-xs: clamp(10px, 1.5vw, 12px);
+  --font-size-sm: clamp(12px, 1.8vw, 14px);
+  --font-size-base: clamp(14px, 2vw, 16px);
+  --font-size-lg: clamp(16px, 2.5vw, 20px);
+  --font-size-xl: clamp(18px, 3vw, 24px);
+  --font-size-2xl: clamp(24px, 4vw, 32px);
+  --font-size-3xl: clamp(28px, 5vw, 42px);
+  --font-size-4xl: clamp(36px, 6vw, 56px);
+  --font-size-5xl: clamp(48px, 8vw, 72px);
+  --font-size-6xl: clamp(56px, 10vw, 96px);
+  --font-size-hero: clamp(48px, 12vw, 160px);
+  
+  /* Breakpoint Reference (for documentation) */
+  /* Mobile: 0 - 479px */
+  /* Mobile Large: 480px - 639px */
+  /* Tablet: 640px - 767px */
+  /* Tablet Large: 768px - 1023px */
+  /* Laptop: 1024px - 1279px */
+  /* Desktop: 1280px - 1399px */
+  /* Desktop Large: 1400px+ */
 }
 
 @theme inline {
@@ -197,5 +232,307 @@ body {
 @media (max-width: 480px) {
   .hero-title {
     font-size: clamp(32px, 16vw, 80px);
+  }
+}
+
+/* ============================================
+   RESPONSIVE UTILITY CLASSES
+   ============================================ */
+
+/* Container utilities */
+.responsive-container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive Grid System */
+.responsive-grid {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.responsive-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.responsive-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.responsive-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Responsive Flexbox */
+.responsive-flex {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.responsive-flex-wrap {
+  flex-wrap: wrap;
+}
+
+/* Hide/Show utilities based on breakpoints */
+.hide-mobile {
+  display: block;
+}
+
+.show-mobile {
+  display: none;
+}
+
+.hide-tablet {
+  display: block;
+}
+
+.show-tablet {
+  display: none;
+}
+
+/* Responsive Text Classes */
+.text-responsive-xs { font-size: var(--font-size-xs); }
+.text-responsive-sm { font-size: var(--font-size-sm); }
+.text-responsive-base { font-size: var(--font-size-base); }
+.text-responsive-lg { font-size: var(--font-size-lg); }
+.text-responsive-xl { font-size: var(--font-size-xl); }
+.text-responsive-2xl { font-size: var(--font-size-2xl); }
+.text-responsive-3xl { font-size: var(--font-size-3xl); }
+.text-responsive-4xl { font-size: var(--font-size-4xl); }
+.text-responsive-5xl { font-size: var(--font-size-5xl); }
+.text-responsive-6xl { font-size: var(--font-size-6xl); }
+
+/* Responsive Spacing Classes */
+.gap-responsive-sm { gap: var(--spacing-sm); }
+.gap-responsive-md { gap: var(--spacing-md); }
+.gap-responsive-lg { gap: var(--spacing-lg); }
+.gap-responsive-xl { gap: var(--spacing-xl); }
+
+.p-responsive-sm { padding: var(--spacing-sm); }
+.p-responsive-md { padding: var(--spacing-md); }
+.p-responsive-lg { padding: var(--spacing-lg); }
+.p-responsive-xl { padding: var(--spacing-xl); }
+
+.px-responsive-sm { padding-left: var(--spacing-sm); padding-right: var(--spacing-sm); }
+.px-responsive-md { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
+.px-responsive-lg { padding-left: var(--spacing-lg); padding-right: var(--spacing-lg); }
+.px-responsive-xl { padding-left: var(--spacing-xl); padding-right: var(--spacing-xl); }
+
+.py-responsive-sm { padding-top: var(--spacing-sm); padding-bottom: var(--spacing-sm); }
+.py-responsive-md { padding-top: var(--spacing-md); padding-bottom: var(--spacing-md); }
+.py-responsive-lg { padding-top: var(--spacing-lg); padding-bottom: var(--spacing-lg); }
+.py-responsive-xl { padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl); }
+
+.m-responsive-sm { margin: var(--spacing-sm); }
+.m-responsive-md { margin: var(--spacing-md); }
+.m-responsive-lg { margin: var(--spacing-lg); }
+.m-responsive-xl { margin: var(--spacing-xl); }
+
+/* ============================================
+   TABLET BREAKPOINT (max-width: 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+  :root {
+    --container-padding: clamp(16px, 3vw, 32px);
+  }
+  
+  .responsive-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .responsive-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .hide-tablet {
+    display: none;
+  }
+  
+  .show-tablet {
+    display: block;
+  }
+  
+  /* Section 3 adjustments */
+  .section3-heading {
+    font-size: clamp(36px, 6vw, 48px);
+  }
+  
+  .section3-title {
+    font-size: clamp(26px, 4vw, 36px);
+  }
+  
+  .section3-description {
+    font-size: clamp(16px, 2vw, 20px);
+  }
+}
+
+/* ============================================
+   MOBILE BREAKPOINT (max-width: 768px)
+   ============================================ */
+@media (max-width: 768px) {
+  :root {
+    --container-padding: clamp(12px, 4vw, 24px);
+  }
+  
+  .responsive-grid-2,
+  .responsive-grid-3,
+  .responsive-grid-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .responsive-flex {
+    flex-direction: column;
+  }
+  
+  .hide-mobile {
+    display: none;
+  }
+  
+  .show-mobile {
+    display: block;
+  }
+  
+  /* Section 3 adjustments */
+  .section3-heading {
+    font-size: clamp(28px, 7vw, 40px);
+  }
+  
+  .section3-title {
+    font-size: clamp(22px, 5vw, 32px);
+  }
+  
+  .section3-description {
+    font-size: clamp(14px, 3vw, 18px);
+  }
+}
+
+/* ============================================
+   SMALL MOBILE BREAKPOINT (max-width: 480px)
+   ============================================ */
+@media (max-width: 480px) {
+  :root {
+    --container-padding: 12px;
+  }
+  
+  /* Even smaller section titles for mobile */
+  .section3-heading {
+    font-size: clamp(24px, 8vw, 32px);
+  }
+  
+  .section3-title {
+    font-size: clamp(18px, 5vw, 26px);
+  }
+  
+  .section3-description {
+    font-size: clamp(13px, 3.5vw, 16px);
+  }
+}
+
+/* ============================================
+   LARGE DESKTOP BREAKPOINT (min-width: 1400px)
+   ============================================ */
+@media (min-width: 1400px) {
+  :root {
+    --container-padding: 60px;
+  }
+}
+
+/* ============================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ============================================ */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase tap target sizes for touch devices */
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Disable hover effects on touch devices */
+  .icon-bulge:hover {
+    transform: none;
+  }
+  
+  .icon-bulge:active {
+    transform: scale(0.95);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION PREFERENCES
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .word-reveal-inner,
+  .section3-reveal-inner {
+    transform: none;
+    opacity: 1;
+    transition: none;
+  }
+}
+
+/* ============================================
+   LANDSCAPE MODE OPTIMIZATIONS
+   ============================================ */
+@media (orientation: landscape) and (max-height: 500px) {
+  .hero-title {
+    font-size: clamp(28px, 8vh, 60px);
+  }
+  
+  .section3-heading {
+    font-size: clamp(24px, 6vh, 40px);
+  }
+}
+
+/* ============================================
+   HIGH DPI / RETINA DISPLAY OPTIMIZATIONS
+   ============================================ */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Ensure crisp text rendering on high DPI displays */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ============================================
+   SAFE AREA INSETS FOR NOTCHED DEVICES
+   ============================================ */
+@supports (padding: max(0px)) {
+  .safe-area-padding {
+    padding-left: max(var(--container-padding), env(safe-area-inset-left));
+    padding-right: max(var(--container-padding), env(safe-area-inset-right));
+    padding-bottom: max(var(--spacing-md), env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: max(var(--spacing-md), env(safe-area-inset-bottom));
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  .hide-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
   }
 }
