@@ -8,10 +8,9 @@ import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
   scrollProgress: number;
-  onNavigateToAbout?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) => {
+const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
   const [vw, setVw] = useState(1440);
@@ -152,17 +151,6 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
     router.push('/store?openCart=true');
   };
 
-  // Handle navigation to About Us - closes menu and triggers animation
-  const handleNavigateToAbout = () => {
-    setMenuOpen(false);
-    if (onNavigateToAbout) {
-      // Small delay to allow menu to start closing
-      setTimeout(() => {
-        onNavigateToAbout();
-      }, 100);
-    }
-  };
-
   // Handle user icon click
   const handleUserIconClick = () => {
     setUserDropdownOpen(!userDropdownOpen);
@@ -185,7 +173,6 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
       <Menu
         isOpen={menuOpen}
         onClose={() => setMenuOpen(false)}
-        onNavigateToAbout={handleNavigateToAbout}
       />
 
       {/* Navbar */}

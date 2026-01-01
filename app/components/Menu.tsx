@@ -6,10 +6,9 @@ import Link from 'next/link';
 interface MenuProps {
   isOpen: boolean;
   onClose: () => void;
-  onNavigateToAbout?: () => void;
 }
 
-const Menu: React.FC<MenuProps> = ({ isOpen, onClose, onNavigateToAbout }) => {
+const Menu: React.FC<MenuProps> = ({ isOpen, onClose }) => {
   const [dimensions, setDimensions] = useState({
     vh: 900,
     vw: 1200,
@@ -169,13 +168,10 @@ const Menu: React.FC<MenuProps> = ({ isOpen, onClose, onNavigateToAbout }) => {
                 {/* Feature Cards - Horizontal scroll on mobile */}
                 <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory">
                   {/* About Us Card */}
-                  <div
+                  <Link
+                    href="/about"
+                    onClick={onClose}
                     className="flex-shrink-0 w-[70vw] max-w-[280px] h-40 relative rounded-xl overflow-hidden group cursor-pointer snap-start"
-                    onClick={() => {
-                      if (onNavigateToAbout) {
-                        onNavigateToAbout();
-                      }
-                    }}
                   >
                     <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
@@ -189,10 +185,14 @@ const Menu: React.FC<MenuProps> = ({ isOpen, onClose, onNavigateToAbout }) => {
                       <h3 className="text-base font-medium mb-0.5">About Us</h3>
                       <p className="text-xs opacity-80">Make your home smart</p>
                     </div>
-                  </div>
+                  </Link>
 
-                  {/* Technology Card */}
-                  <div className="flex-shrink-0 w-[60vw] max-w-[240px] h-40 relative rounded-xl overflow-hidden group cursor-pointer snap-start">
+                  {/* FAQ Card */}
+                  <Link
+                    href="/faq"
+                    onClick={onClose}
+                    className="flex-shrink-0 w-[60vw] max-w-[240px] h-40 relative rounded-xl overflow-hidden group cursor-pointer snap-start"
+                  >
                     <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                       style={{
@@ -202,13 +202,17 @@ const Menu: React.FC<MenuProps> = ({ isOpen, onClose, onNavigateToAbout }) => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <h3 className="text-base font-medium mb-0.5">Technology</h3>
-                      <p className="text-xs opacity-80">Tech within KBS</p>
+                      <h3 className="text-base font-medium mb-0.5">FAQ</h3>
+                      <p className="text-xs opacity-80">Common questions</p>
                     </div>
-                  </div>
+                  </Link>
 
-                  {/* Connect Card */}
-                  <div className="flex-shrink-0 w-[60vw] max-w-[240px] h-40 relative rounded-xl overflow-hidden group cursor-pointer snap-start">
+                  {/* Contact Card */}
+                  <Link
+                    href="/contact"
+                    onClick={onClose}
+                    className="flex-shrink-0 w-[60vw] max-w-[240px] h-40 relative rounded-xl overflow-hidden group cursor-pointer snap-start"
+                  >
                     <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                       style={{
@@ -218,32 +222,32 @@ const Menu: React.FC<MenuProps> = ({ isOpen, onClose, onNavigateToAbout }) => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <h3 className="text-base font-medium mb-0.5">Connect</h3>
+                      <h3 className="text-base font-medium mb-0.5">Contact</h3>
                       <p className="text-xs opacity-80">Get in touch</p>
                     </div>
-                  </div>
+                  </Link>
                 </div>
 
                 {/* Footer Links - 2 columns on mobile */}
                 <div className="grid grid-cols-2 gap-x-8 gap-y-2 pt-4 border-t border-[#ddd]">
-                  <a href="#company" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
-                    Company
-                  </a>
-                  <a href="#journal" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
-                    Journal
-                  </a>
-                  <a href="#events" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
-                    Events
-                  </a>
-                  <a href="#careers" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
-                    Careers
-                  </a>
-                  <a href="#press" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
-                    Press & Media
-                  </a>
-                  <a href="#compare" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
-                    Compare
-                  </a>
+                  <Link href="/about" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
+                    About Us
+                  </Link>
+                  <Link href="/faq" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
+                    FAQ
+                  </Link>
+                  <Link href="/contact" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
+                    Contact
+                  </Link>
+                  <Link href="/shipping" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
+                    Shipping & Returns
+                  </Link>
+                  <Link href="/terms" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
+                    Terms of Service
+                  </Link>
+                  <Link href="/privacy" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity py-1">
+                    Privacy Policy
+                  </Link>
                 </div>
               </div>
             ) : (
@@ -291,26 +295,26 @@ const Menu: React.FC<MenuProps> = ({ isOpen, onClose, onNavigateToAbout }) => {
                   {/* Bottom - Footer Links */}
                   <div className={`flex mt-auto pb-2 ${isTablet ? 'gap-10' : 'gap-16 lg:gap-24'}`}>
                     <div className="space-y-2">
-                      <a href="#company" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
-                        Company
-                      </a>
-                      <a href="#events" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
-                        Events
-                      </a>
-                      <a href="#press" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
-                        Press & Media
-                      </a>
+                      <Link href="/about" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
+                        About Us
+                      </Link>
+                      <Link href="/contact" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
+                        Contact
+                      </Link>
+                      <Link href="/faq" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
+                        FAQ
+                      </Link>
                     </div>
                     <div className="space-y-2">
-                      <a href="#journal" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
-                        Journal
-                      </a>
-                      <a href="#careers" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
-                        Careers
-                      </a>
-                      <a href="#compare" className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
-                        Compare
-                      </a>
+                      <Link href="/shipping" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
+                        Shipping & Returns
+                      </Link>
+                      <Link href="/terms" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
+                        Terms of Service
+                      </Link>
+                      <Link href="/privacy" onClick={onClose} className="block text-sm text-[#1a1a1a] hover:opacity-70 transition-opacity">
+                        Privacy Policy
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -325,14 +329,11 @@ const Menu: React.FC<MenuProps> = ({ isOpen, onClose, onNavigateToAbout }) => {
                   }}
                 >
                   {/* Large Card - About Us */}
-                  <div
+                  <Link
+                    href="/about"
+                    onClick={onClose}
                     className="relative rounded-2xl overflow-hidden group cursor-pointer"
                     style={{ width: '62%' }}
-                    onClick={() => {
-                      if (onNavigateToAbout) {
-                        onNavigateToAbout();
-                      }
-                    }}
                   >
                     <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
@@ -346,12 +347,16 @@ const Menu: React.FC<MenuProps> = ({ isOpen, onClose, onNavigateToAbout }) => {
                       <h3 className={`font-medium mb-1 ${isTablet ? 'text-lg' : 'text-xl'}`}>About Us</h3>
                       <p className={`opacity-80 ${isTablet ? 'text-xs' : 'text-sm'}`}>Make your home smart with us</p>
                     </div>
-                  </div>
+                  </Link>
 
                   {/* Right Column - Two smaller cards */}
                   <div className="flex flex-col" style={{ width: '38%', gap: isTablet ? '12px' : '16px' }}>
-                    {/* Technology Card */}
-                    <div className="flex-1 relative rounded-2xl overflow-hidden group cursor-pointer">
+                    {/* FAQ Card */}
+                    <Link
+                      href="/faq"
+                      onClick={onClose}
+                      className="flex-1 relative rounded-2xl overflow-hidden group cursor-pointer"
+                    >
                       <div
                         className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                         style={{
@@ -361,13 +366,17 @@ const Menu: React.FC<MenuProps> = ({ isOpen, onClose, onNavigateToAbout }) => {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       <div className={`absolute left-3 right-3 text-white ${isTablet ? 'bottom-3' : 'bottom-4'}`}>
-                        <h3 className={`font-medium mb-0.5 ${isTablet ? 'text-base' : 'text-lg'}`}>Technology</h3>
-                        <p className="text-xs opacity-80">Discover the tech within KBS</p>
+                        <h3 className={`font-medium mb-0.5 ${isTablet ? 'text-base' : 'text-lg'}`}>FAQ</h3>
+                        <p className="text-xs opacity-80">Common questions answered</p>
                       </div>
-                    </div>
+                    </Link>
 
-                    {/* Connect with us Card */}
-                    <div className="flex-1 relative rounded-2xl overflow-hidden group cursor-pointer">
+                    {/* Contact Card */}
+                    <Link
+                      href="/contact"
+                      onClick={onClose}
+                      className="flex-1 relative rounded-2xl overflow-hidden group cursor-pointer"
+                    >
                       <div
                         className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                         style={{
@@ -377,7 +386,7 @@ const Menu: React.FC<MenuProps> = ({ isOpen, onClose, onNavigateToAbout }) => {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       <div className={`absolute left-3 right-3 text-white ${isTablet ? 'bottom-3' : 'bottom-4'}`}>
-                        <h3 className={`font-medium mb-0.5 ${isTablet ? 'text-base' : 'text-lg'}`}>Connect with us</h3>
+                        <h3 className={`font-medium mb-0.5 ${isTablet ? 'text-base' : 'text-lg'}`}>Contact Us</h3>
                         <p className="text-xs opacity-80">Questions? We&apos;ve got answers</p>
                       </div>
                       {/* Chat Icon */}
@@ -396,7 +405,7 @@ const Menu: React.FC<MenuProps> = ({ isOpen, onClose, onNavigateToAbout }) => {
                           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                         </svg>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                 </div>
               </div>

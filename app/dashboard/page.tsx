@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -154,12 +154,45 @@ function DashboardContent() {
   const [activeTab, setActiveTab] = useState<TabType>('orders');
   const [orders] = useState<Order[]>(sampleOrders);
   const [addresses, setAddresses] = useState<Address[]>(sampleAddresses);
-  const [paymentMethods] = useState<PaymentMethod[]>(samplePaymentMethods);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(samplePaymentMethods);
   const [wishlist, setWishlist] = useState<WishlistItem[]>(sampleWishlist);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [editedName, setEditedName] = useState('');
-  const [editedEmail, setEditedEmail] = useState('');
-  const [editedPhone, setEditedPhone] = useState('');
+  const [editedName, setEditedName] = useState(() =>
+    user ? `${user.firstName} ${user.lastName}` : ''
+  );
+  const [editedEmail, setEditedEmail] = useState(() => user?.email || '');
+  const [editedPhone, setEditedPhone] = useState(() => user?.phone || '');
+  
+  // Modal states
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+  
+  // Address form
+  const [addressForm, setAddressForm] = useState({
+    type: 'home' as 'home' | 'work' | 'other',
+    name: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+    isDefault: false
+  });
+  
+  // Password form
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  
+  // Payment form
+  const [paymentForm, setPaymentForm] = useState({
+    type: 'card' as 'card' | 'upi',
+    cardNumber: '',
+    upiId: ''
+  });
   
   const shutterTopRef = useRef<HTMLDivElement>(null);
   const shutterBottomRef = useRef<HTMLDivElement>(null);
@@ -171,14 +204,6 @@ function DashboardContent() {
     }
   }, [isAuthenticated, router]);
 
-  // Initialize edit form with user data
-  useEffect(() => {
-    if (user) {
-      setEditedName(`${user.firstName} ${user.lastName}`);
-      setEditedEmail(user.email);
-      setEditedPhone(user.phone || '');
-    }
-  }, [user]);
 
   // Shutter animation on page load
   useEffect(() => {
@@ -233,6 +258,223 @@ function DashboardContent() {
   const handleRemoveFromWishlist = (id: string) => {
     setWishlist(prev => prev.filter(item => item.id !== id));
   };
+
+  // Handle Track Order - Navigate to track order page with order ID
+  const handleTrackOrder = useCallback((orderId: string) => {
+    router.push(`/track-order?orderId=${orderId}`);
+  }, [router]);
+
+  // Handle Reorder - Add items back to cart
+  const handleReorder = useCallback((order: Order) => {
+    // Get existing cart from localStorage
+    const existingCart = localStorage.getItem('cart');
+    let cart: { id: string; name: string; price: number; cover: string; quantity: number }[] = [];
+    
+    if (existingCart) {
+      try {
+        cart = JSON.parse(existingCart);
+      } catch (e) {
+        console.error('Error parsing cart:', e);
+      }
+    }
+    
+    // Add order items to cart
+    order.items.forEach(item => {
+      const existingIndex = cart.findIndex(c => c.name === item.name);
+      if (existingIndex >= 0) {
+        cart[existingIndex].quantity += item.quantity;
+      } else {
+        cart.push({
+          id: `reorder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          name: item.name,
+          price: item.price,
+          cover: item.cover,
+          quantity: item.quantity
+        });
+      }
+    });
+    
+    localStorage.setItem('cart', JSON.stringify(cart));
+    router.push('/checkout');
+  }, [router]);
+
+  // Handle Add to Cart from Wishlist
+  const handleAddToCart = useCallback((item: WishlistItem) => {
+    if (!item.inStock) return;
+    
+    // Get existing cart from localStorage
+    const existingCart = localStorage.getItem('cart');
+    let cart: { id: string; name: string; price: number; cover: string; quantity: number }[] = [];
+    
+    if (existingCart) {
+      try {
+        cart = JSON.parse(existingCart);
+      } catch (e) {
+        console.error('Error parsing cart:', e);
+      }
+    }
+    
+    // Add item to cart
+    const existingIndex = cart.findIndex(c => c.name === item.name);
+    if (existingIndex >= 0) {
+      cart[existingIndex].quantity += 1;
+    } else {
+      cart.push({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        cover: item.cover,
+        quantity: 1
+      });
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Remove from wishlist after adding to cart
+    setWishlist(prev => prev.filter(w => w.id !== item.id));
+    
+    // Show feedback
+    alert(`${item.name} added to cart!`);
+  }, []);
+
+  // Handle Add Address
+  const handleOpenAddressModal = useCallback((address?: Address) => {
+    if (address) {
+      setEditingAddress(address);
+      setAddressForm({
+        type: address.type,
+        name: address.name,
+        address: address.address,
+        city: address.city,
+        state: address.state,
+        pincode: address.pincode,
+        isDefault: address.isDefault
+      });
+    } else {
+      setEditingAddress(null);
+      setAddressForm({
+        type: 'home',
+        name: user ? `${user.firstName} ${user.lastName}` : '',
+        address: '',
+        city: '',
+        state: '',
+        pincode: '',
+        isDefault: false
+      });
+    }
+    setShowAddressModal(true);
+  }, [user]);
+
+  const handleSaveAddress = useCallback(() => {
+    if (!addressForm.name || !addressForm.address || !addressForm.city || !addressForm.state || !addressForm.pincode) {
+      alert('Please fill in all fields');
+      return;
+    }
+    
+    if (editingAddress) {
+      // Update existing address
+      setAddresses(prev => prev.map(addr =>
+        addr.id === editingAddress.id
+          ? { ...addr, ...addressForm }
+          : addressForm.isDefault ? { ...addr, isDefault: false } : addr
+      ));
+    } else {
+      // Add new address
+      const newAddress: Address = {
+        id: `addr-${Date.now()}`,
+        ...addressForm
+      };
+      
+      setAddresses(prev => {
+        const updated = addressForm.isDefault
+          ? prev.map(addr => ({ ...addr, isDefault: false }))
+          : prev;
+        return [...updated, newAddress];
+      });
+    }
+    
+    setShowAddressModal(false);
+    setEditingAddress(null);
+  }, [addressForm, editingAddress]);
+
+  const handleDeleteAddress = useCallback((id: string) => {
+    if (confirm('Are you sure you want to delete this address?')) {
+      setAddresses(prev => prev.filter(addr => addr.id !== id));
+    }
+  }, []);
+
+  // Handle Payment Methods
+  const handleOpenPaymentModal = useCallback(() => {
+    setPaymentForm({
+      type: 'card',
+      cardNumber: '',
+      upiId: ''
+    });
+    setShowPaymentModal(true);
+  }, []);
+
+  const handleSavePayment = useCallback(() => {
+    if (paymentForm.type === 'card' && paymentForm.cardNumber.length < 16) {
+      alert('Please enter a valid card number');
+      return;
+    }
+    if (paymentForm.type === 'upi' && !paymentForm.upiId.includes('@')) {
+      alert('Please enter a valid UPI ID');
+      return;
+    }
+    
+    const newPayment: PaymentMethod = {
+      id: `pay-${Date.now()}`,
+      type: paymentForm.type,
+      isDefault: paymentMethods.length === 0,
+      ...(paymentForm.type === 'card' ? {
+        last4: paymentForm.cardNumber.slice(-4),
+        cardBrand: paymentForm.cardNumber.startsWith('4') ? 'Visa' : 'Mastercard'
+      } : {
+        upiId: paymentForm.upiId
+      })
+    };
+    
+    setPaymentMethods(prev => [...prev, newPayment]);
+    setShowPaymentModal(false);
+  }, [paymentForm, paymentMethods.length]);
+
+  const handleRemovePayment = useCallback((id: string) => {
+    if (confirm('Are you sure you want to remove this payment method?')) {
+      setPaymentMethods(prev => prev.filter(p => p.id !== id));
+    }
+  }, []);
+
+  // Handle Change Password
+  const handleOpenPasswordModal = useCallback(() => {
+    setPasswordForm({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+    setShowPasswordModal(true);
+  }, []);
+
+  const handleChangePassword = useCallback(() => {
+    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      alert('Please fill in all fields');
+      return;
+    }
+    
+    if (passwordForm.newPassword.length < 8) {
+      alert('New password must be at least 8 characters');
+      return;
+    }
+    
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      alert('New passwords do not match');
+      return;
+    }
+    
+    // In a real app, this would call an API
+    alert('Password changed successfully!');
+    setShowPasswordModal(false);
+  }, [passwordForm]);
 
   const handleSetDefaultAddress = (id: string) => {
     setAddresses(prev => prev.map(addr => ({
@@ -314,9 +556,9 @@ function DashboardContent() {
             <div className="order-footer">
               <span className="order-total">Total: <strong>${order.total.toFixed(2)}</strong></span>
               <div className="order-actions">
-                <button className="order-action-btn">Track Order</button>
+                <button className="order-action-btn" onClick={() => handleTrackOrder(order.id)}>Track Order</button>
                 {order.status === 'delivered' && (
-                  <button className="order-action-btn secondary">Reorder</button>
+                  <button className="order-action-btn secondary" onClick={() => handleReorder(order)}>Reorder</button>
                 )}
               </div>
             </div>
@@ -330,7 +572,7 @@ function DashboardContent() {
     <div className="tab-content">
       <div className="tab-header">
         <h2 className="tab-title">Saved Addresses</h2>
-        <button className="add-btn">
+        <button className="add-btn" onClick={() => handleOpenAddressModal()}>
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"/>
             <line x1="5" y1="12" x2="19" y2="12"/>
@@ -370,11 +612,11 @@ function DashboardContent() {
               <p>PIN: {address.pincode}</p>
             </div>
             <div className="address-actions">
-              <button className="address-action-btn">Edit</button>
+              <button className="address-action-btn" onClick={() => handleOpenAddressModal(address)}>Edit</button>
               {!address.isDefault && (
                 <button className="address-action-btn" onClick={() => handleSetDefaultAddress(address.id)}>Set as Default</button>
               )}
-              <button className="address-action-btn delete">Delete</button>
+              <button className="address-action-btn delete" onClick={() => handleDeleteAddress(address.id)}>Delete</button>
             </div>
           </div>
         ))}
@@ -386,7 +628,7 @@ function DashboardContent() {
     <div className="tab-content">
       <div className="tab-header">
         <h2 className="tab-title">Payment Methods</h2>
-        <button className="add-btn">
+        <button className="add-btn" onClick={handleOpenPaymentModal}>
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"/>
             <line x1="5" y1="12" x2="19" y2="12"/>
@@ -438,7 +680,7 @@ function DashboardContent() {
               )}
             </div>
             <div className="payment-actions">
-              <button className="payment-action-btn delete">Remove</button>
+              <button className="payment-action-btn delete" onClick={() => handleRemovePayment(method.id)}>Remove</button>
             </div>
           </div>
         ))}
@@ -479,7 +721,11 @@ function DashboardContent() {
                 <span className="wishlist-name">{item.name}</span>
                 <span className="wishlist-price">${item.price.toFixed(2)}</span>
               </div>
-              <button className={`add-to-cart-btn ${!item.inStock ? 'disabled' : ''}`} disabled={!item.inStock}>
+              <button
+                className={`add-to-cart-btn ${!item.inStock ? 'disabled' : ''}`}
+                disabled={!item.inStock}
+                onClick={() => handleAddToCart(item)}
+              >
                 {item.inStock ? 'Add to Cart' : 'Notify Me'}
               </button>
             </div>
@@ -610,7 +856,7 @@ function DashboardContent() {
       <div className="settings-section">
         <h3 className="settings-section-title">Security</h3>
         <div className="security-card">
-          <button className="security-btn">
+          <button className="security-btn" onClick={handleOpenPasswordModal}>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -781,6 +1027,196 @@ function DashboardContent() {
           ))}
         </nav>
       </section>
+
+      {/* Address Modal */}
+      {showAddressModal && (
+        <div className="modal-overlay" onClick={() => setShowAddressModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">{editingAddress ? 'Edit Address' : 'Add New Address'}</h2>
+            <div className="modal-form">
+              <div className="form-group">
+                <label>Address Type</label>
+                <div className="radio-group">
+                  {(['home', 'work', 'other'] as const).map((type) => (
+                    <label key={type} className="radio-label">
+                      <input
+                        type="radio"
+                        name="addressType"
+                        checked={addressForm.type === type}
+                        onChange={() => setAddressForm(prev => ({ ...prev, type }))}
+                      />
+                      <span>{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Full Name</label>
+                <input
+                  type="text"
+                  value={addressForm.name}
+                  onChange={(e) => setAddressForm(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Enter full name"
+                />
+              </div>
+              <div className="form-group">
+                <label>Street Address</label>
+                <input
+                  type="text"
+                  value={addressForm.address}
+                  onChange={(e) => setAddressForm(prev => ({ ...prev, address: e.target.value }))}
+                  placeholder="Enter street address"
+                />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>City</label>
+                  <input
+                    type="text"
+                    value={addressForm.city}
+                    onChange={(e) => setAddressForm(prev => ({ ...prev, city: e.target.value }))}
+                    placeholder="City"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>State</label>
+                  <input
+                    type="text"
+                    value={addressForm.state}
+                    onChange={(e) => setAddressForm(prev => ({ ...prev, state: e.target.value }))}
+                    placeholder="State"
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>PIN Code</label>
+                <input
+                  type="text"
+                  value={addressForm.pincode}
+                  onChange={(e) => setAddressForm(prev => ({ ...prev, pincode: e.target.value }))}
+                  placeholder="PIN Code"
+                  maxLength={6}
+                />
+              </div>
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={addressForm.isDefault}
+                  onChange={(e) => setAddressForm(prev => ({ ...prev, isDefault: e.target.checked }))}
+                />
+                <span>Set as default address</span>
+              </label>
+            </div>
+            <div className="modal-actions">
+              <button className="modal-btn secondary" onClick={() => setShowAddressModal(false)}>Cancel</button>
+              <button className="modal-btn primary" onClick={handleSaveAddress}>Save Address</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Modal */}
+      {showPaymentModal && (
+        <div className="modal-overlay" onClick={() => setShowPaymentModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">Add Payment Method</h2>
+            <div className="modal-form">
+              <div className="form-group">
+                <label>Payment Type</label>
+                <div className="radio-group">
+                  <label className="radio-label">
+                    <input
+                      type="radio"
+                      name="paymentType"
+                      checked={paymentForm.type === 'card'}
+                      onChange={() => setPaymentForm(prev => ({ ...prev, type: 'card' }))}
+                    />
+                    <span>Credit/Debit Card</span>
+                  </label>
+                  <label className="radio-label">
+                    <input
+                      type="radio"
+                      name="paymentType"
+                      checked={paymentForm.type === 'upi'}
+                      onChange={() => setPaymentForm(prev => ({ ...prev, type: 'upi' }))}
+                    />
+                    <span>UPI</span>
+                  </label>
+                </div>
+              </div>
+              {paymentForm.type === 'card' ? (
+                <div className="form-group">
+                  <label>Card Number</label>
+                  <input
+                    type="text"
+                    value={paymentForm.cardNumber}
+                    onChange={(e) => setPaymentForm(prev => ({ ...prev, cardNumber: e.target.value.replace(/\D/g, '').slice(0, 16) }))}
+                    placeholder="1234 5678 9012 3456"
+                    maxLength={16}
+                  />
+                </div>
+              ) : (
+                <div className="form-group">
+                  <label>UPI ID</label>
+                  <input
+                    type="text"
+                    value={paymentForm.upiId}
+                    onChange={(e) => setPaymentForm(prev => ({ ...prev, upiId: e.target.value }))}
+                    placeholder="yourname@upi"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="modal-actions">
+              <button className="modal-btn secondary" onClick={() => setShowPaymentModal(false)}>Cancel</button>
+              <button className="modal-btn primary" onClick={handleSavePayment}>Add Payment</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Password Modal */}
+      {showPasswordModal && (
+        <div className="modal-overlay" onClick={() => setShowPasswordModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">Change Password</h2>
+            <div className="modal-form">
+              <div className="form-group">
+                <label>Current Password</label>
+                <input
+                  type="password"
+                  value={passwordForm.currentPassword}
+                  onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+                  placeholder="Enter current password"
+                />
+              </div>
+              <div className="form-group">
+                <label>New Password</label>
+                <input
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                  placeholder="Enter new password"
+                />
+              </div>
+              <div className="form-group">
+                <label>Confirm New Password</label>
+                <input
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  placeholder="Confirm new password"
+                />
+              </div>
+              <p className="password-hint">Password must be at least 8 characters long</p>
+            </div>
+            <div className="modal-actions">
+              <button className="modal-btn secondary" onClick={() => setShowPasswordModal(false)}>Cancel</button>
+              <button className="modal-btn primary" onClick={handleChangePassword}>Change Password</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Styles */}
       <style jsx global>{dashboardStyles}</style>
@@ -2122,6 +2558,148 @@ const dashboardStyles = `
     }
 
     .order-action-btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+  }
+
+  .modal-content {
+    background: #fff;
+    border-radius: clamp(12px, 2vw, 16px);
+    padding: clamp(24px, 4vw, 32px);
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-title {
+    font-size: clamp(18px, 2.5vw, 22px);
+    font-weight: 600;
+    color: #000;
+    margin: 0 0 clamp(20px, 3vw, 24px) 0;
+  }
+
+  .modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 2vw, 20px);
+  }
+
+  .modal-form .form-group {
+    margin-bottom: 0;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(12px, 2vw, 16px);
+  }
+
+  .radio-group {
+    display: flex;
+    gap: clamp(16px, 2vw, 24px);
+    flex-wrap: wrap;
+  }
+
+  .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: clamp(13px, 1.5vw, 14px);
+    color: #444;
+  }
+
+  .radio-label input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: clamp(13px, 1.5vw, 14px);
+    color: #444;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: clamp(24px, 3vw, 32px);
+    justify-content: flex-end;
+  }
+
+  .modal-btn {
+    padding: clamp(12px, 1.5vw, 14px) clamp(24px, 3vw, 32px);
+    border-radius: 50px;
+    font-size: clamp(13px, 1.5vw, 14px);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 44px;
+  }
+
+  .modal-btn.primary {
+    background: #111;
+    color: #fff;
+    border: none;
+  }
+
+  .modal-btn.primary:hover {
+    background: #333;
+  }
+
+  .modal-btn.secondary {
+    background: #fff;
+    color: #111;
+    border: 1px solid #ddd;
+  }
+
+  .modal-btn.secondary:hover {
+    background: #f5f5f5;
+    border-color: #111;
+  }
+
+  .password-hint {
+    font-size: clamp(11px, 1.2vw, 12px);
+    color: #666;
+    margin: 0;
+  }
+
+  @media (max-width: 480px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .modal-actions {
+      flex-direction: column-reverse;
+    }
+
+    .modal-btn {
       width: 100%;
       text-align: center;
     }

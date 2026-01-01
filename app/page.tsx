@@ -86,11 +86,6 @@ export default function Home() {
     };
   }, []);
 
-  // Handle navigation to About Us section with shutter animation
-  const handleNavigateToAbout = useCallback(() => {
-    setIsShutterAnimating(true);
-  }, []);
-
   // Called when shutter closes - scroll to Section 5
   const handleShutterComplete = useCallback(() => {
     // Section 5 (FourthSection/About Us) is at around 700vh scroll position
@@ -116,7 +111,7 @@ export default function Home() {
       />
       
       {/* Navbar - transforms from full-width to pill shape */}
-      <Navbar scrollProgress={scrollProgress} onNavigateToAbout={handleNavigateToAbout} />
+      <Navbar scrollProgress={scrollProgress} />
       
       {/* Hero Section with Video Background that shrinks */}
       <HeroSection scrollProgress={scrollProgress} section2to3Progress={section2to3Progress} />

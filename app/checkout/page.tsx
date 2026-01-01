@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -20,7 +20,21 @@ function CheckoutContent() {
   const [showContent, setShowContent] = useState(false);
   const [titleRevealed, setTitleRevealed] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState('credit');
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    // Initialize cart items from localStorage during first render
+    if (typeof window !== 'undefined') {
+      const savedCart = localStorage.getItem('checkoutCart');
+      if (savedCart) {
+        try {
+          return JSON.parse(savedCart);
+        } catch {
+          return [];
+        }
+      }
+    }
+    return [];
+  });
+  const [isProcessing, setIsProcessing] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -39,18 +53,6 @@ function CheckoutContent() {
   const shutterTopRef = useRef<HTMLDivElement>(null);
   const shutterBottomRef = useRef<HTMLDivElement>(null);
 
-  // Load cart items from localStorage
-  useEffect(() => {
-    const savedCart = localStorage.getItem('checkoutCart');
-    if (savedCart) {
-      try {
-        const items = JSON.parse(savedCart);
-        setCartItems(items);
-      } catch (e) {
-        console.error('Error parsing cart data:', e);
-      }
-    }
-  }, []);
 
   // Shutter animation on page load
   useEffect(() => {
@@ -116,6 +118,65 @@ function CheckoutContent() {
       return updated;
     });
   };
+
+  // Generate order ID helper
+  const generateOrderId = useCallback(() => {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const randomPart = Math.random().toString(36).substring(2, 5).toUpperCase();
+    return 'KBS-' + timestamp + randomPart;
+  }, []);
+
+  // Handle purchase completion
+  const handleCompletePurchase = useCallback(() => {
+    // Validate form data
+    if (!formData.email || !formData.phone || !formData.address || !formData.city || !formData.state || !formData.pincode) {
+      alert('Please fill in all delivery information fields.');
+      return;
+    }
+
+    if (selectedPayment === 'credit') {
+      if (!formData.cardNumber || !formData.expiryDate || !formData.cvv || !formData.cardholderName) {
+        alert('Please fill in all card details.');
+        return;
+      }
+    }
+
+    setIsProcessing(true);
+
+    // Generate order ID
+    const orderId = generateOrderId();
+    
+    // Save order to localStorage for the success page to access
+    const orderData = {
+      orderId,
+      items: cartItems,
+      subtotal,
+      shipping,
+      tax,
+      total,
+      shippingAddress: {
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pincode,
+      },
+      email: formData.email,
+      phone: formData.phone,
+      paymentMethod: selectedPayment,
+      createdAt: new Date().toISOString(),
+    };
+    
+    localStorage.setItem('lastOrder', JSON.stringify(orderData));
+    
+    // Clear checkout cart
+    localStorage.removeItem('checkoutCart');
+
+    // Simulate payment processing delay
+    setTimeout(() => {
+      setIsProcessing(false);
+      router.push('/order/success');
+    }, 1500);
+  }, [formData, selectedPayment, cartItems, subtotal, shipping, tax, total, generateOrderId, router]);
 
   return (
     <main className={`checkout-page ${loading ? 'loading' : ''}`}>
@@ -524,8 +585,19 @@ function CheckoutContent() {
                 <span className="summary-value total-value">${total.toFixed(2)}</span>
               </div>
 
-              <button className="complete-purchase-btn" disabled={cartItems.length === 0}>
-                Complete Purchase
+              <button
+                className="complete-purchase-btn"
+                disabled={cartItems.length === 0 || isProcessing}
+                onClick={handleCompletePurchase}
+              >
+                {isProcessing ? (
+                  <span className="processing-text">
+                    <span className="spinner"></span>
+                    Processing...
+                  </span>
+                ) : (
+                  'Complete Purchase'
+                )}
               </button>
 
               <div className="secure-checkout">
@@ -1076,6 +1148,28 @@ function CheckoutContent() {
         .complete-purchase-btn:disabled {
           background: #999;
           cursor: not-allowed;
+        }
+
+        .processing-text {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        .spinner {
+          width: 18px;
+          height: 18px;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-top-color: #fff;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
         }
 
         .secure-checkout {

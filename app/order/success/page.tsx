@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
 
 interface OrderItem {
@@ -33,69 +32,101 @@ interface OrderDetails {
   paymentMethod: string;
 }
 
+// Helper function to load order from localStorage
+function loadOrderFromStorage(): OrderDetails | null {
+  if (typeof window === 'undefined') return null;
+  
+  const savedOrder = localStorage.getItem('lastOrder');
+  if (!savedOrder) return null;
+  
+  try {
+    const parsedOrder = JSON.parse(savedOrder);
+    
+    // Calculate estimated delivery (5-7 business days from now)
+    const deliveryDate = new Date();
+    deliveryDate.setDate(deliveryDate.getDate() + 5 + Math.floor(Math.random() * 3));
+    
+    const order: OrderDetails = {
+      orderId: parsedOrder.orderId,
+      orderDate: parsedOrder.createdAt
+        ? new Date(parsedOrder.createdAt).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })
+        : new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+      estimatedDelivery: deliveryDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      items: parsedOrder.items || [],
+      subtotal: parsedOrder.subtotal || 0,
+      shipping: parsedOrder.shipping || 0,
+      tax: parsedOrder.tax || 0,
+      total: parsedOrder.total || 0,
+      shippingAddress: {
+        name: 'Customer',
+        address: parsedOrder.shippingAddress?.address || '',
+        city: parsedOrder.shippingAddress?.city || '',
+        state: parsedOrder.shippingAddress?.state || '',
+        pincode: parsedOrder.shippingAddress?.pincode || ''
+      },
+      paymentMethod: parsedOrder.paymentMethod === 'credit'
+        ? 'Credit Card'
+        : parsedOrder.paymentMethod === 'apple'
+          ? 'Apple Pay'
+          : parsedOrder.paymentMethod === 'paypal'
+            ? 'PayPal'
+            : parsedOrder.paymentMethod === 'gpay'
+              ? 'Google Pay'
+              : 'Card Payment'
+    };
+    
+    return order;
+  } catch (e) {
+    console.error('Error parsing order data:', e);
+    return null;
+  }
+}
+
 function OrderSuccessContent() {
   const [loading, setLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
   const [titleRevealed, setTitleRevealed] = useState(false);
-  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(() => {
-    // Initialize state from localStorage synchronously to avoid cascading renders
-    if (typeof window !== 'undefined') {
-      const savedCart = localStorage.getItem('checkoutCart');
-      if (savedCart) {
-        try {
-          const items: OrderItem[] = JSON.parse(savedCart);
-          const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-          const shipping = subtotal > 500 ? 0 : 15.00;
-          const tax = subtotal * 0.08;
-          const total = subtotal + shipping + tax;
-          
-          // Generate random order ID
-          const orderId = `KBS-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
-          
-          // Calculate estimated delivery (5-7 business days from now)
-          const deliveryDate = new Date();
-          deliveryDate.setDate(deliveryDate.getDate() + 5 + Math.floor(Math.random() * 3));
-          
-          const order: OrderDetails = {
-            orderId,
-            orderDate: new Date().toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            }),
-            estimatedDelivery: deliveryDate.toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            }),
-            items,
-            subtotal,
-            shipping,
-            tax,
-            total,
-            shippingAddress: {
-              name: 'John Doe',
-              address: '123 Main Street, Apartment 4B',
-              city: 'Madison',
-              state: 'Wisconsin',
-              pincode: '50000'
-            },
-            paymentMethod: 'Credit Card ending in ****1234'
-          };
-          
-          // Clear the cart after successful order
-          localStorage.removeItem('checkoutCart');
-          
-          return order;
-        } catch (e) {
-          console.error('Error parsing cart data:', e);
+  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(() => loadOrderFromStorage());
+  
+  // Save to order history on mount (only once)
+  useEffect(() => {
+    if (orderDetails) {
+      try {
+        const existingHistory = localStorage.getItem('orderHistory');
+        const history = existingHistory ? JSON.parse(existingHistory) : [];
+        
+        // Check if this order already exists in history
+        const orderExists = history.some((o: { orderId: string }) => o.orderId === orderDetails.orderId);
+        if (!orderExists) {
+          history.unshift({
+            orderId: orderDetails.orderId,
+            date: orderDetails.orderDate,
+            total: orderDetails.total,
+            items: orderDetails.items,
+            status: 'Processing'
+          });
+          localStorage.setItem('orderHistory', JSON.stringify(history));
         }
+      } catch (e) {
+        console.error('Error saving order history:', e);
       }
     }
-    return null;
-  });
+  }, [orderDetails]);
   
   const shutterTopRef = useRef<HTMLDivElement>(null);
   const shutterBottomRef = useRef<HTMLDivElement>(null);
@@ -130,10 +161,217 @@ function OrderSuccessContent() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleDownloadInvoice = () => {
-    // In a real app, this would generate and download a PDF
-    alert('Invoice download would be implemented here');
-  };
+  const handleDownloadInvoice = useCallback(() => {
+    if (!orderDetails) return;
+    
+    // Generate invoice HTML content
+    const invoiceHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice - ${orderDetails.orderId}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #111;
+      line-height: 1.5;
+      padding: 40px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #111;
+    }
+    .brand { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+    .invoice-title {
+      text-align: right;
+    }
+    .invoice-title h1 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+    .invoice-title p { color: #666; font-size: 14px; }
+    .invoice-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    .info-section h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    .info-section p { font-size: 14px; margin-bottom: 4px; }
+    .info-section .highlight { font-weight: 600; color: #111; }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    .items-table th {
+      text-align: left;
+      padding: 12px 8px;
+      border-bottom: 2px solid #111;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #666;
+    }
+    .items-table th:last-child { text-align: right; }
+    .items-table td {
+      padding: 16px 8px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+    .items-table td:last-child { text-align: right; font-weight: 500; }
+    .item-name { font-weight: 500; }
+    .item-details { color: #666; font-size: 13px; }
+    .totals {
+      margin-left: auto;
+      width: 280px;
+    }
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 14px;
+    }
+    .totals-row.total {
+      border-top: 2px solid #111;
+      margin-top: 8px;
+      padding-top: 16px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .totals-row .label { color: #666; }
+    .totals-row.total .label { color: #111; }
+    .footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      text-align: center;
+      color: #666;
+      font-size: 12px;
+    }
+    @media print {
+      body { padding: 20px; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-header">
+    <div class="brand">KBS STORE</div>
+    <div class="invoice-title">
+      <h1>INVOICE</h1>
+      <p>${orderDetails.orderId}</p>
+    </div>
+  </div>
+  
+  <div class="invoice-info">
+    <div class="info-section">
+      <h3>Bill To</h3>
+      <p class="highlight">${orderDetails.shippingAddress.name}</p>
+      <p>${orderDetails.shippingAddress.address}</p>
+      <p>${orderDetails.shippingAddress.city}, ${orderDetails.shippingAddress.state}</p>
+      <p>PIN: ${orderDetails.shippingAddress.pincode}</p>
+    </div>
+    <div class="info-section">
+      <h3>Invoice Details</h3>
+      <p><span class="highlight">Date:</span> ${orderDetails.orderDate}</p>
+      <p><span class="highlight">Payment:</span> ${orderDetails.paymentMethod}</p>
+      <p><span class="highlight">Est. Delivery:</span> ${orderDetails.estimatedDelivery}</p>
+    </div>
+  </div>
+  
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${orderDetails.items.map(item => `
+        <tr>
+          <td>
+            <div class="item-name">${item.name}</div>
+            <div class="item-details">SKU: ${item.id}</div>
+          </td>
+          <td>${item.quantity}</td>
+          <td>$${item.price.toFixed(2)}</td>
+          <td>$${(item.price * item.quantity).toFixed(2)}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  </table>
+  
+  <div class="totals">
+    <div class="totals-row">
+      <span class="label">Subtotal</span>
+      <span>$${orderDetails.subtotal.toFixed(2)}</span>
+    </div>
+    <div class="totals-row">
+      <span class="label">Shipping</span>
+      <span>${orderDetails.shipping === 0 ? 'FREE' : '$' + orderDetails.shipping.toFixed(2)}</span>
+    </div>
+    <div class="totals-row">
+      <span class="label">Tax (8%)</span>
+      <span>$${orderDetails.tax.toFixed(2)}</span>
+    </div>
+    <div class="totals-row total">
+      <span class="label">Total</span>
+      <span>$${orderDetails.total.toFixed(2)}</span>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <p>Thank you for shopping with KBS Store!</p>
+    <p>Questions? Contact us at support@kbsstore.com</p>
+  </div>
+</body>
+</html>
+    `;
+
+    // Create a Blob with the HTML content
+    const blob = new Blob([invoiceHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    // Open in new window for printing
+    const printWindow = window.open(url, '_blank');
+    
+    if (printWindow) {
+      printWindow.onload = () => {
+        // Small delay to ensure content is rendered
+        setTimeout(() => {
+          printWindow.print();
+        }, 250);
+      };
+    } else {
+      // Fallback: download as HTML file if popup blocked
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Invoice-${orderDetails.orderId}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
+    // Clean up the URL object after a delay
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
+  }, [orderDetails]);
 
   if (!orderDetails) {
     return (

@@ -180,6 +180,7 @@ function StoreContent() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsAnimating, setDetailsAnimating] = useState(false);
   const [mainImageIndex, setMainImageIndex] = useState(0);
+  const [detailsQuantity, setDetailsQuantity] = useState(1);
   const [shouldOpenCart, setShouldOpenCart] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
   const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
@@ -450,6 +451,7 @@ function StoreContent() {
     
     setSelectedProduct(product);
     setMainImageIndex(0);
+    setDetailsQuantity(1); // Reset quantity when opening new product
     document.body.classList.add('locked');
     setDetailsAnimating(true);
 
@@ -658,7 +660,7 @@ function StoreContent() {
       stagger: 0.02,
       ease: 'power2.out',
     }, 'start+=1');
-  }, [cartButtonAnimationEnter]);
+  }, [isAuthenticated, cartButtonAnimationEnter]);
 
   const addToCartFromDetails = useCallback(() => {
     if (!selectedProduct) return;
@@ -674,10 +676,10 @@ function StoreContent() {
       const existingItem = prevItems.find((item) => item.id === selectedProduct.id);
       if (existingItem) {
         return prevItems.map((item) =>
-          item.id === selectedProduct.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === selectedProduct.id ? { ...item, quantity: item.quantity + detailsQuantity } : item
         );
       } else {
-        return [...prevItems, { ...selectedProduct, quantity: 1 }];
+        return [...prevItems, { ...selectedProduct, quantity: detailsQuantity }];
       }
     });
     
@@ -692,7 +694,7 @@ function StoreContent() {
         addButton.style.background = '#111';
       }, 1000);
     }
-  }, [isAuthenticated]);
+  }, [selectedProduct, isAuthenticated, detailsQuantity]);
 
   const buyNowFromDetails = useCallback(() => {
     if (!selectedProduct) return;
@@ -704,15 +706,15 @@ function StoreContent() {
       return;
     }
     
-    // Add to cart first
+    // Add to cart first with selected quantity
     setCartItems(prevItems => {
       const existingItem = prevItems.find((item) => item.id === selectedProduct.id);
       if (existingItem) {
         return prevItems.map((item) =>
-          item.id === selectedProduct.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === selectedProduct.id ? { ...item, quantity: item.quantity + detailsQuantity } : item
         );
       } else {
-        return [...prevItems, { ...selectedProduct, quantity: 1 }];
+        return [...prevItems, { ...selectedProduct, quantity: detailsQuantity }];
       }
     });
     
@@ -721,7 +723,7 @@ function StoreContent() {
     setTimeout(() => {
       openCart();
     }, 800);
-  }, [selectedProduct, openCart, isAuthenticated]);
+  }, [selectedProduct, openCart, isAuthenticated, detailsQuantity]);
 
   const updateQuantity = (id: string, delta: number) => {
     setCartItems((items) => {
@@ -739,6 +741,36 @@ function StoreContent() {
   const removeFromCart = (id: string) => {
     setCartItems((items) => items.filter((item) => item.id !== id));
   };
+
+  // Handle quantity change in details panel
+  const handleDetailsQuantityChange = useCallback((delta: number) => {
+    setDetailsQuantity(prev => {
+      const newQty = prev + delta;
+      return newQty < 1 ? 1 : newQty > 99 ? 99 : newQty;
+    });
+  }, []);
+
+  // Add similar product to cart
+  const addSimilarProductToCart = useCallback((product: typeof products[0]) => {
+    if (!isAuthenticated) {
+      setShowLoginPrompt(true);
+      return;
+    }
+    
+    setCartItems(prevItems => {
+      const existingItem = prevItems.find((item) => item.id === product.id);
+      if (existingItem) {
+        return prevItems.map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      } else {
+        return [...prevItems, { ...product, quantity: 1 }];
+      }
+    });
+    
+    // Brief visual feedback
+    cartButtonAnimationEnter();
+  }, [isAuthenticated, cartButtonAnimationEnter]);
 
   const toggleSearch = () => {
     setSearchExpanded(!searchExpanded);
@@ -1018,9 +1050,21 @@ function StoreContent() {
                   {/* Quantity and Add to Cart */}
                   <div className="details-panel__cart-section">
                     <div className="details-panel__quantity">
-                      <button className="details-panel__qty-btn">-</button>
-                      <span className="details-panel__qty-value">1</span>
-                      <button className="details-panel__qty-btn">+</button>
+                      <button
+                        className="details-panel__qty-btn"
+                        onClick={() => handleDetailsQuantityChange(-1)}
+                        disabled={detailsQuantity <= 1}
+                      >
+                        -
+                      </button>
+                      <span className="details-panel__qty-value">{detailsQuantity}</span>
+                      <button
+                        className="details-panel__qty-btn"
+                        onClick={() => handleDetailsQuantityChange(1)}
+                        disabled={detailsQuantity >= 99}
+                      >
+                        +
+                      </button>
                     </div>
                     <button className="details-panel__add-to-cart" onClick={addToCartFromDetails}>
                       Add to Cart
@@ -1136,7 +1180,11 @@ function StoreContent() {
                           <span className="current">${prod.price}</span>
                         </div>
                       </div>
-                      <button className="details-panel__similar-add icon-bulge">
+                      <button
+                        className="details-panel__similar-add icon-bulge"
+                        onClick={() => addSimilarProductToCart(prod)}
+                        title="Add to Cart"
+                      >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10" />
                           <line x1="12" y1="8" x2="12" y2="16" />
@@ -2009,6 +2057,16 @@ function StoreContent() {
           padding: 8px;
           min-width: 44px;
           min-height: 44px;
+          transition: opacity 0.2s ease, color 0.2s ease;
+        }
+
+        .details-panel__qty-btn:hover:not(:disabled) {
+          color: #666;
+        }
+
+        .details-panel__qty-btn:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
         }
 
         .details-panel__qty-value {
