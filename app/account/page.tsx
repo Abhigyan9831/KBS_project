@@ -1,16 +1,25 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { gsap } from 'gsap';
+import { useAuth } from '../context/AuthContext';
 
 function AccountContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login, signup, isAuthenticated, isLoading: authLoading } = useAuth();
+  
   const [loading, setLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
   const [titleRevealed, setTitleRevealed] = useState(false);
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
+  const [formLoading, setFormLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  // Get redirect URL from query params
+  const redirectUrl = searchParams.get('redirect') || '/store';
   
   // Form state
   const [loginData, setLoginData] = useState({
@@ -25,6 +34,13 @@ function AccountContent() {
     password: '',
     confirmPassword: ''
   });
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push(redirectUrl);
+    }
+  }, [isAuthenticated, authLoading, router, redirectUrl]);
   
   const shutterTopRef = useRef<HTMLDivElement>(null);
   const shutterBottomRef = useRef<HTMLDivElement>(null);
@@ -69,16 +85,60 @@ function AccountContent() {
     setSignupData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login:', loginData);
-    // Add login logic here
+    setError('');
+    setFormLoading(true);
+    
+    try {
+      const success = await login(loginData.email, loginData.password);
+      if (success) {
+        router.push(redirectUrl);
+      } else {
+        setError('Invalid email or password. Please try again.');
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setFormLoading(false);
+    }
   };
 
-  const handleSignupSubmit = (e: React.FormEvent) => {
+  const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Signup:', signupData);
-    // Add signup logic here
+    setError('');
+    
+    // Validate passwords match
+    if (signupData.password !== signupData.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    
+    // Validate password length
+    if (signupData.password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      return;
+    }
+    
+    setFormLoading(true);
+    
+    try {
+      const success = await signup(
+        signupData.firstName,
+        signupData.lastName,
+        signupData.email,
+        signupData.password
+      );
+      if (success) {
+        router.push(redirectUrl);
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setFormLoading(false);
+    }
   };
 
   return (
@@ -151,6 +211,18 @@ function AccountContent() {
               </button>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="auth-error">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="15" y1="9" x2="9" y2="15"/>
+                  <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                <span>{error}</span>
+              </div>
+            )}
+
             {/* Login Form */}
             {activeTab === 'login' && (
               <form onSubmit={handleLoginSubmit} className="auth-form">
@@ -186,8 +258,8 @@ function AccountContent() {
                   </button>
                 </div>
 
-                <button type="submit" className="auth-submit-btn">
-                  Sign In
+                <button type="submit" className="auth-submit-btn" disabled={formLoading}>
+                  {formLoading ? 'Signing In...' : 'Sign In'}
                 </button>
 
                 <div className="auth-divider">
@@ -291,8 +363,8 @@ function AccountContent() {
                   </label>
                 </div>
 
-                <button type="submit" className="auth-submit-btn">
-                  Create Account
+                <button type="submit" className="auth-submit-btn" disabled={formLoading}>
+                  {formLoading ? 'Creating Account...' : 'Create Account'}
                 </button>
 
                 <div className="auth-divider">
@@ -588,6 +660,24 @@ function AccountContent() {
         }
 
         /* Auth Tabs - Responsive */
+        /* Auth Error */
+        .auth-error {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: clamp(10px, 1.4vw, 14px) clamp(12px, 1.5vw, 16px);
+          background: #fef2f2;
+          border: 1px solid #fecaca;
+          border-radius: 8px;
+          color: #dc2626;
+          font-size: clamp(12px, 1.4vw, 14px);
+          margin-bottom: clamp(16px, 2vw, 20px);
+        }
+
+        .auth-error svg {
+          flex-shrink: 0;
+        }
+
         .auth-tabs {
           display: flex;
           gap: clamp(4px, 0.8vw, 8px);
@@ -731,9 +821,14 @@ function AccountContent() {
           min-height: 44px;
         }
 
-        .auth-submit-btn:hover {
+        .auth-submit-btn:hover:not(:disabled) {
           background: #333;
           transform: translateY(-2px);
+        }
+
+        .auth-submit-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
         }
 
         .auth-divider {
@@ -930,5 +1025,14 @@ function AccountContent() {
 }
 
 export default function AccountPage() {
-  return <AccountContent />;
+  return (
+    <Suspense fallback={
+      <div className="account-page loading">
+        <div className="fixed top-0 left-0 w-full h-[50vh] bg-[#0a0a0a] z-[1000]" />
+        <div className="fixed top-[50vh] left-0 w-full h-[50vh] bg-[#0a0a0a] z-[1000]" />
+      </div>
+    }>
+      <AccountContent />
+    </Suspense>
+  );
 }

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
+import { useAuth } from '../context/AuthContext';
 
 // Product data with more details
 // Review interface
@@ -165,7 +166,9 @@ interface CartItem {
 function StoreContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { isAuthenticated, user } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -548,6 +551,12 @@ function StoreContent() {
   };
 
   const addToCart = useCallback((product: typeof products[0], productElement: HTMLElement) => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      setShowLoginPrompt(true);
+      return;
+    }
+    
     const galleryItems = productElement.querySelectorAll('.product-gallery-item');
     const gallery = productElement.querySelector('.product-gallery') as HTMLElement;
     const otherProducts = document.querySelectorAll('.product-item:not(.active)');
@@ -654,6 +663,13 @@ function StoreContent() {
   const addToCartFromDetails = useCallback(() => {
     if (!selectedProduct) return;
     
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      setShowLoginPrompt(true);
+      closeDetails();
+      return;
+    }
+    
     setCartItems(prevItems => {
       const existingItem = prevItems.find((item) => item.id === selectedProduct.id);
       if (existingItem) {
@@ -676,10 +692,17 @@ function StoreContent() {
         addButton.style.background = '#111';
       }, 1000);
     }
-  }, [selectedProduct, cartButtonAnimationEnter]);
+  }, [isAuthenticated]);
 
   const buyNowFromDetails = useCallback(() => {
     if (!selectedProduct) return;
+    
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      setShowLoginPrompt(true);
+      closeDetails();
+      return;
+    }
     
     // Add to cart first
     setCartItems(prevItems => {
@@ -698,7 +721,7 @@ function StoreContent() {
     setTimeout(() => {
       openCart();
     }, 800);
-  }, [selectedProduct, openCart]);
+  }, [selectedProduct, openCart, isAuthenticated]);
 
   const updateQuantity = (id: string, delta: number) => {
     setCartItems((items) => {
@@ -807,12 +830,22 @@ function StoreContent() {
             </div>
 
             {/* User/Login Icon */}
-            <button className="store-header__icon icon-bulge">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-            </button>
+            <Link
+              href={isAuthenticated ? "/dashboard" : "/account?redirect=/store"}
+              className="store-header__icon icon-bulge"
+              title={isAuthenticated ? `${user?.firstName}'s Dashboard` : "Sign In"}
+            >
+              {isAuthenticated ? (
+                <div className="user-avatar">
+                  {user?.firstName?.charAt(0).toUpperCase()}
+                </div>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              )}
+            </Link>
 
             {/* Cart Button with Icon */}
             <button ref={cartButtonRef} className="cart-button icon-bulge" onClick={openCart}>
@@ -1210,6 +1243,48 @@ function StoreContent() {
         </div>
       </aside>
 
+    {/* Login Prompt Modal */}
+    {showLoginPrompt && (
+      <div className="login-prompt-overlay" onClick={() => setShowLoginPrompt(false)}>
+        <div className="login-prompt-modal" onClick={e => e.stopPropagation()}>
+          <button
+            className="login-prompt-close"
+            onClick={() => setShowLoginPrompt(false)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+          <div className="login-prompt-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <h3 className="login-prompt-title">Sign In Required</h3>
+          <p className="login-prompt-message">
+            Please sign in or create an account to add items to your cart and make purchases.
+          </p>
+          <div className="login-prompt-buttons">
+            <Link
+              href="/account?redirect=/store"
+              className="login-prompt-btn primary"
+              onClick={() => setShowLoginPrompt(false)}
+            >
+              Sign In
+            </Link>
+            <button
+              className="login-prompt-btn secondary"
+              onClick={() => setShowLoginPrompt(false)}
+            >
+              Continue Browsing
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
       {/* Styles */}
       <style jsx global>{`
         /* Store Page Styles */
@@ -1378,6 +1453,20 @@ function StoreContent() {
         .store-header__icon svg {
           width: clamp(18px, 2.5vw, 24px);
           height: clamp(18px, 2.5vw, 24px);
+        }
+
+        /* User Avatar */
+        .user-avatar {
+          width: clamp(24px, 3vw, 28px);
+          height: clamp(24px, 3vw, 28px);
+          border-radius: 50%;
+          background: linear-gradient(135deg, #4A90D9 0%, #357abd 100%);
+          color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: clamp(11px, 1.3vw, 13px);
+          font-weight: 600;
         }
 
         /* Cart Button (like sam3) */
@@ -2719,6 +2808,136 @@ function StoreContent() {
         /* Locked body state */
         body.locked {
           overflow: hidden;
+        }
+
+        /* Login Prompt Modal */
+        .login-prompt-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2000;
+          padding: 20px;
+          animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .login-prompt-modal {
+          background: #fff;
+          border-radius: 16px;
+          padding: clamp(24px, 4vw, 40px);
+          max-width: 400px;
+          width: 100%;
+          text-align: center;
+          position: relative;
+          animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .login-prompt-close {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #999;
+          padding: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.3s ease;
+        }
+
+        .login-prompt-close:hover {
+          color: #333;
+        }
+
+        .login-prompt-icon {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 20px;
+          color: #333;
+        }
+
+        .login-prompt-title {
+          font-size: clamp(18px, 2.5vw, 24px);
+          font-weight: 500;
+          color: #111;
+          margin: 0 0 12px 0;
+        }
+
+        .login-prompt-message {
+          font-size: clamp(13px, 1.5vw, 15px);
+          color: #666;
+          line-height: 1.6;
+          margin: 0 0 24px 0;
+        }
+
+        .login-prompt-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .login-prompt-btn {
+          display: block;
+          width: 100%;
+          padding: clamp(12px, 1.5vw, 16px);
+          border-radius: 50px;
+          font-size: clamp(14px, 1.6vw, 16px);
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-decoration: none;
+          text-align: center;
+          min-height: 44px;
+        }
+
+        .login-prompt-btn.primary {
+          background: #111;
+          color: #fff;
+          border: none;
+        }
+
+        .login-prompt-btn.primary:hover {
+          background: #333;
+          transform: translateY(-2px);
+        }
+
+        .login-prompt-btn.secondary {
+          background: transparent;
+          color: #666;
+          border: 1px solid #ddd;
+        }
+
+        .login-prompt-btn.secondary:hover {
+          border-color: #999;
+          color: #333;
         }
       `}</style>
     </main>

@@ -4,27 +4,22 @@ import React, { useLayoutEffect, useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Menu from './Menu';
+import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
   scrollProgress: number;
   onNavigateToAbout?: () => void;
 }
 
-// Simulated user state - in a real app, this would come from auth context
-interface User {
-  name: string;
-  email: string;
-}
-
 const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) => {
   const router = useRouter();
+  const { user, isAuthenticated, logout } = useAuth();
   const [vw, setVw] = useState(1440);
   const [vh, setVh] = useState(900);
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null); // null = not logged in
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -175,19 +170,14 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
 
   // Handle logout
   const handleLogout = () => {
-    setUser(null);
+    logout();
     setUserDropdownOpen(false);
-    // In a real app, you would also clear tokens, etc.
+    router.push('/');
   };
 
-  // For demo: simulate login
-  const handleDemoLogin = () => {
-    setUser({
-      name: 'John Doe',
-      email: 'john@example.com'
-    });
-    setUserDropdownOpen(false);
-  };
+  // Get user display name and initials
+  const userDisplayName = user ? `${user.firstName} ${user.lastName}` : '';
+  const userInitials = user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : '';
 
   return (
     <>
@@ -340,26 +330,38 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
             <div className="user-dropdown-container relative">
               <button
                 className={`${isMobile ? 'p-1.5' : 'p-2'} hover:opacity-70 transition-opacity relative`}
-                title={user ? user.name : "Login / Sign up"}
+                title={isAuthenticated ? userDisplayName : "Login / Sign up"}
                 onClick={handleUserIconClick}
-                aria-label={user ? "User menu" : "Login or sign up"}
+                aria-label={isAuthenticated ? "User menu" : "Login or sign up"}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width={isMobile ? "20" : "22"}
-                  height={isMobile ? "20" : "22"}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke={textColor}
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
+                {isAuthenticated && user ? (
+                  <div
+                    className={`${isMobile ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 text-xs'} rounded-full flex items-center justify-center font-medium`}
+                    style={{
+                      background: 'linear-gradient(135deg, #4A90D9 0%, #357abd 100%)',
+                      color: '#fff',
+                    }}
+                  >
+                    {userInitials}
+                  </div>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={isMobile ? "20" : "22"}
+                    height={isMobile ? "20" : "22"}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={textColor}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                )}
                 {/* Logged in indicator */}
-                {user && (
+                {isAuthenticated && (
                   <span
                     className={`absolute ${isMobile ? 'bottom-0.5 right-0.5 w-2 h-2' : 'bottom-1 right-1 w-2.5 h-2.5'} rounded-full border-2`}
                     style={{
@@ -405,19 +407,24 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                     <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
                   </div>
                 )}
-                {user ? (
+                {isAuthenticated && user ? (
                   /* Logged In State */
                   <>
                     {/* User Info Header */}
                     <div className="px-5 py-4 border-b border-gray-100">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                          <span className="text-sm font-medium text-gray-600">
-                            {user.name.split(' ').map(n => n[0]).join('')}
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center"
+                          style={{
+                            background: 'linear-gradient(135deg, #4A90D9 0%, #357abd 100%)',
+                          }}
+                        >
+                          <span className="text-sm font-medium text-white">
+                            {userInitials}
                           </span>
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                          <p className="text-sm font-medium text-gray-900">{userDisplayName}</p>
                           <p className="text-xs text-gray-500">{user.email}</p>
                         </div>
                       </div>
@@ -426,7 +433,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                     {/* Account Options */}
                     <div className="py-2">
                       <Link
-                        href="/account"
+                        href="/dashboard"
                         className="dropdown-item"
                         onClick={() => setUserDropdownOpen(false)}
                       >
@@ -434,10 +441,10 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                           <circle cx="12" cy="7" r="4"/>
                         </svg>
-                        <span>My Account</span>
+                        <span>My Dashboard</span>
                       </Link>
                       <Link
-                        href="/store"
+                        href="/dashboard"
                         className="dropdown-item"
                         onClick={() => setUserDropdownOpen(false)}
                       >
@@ -449,7 +456,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                         <span>Orders</span>
                       </Link>
                       <Link
-                        href="/store"
+                        href="/dashboard"
                         className="dropdown-item"
                         onClick={() => setUserDropdownOpen(false)}
                       >
@@ -458,7 +465,8 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                         </svg>
                         <span>Wishlist</span>
                       </Link>
-                      <button
+                      <Link
+                        href="/dashboard"
                         className="dropdown-item"
                         onClick={() => setUserDropdownOpen(false)}
                       >
@@ -467,7 +475,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                         </svg>
                         <span>Settings</span>
-                      </button>
+                      </Link>
                     </div>
 
                     {/* Logout */}
@@ -523,7 +531,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                     <div className="p-4 flex gap-3">
                       <button
                         className="flex-1 py-2.5 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
-                        onClick={handleDemoLogin}
+                        onClick={() => setUserDropdownOpen(false)}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#000">
                           <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -532,7 +540,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress, onNavigateToAbout }) =>
                       </button>
                       <button
                         className="flex-1 py-2.5 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
-                        onClick={handleDemoLogin}
+                        onClick={() => setUserDropdownOpen(false)}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
                           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
