@@ -3913,15 +3913,24 @@ function StoreContent() {
           
           /* Breadcrumb - Single Line on Mobile */
           .details-panel__breadcrumb {
-            flex-wrap: nowrap;
+            display: flex !important;
+            flex-wrap: nowrap !important;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             white-space: nowrap;
             padding-bottom: 4px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
           }
           
           .details-panel__breadcrumb::-webkit-scrollbar {
             display: none;
+          }
+          
+          .details-panel__breadcrumb a,
+          .details-panel__breadcrumb span {
+            flex-shrink: 0;
+            white-space: nowrap;
           }
           
           /* Details Panel - Mobile Layout */
