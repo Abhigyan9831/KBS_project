@@ -50,10 +50,142 @@ const productReviews: { [key: string]: Review[] } = {
   ],
 };
 
+// Specification labels for each product image - these will animate in with fade effect
+interface SpecLabel {
+  text: string;
+  position: { top?: string; bottom?: string; left?: string; right?: string };
+  delay: number;
+}
+
+interface ProductSpecs {
+  [imageIndex: number]: SpecLabel[];
+}
+
+const productSpecifications: { [productId: string]: ProductSpecs } = {
+  'product-01': {
+    0: [
+      { text: 'MODEL_KBS_01', position: { top: '15%', left: '10%' }, delay: 0.2 },
+      { text: 'PREMIUM BUILD', position: { top: '25%', left: '8%' }, delay: 0.4 },
+      { text: 'POWER: 1200W', position: { top: '60%', right: '10%' }, delay: 0.6 },
+      { text: 'TEMP: 45.80°C', position: { bottom: '25%', right: '12%' }, delay: 0.8 },
+      { text: 'D 01.01.2025', position: { bottom: '15%', left: '10%' }, delay: 1.0 },
+    ],
+    1: [
+      { text: 'SIDE_VIEW_01', position: { top: '12%', left: '8%' }, delay: 0.2 },
+      { text: 'DIMENSIONS: 30x25x20cm', position: { top: '70%', right: '8%' }, delay: 0.5 },
+    ],
+    2: [
+      { text: 'DETAIL_PANEL', position: { top: '10%', left: '10%' }, delay: 0.3 },
+      { text: 'MATERIAL: STEEL', position: { bottom: '20%', right: '10%' }, delay: 0.6 },
+    ],
+    3: [
+      { text: 'CONTROL_UNIT', position: { top: '15%', right: '10%' }, delay: 0.2 },
+      { text: 'DIGITAL DISPLAY', position: { bottom: '25%', left: '8%' }, delay: 0.5 },
+    ],
+  },
+  'product-02': {
+    0: [
+      { text: 'KETTLE_PRO_02', position: { top: '12%', left: '8%' }, delay: 0.2 },
+      { text: 'RAPID BOIL', position: { top: '22%', left: '6%' }, delay: 0.4 },
+      { text: 'CAPACITY: 1.7L', position: { top: '55%', right: '8%' }, delay: 0.6 },
+      { text: 'TEMP: 100°C MAX', position: { bottom: '30%', right: '10%' }, delay: 0.8 },
+    ],
+    1: [
+      { text: 'HANDLE_DESIGN', position: { top: '15%', left: '10%' }, delay: 0.3 },
+      { text: 'ERGONOMIC GRIP', position: { bottom: '20%', right: '8%' }, delay: 0.5 },
+    ],
+  },
+  'product-03': {
+    0: [
+      { text: 'AIRFRYER_DLX_03', position: { top: '10%', left: '8%' }, delay: 0.2 },
+      { text: 'HEALTHY COOKING', position: { top: '20%', left: '6%' }, delay: 0.4 },
+      { text: 'CAPACITY: 5.8QT', position: { top: '50%', right: '10%' }, delay: 0.6 },
+      { text: 'TEMP: 200°C', position: { bottom: '25%', right: '8%' }, delay: 0.8 },
+      { text: '7 PRESETS', position: { bottom: '15%', left: '10%' }, delay: 1.0 },
+    ],
+  },
+  'product-04': {
+    0: [
+      { text: 'COFFEE_MKR_04', position: { top: '12%', left: '10%' }, delay: 0.2 },
+      { text: 'FRESH GROUND', position: { top: '22%', left: '8%' }, delay: 0.4 },
+      { text: 'CUPS: 12', position: { top: '55%', right: '10%' }, delay: 0.6 },
+      { text: 'GRINDER: BUILT-IN', position: { bottom: '20%', right: '8%' }, delay: 0.8 },
+    ],
+  },
+  'product-05': {
+    0: [
+      { text: 'TOASTER_ELT_05', position: { top: '15%', left: '8%' }, delay: 0.2 },
+      { text: 'EVEN BROWNING', position: { top: '25%', left: '6%' }, delay: 0.4 },
+      { text: 'SLOTS: 4', position: { top: '60%', right: '10%' }, delay: 0.6 },
+      { text: 'EXTRA WIDE', position: { bottom: '25%', right: '8%' }, delay: 0.8 },
+    ],
+  },
+  'product-06': {
+    0: [
+      { text: 'PROCESSOR_06', position: { top: '10%', left: '8%' }, delay: 0.2 },
+      { text: 'MULTI-FUNCTION', position: { top: '20%', left: '6%' }, delay: 0.4 },
+      { text: 'POWER: 700W', position: { top: '50%', right: '10%' }, delay: 0.6 },
+      { text: 'PULSE CONTROL', position: { bottom: '25%', right: '8%' }, delay: 0.8 },
+      { text: 'ATTACHMENTS: 5', position: { bottom: '15%', left: '10%' }, delay: 1.0 },
+    ],
+  },
+};
+
+// Combo items for each product - accessories and complementary items
+interface ComboItem {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice: number;
+  discount: number;
+  cover: string;
+  description: string;
+}
+
+const productComboItems: { [productId: string]: ComboItem[] } = {
+  'product-01': [
+    { id: 'combo-01-1', name: 'Premium Stand', price: 49, originalPrice: 65, discount: 25, cover: '/images/10.jpg', description: 'Ergonomic stand for Product-1' },
+    { id: 'combo-01-2', name: 'Protective Cover', price: 29, originalPrice: 39, discount: 26, cover: '/images/11.jpg', description: 'Durable protective cover' },
+    { id: 'combo-01-3', name: 'Extended Warranty', price: 59, originalPrice: 79, discount: 25, cover: '/images/12.jpg', description: '2-year extended warranty' },
+    { id: 'combo-01-4', name: 'Cleaning Kit', price: 19, originalPrice: 25, discount: 24, cover: '/images/13.jpg', description: 'Complete cleaning kit' },
+  ],
+  'product-02': [
+    { id: 'combo-02-1', name: 'Kettle Base Pad', price: 15, originalPrice: 20, discount: 25, cover: '/images/14.jpg', description: 'Heat-resistant base pad' },
+    { id: 'combo-02-2', name: 'Descaling Tablets', price: 12, originalPrice: 16, discount: 25, cover: '/images/15.jpg', description: 'Pack of 12 descaling tablets' },
+    { id: 'combo-02-3', name: 'Temperature Display', price: 25, originalPrice: 35, discount: 29, cover: '/images/16.jpg', description: 'Smart temperature display add-on' },
+    { id: 'combo-02-4', name: 'Tea Infuser Set', price: 18, originalPrice: 24, discount: 25, cover: '/images/17.jpg', description: 'Stainless steel tea infusers' },
+  ],
+  'product-03': [
+    { id: 'combo-03-1', name: 'Air Fryer Liners', price: 14, originalPrice: 18, discount: 22, cover: '/images/18.jpg', description: 'Pack of 100 disposable liners' },
+    { id: 'combo-03-2', name: 'Silicone Mat Set', price: 22, originalPrice: 30, discount: 27, cover: '/images/10.jpg', description: 'Non-stick silicone mats' },
+    { id: 'combo-03-3', name: 'Recipe Book', price: 19, originalPrice: 25, discount: 24, cover: '/images/11.jpg', description: '200+ air fryer recipes' },
+    { id: 'combo-03-4', name: 'Rack Accessory Kit', price: 35, originalPrice: 45, discount: 22, cover: '/images/12.jpg', description: 'Multi-layer cooking rack set' },
+  ],
+  'product-04': [
+    { id: 'combo-04-1', name: 'Coffee Bean Set', price: 28, originalPrice: 35, discount: 20, cover: '/images/13.jpg', description: 'Premium blend sampler pack' },
+    { id: 'combo-04-2', name: 'Thermal Carafe', price: 32, originalPrice: 42, discount: 24, cover: '/images/14.jpg', description: 'Insulated replacement carafe' },
+    { id: 'combo-04-3', name: 'Water Filter Pack', price: 24, originalPrice: 32, discount: 25, cover: '/images/15.jpg', description: 'Pack of 6 charcoal filters' },
+    { id: 'combo-04-4', name: 'Coffee Mug Set', price: 26, originalPrice: 34, discount: 24, cover: '/images/16.jpg', description: 'Set of 4 ceramic mugs' },
+  ],
+  'product-05': [
+    { id: 'combo-05-1', name: 'Crumb Tray Set', price: 12, originalPrice: 16, discount: 25, cover: '/images/17.jpg', description: 'Replacement crumb trays' },
+    { id: 'combo-05-2', name: 'Bagel Rack', price: 15, originalPrice: 20, discount: 25, cover: '/images/18.jpg', description: 'Extra wide bagel rack' },
+    { id: 'combo-05-3', name: 'Bread Box', price: 28, originalPrice: 38, discount: 26, cover: '/images/10.jpg', description: 'Matching bread storage box' },
+    { id: 'combo-05-4', name: 'Butter Dish', price: 18, originalPrice: 24, discount: 25, cover: '/images/11.jpg', description: 'Ceramic butter keeper' },
+  ],
+  'product-06': [
+    { id: 'combo-06-1', name: 'Blade Set', price: 35, originalPrice: 45, discount: 22, cover: '/images/12.jpg', description: 'Complete blade replacement set' },
+    { id: 'combo-06-2', name: 'Bowl Extension', price: 42, originalPrice: 55, discount: 24, cover: '/images/13.jpg', description: 'Extra large processing bowl' },
+    { id: 'combo-06-3', name: 'Spiralizer Attachment', price: 28, originalPrice: 38, discount: 26, cover: '/images/14.jpg', description: 'Vegetable spiralizer add-on' },
+    { id: 'combo-06-4', name: 'Storage Container Set', price: 22, originalPrice: 30, discount: 27, cover: '/images/15.jpg', description: 'Stackable storage containers' },
+  ],
+};
+
 const products = [
   {
     id: 'product-01',
-    name: 'Product-1',
+    name: 'Premium Smart Blender',
+    category: 'Kitchen Essentials',
     price: 299,
     originalPrice: 350,
     discount: 15,
@@ -67,10 +199,12 @@ const products = [
     ],
     rating: 4.5,
     reviews: 32,
+    colors: ['#1a1a1a', '#c4c4c4', '#8b4513'],
   },
   {
     id: 'product-02',
-    name: 'Electric Kettle',
+    name: 'Electric Kettle Pro',
+    category: 'Kitchen Appliances',
     price: 149,
     originalPrice: 180,
     discount: 17,
@@ -84,10 +218,12 @@ const products = [
     ],
     rating: 4.8,
     reviews: 56,
+    colors: ['#1a1a1a', '#ffffff', '#d4af37'],
   },
   {
     id: 'product-03',
-    name: 'Air Fryer Deluxe',
+    name: 'Air Fryer Deluxe XL',
+    category: 'Cooking Appliances',
     price: 199,
     originalPrice: 250,
     discount: 20,
@@ -101,10 +237,12 @@ const products = [
     ],
     rating: 4.7,
     reviews: 89,
+    colors: ['#1a1a1a', '#c4c4c4'],
   },
   {
     id: 'product-04',
-    name: 'Coffee Maker',
+    name: 'Artisan Coffee Maker',
+    category: 'Coffee & Tea',
     price: 179,
     originalPrice: 220,
     discount: 18,
@@ -118,10 +256,12 @@ const products = [
     ],
     rating: 4.6,
     reviews: 45,
+    colors: ['#1a1a1a', '#8b0000', '#c4c4c4'],
   },
   {
     id: 'product-05',
-    name: 'Toaster Elite',
+    name: 'Toaster Elite 4-Slice',
+    category: 'Breakfast Essentials',
     price: 89,
     originalPrice: 110,
     discount: 19,
@@ -135,10 +275,12 @@ const products = [
     ],
     rating: 4.4,
     reviews: 28,
+    colors: ['#c4c4c4', '#1a1a1a'],
   },
   {
     id: 'product-06',
-    name: 'Food Processor',
+    name: 'Food Processor Ultra',
+    category: 'Kitchen Essentials',
     price: 249,
     originalPrice: 299,
     discount: 17,
@@ -152,6 +294,157 @@ const products = [
     ],
     rating: 4.9,
     reviews: 112,
+    colors: ['#1a1a1a', '#ffffff', '#c4c4c4'],
+  },
+  {
+    id: 'product-07',
+    name: 'Smart Induction Cooktop',
+    category: 'Cooking Appliances',
+    price: 329,
+    originalPrice: 399,
+    discount: 18,
+    cover: '/images/7.jpg',
+    gallery: ['/images/7.jpg', '/images/8.jpg', '/images/9.jpg', '/images/10.jpg', '/images/11.jpg', '/images/7.jpg'],
+    description: 'Experience precision cooking with our advanced induction technology. Perfect for modern kitchens.',
+    features: [
+      'Precise temperature control',
+      'Energy efficient',
+      'Easy-clean glass surface'
+    ],
+    rating: 4.7,
+    reviews: 67,
+    colors: ['#1a1a1a', '#c4c4c4'],
+  },
+  {
+    id: 'product-08',
+    name: 'Stand Mixer Professional',
+    category: 'Baking Essentials',
+    price: 449,
+    originalPrice: 549,
+    discount: 18,
+    cover: '/images/8.jpg',
+    gallery: ['/images/8.jpg', '/images/9.jpg', '/images/10.jpg', '/images/11.jpg', '/images/12.jpg', '/images/8.jpg'],
+    description: 'Professional-grade stand mixer for all your baking needs. Powerful and versatile.',
+    features: [
+      '500W powerful motor',
+      '10 speed settings',
+      'Includes 3 attachments'
+    ],
+    rating: 4.9,
+    reviews: 156,
+    colors: ['#cc0000', '#1a1a1a', '#ffffff', '#4169e1'],
+  },
+  {
+    id: 'product-09',
+    name: 'Electric Pressure Cooker',
+    category: 'Cooking Appliances',
+    price: 189,
+    originalPrice: 229,
+    discount: 17,
+    cover: '/images/9.jpg',
+    gallery: ['/images/9.jpg', '/images/10.jpg', '/images/11.jpg', '/images/12.jpg', '/images/13.jpg', '/images/9.jpg'],
+    description: 'Cook meals up to 70% faster with our multi-function pressure cooker.',
+    features: [
+      '8 quart capacity',
+      '14 smart programs',
+      'Keep warm function'
+    ],
+    rating: 4.6,
+    reviews: 89,
+    colors: ['#c4c4c4', '#1a1a1a'],
+  },
+  {
+    id: 'product-10',
+    name: 'Immersion Blender Set',
+    category: 'Kitchen Essentials',
+    price: 79,
+    originalPrice: 99,
+    discount: 20,
+    cover: '/images/10.jpg',
+    gallery: ['/images/10.jpg', '/images/11.jpg', '/images/12.jpg', '/images/13.jpg', '/images/14.jpg', '/images/10.jpg'],
+    description: 'Versatile hand blender with multiple attachments for blending, chopping, and whisking.',
+    features: [
+      'Powerful 400W motor',
+      '5 attachments included',
+      'Variable speed control'
+    ],
+    rating: 4.5,
+    reviews: 42,
+    colors: ['#1a1a1a', '#ffffff'],
+  },
+  {
+    id: 'product-11',
+    name: 'Rice Cooker Smart',
+    category: 'Cooking Appliances',
+    price: 129,
+    originalPrice: 159,
+    discount: 19,
+    cover: '/images/11.jpg',
+    gallery: ['/images/11.jpg', '/images/12.jpg', '/images/13.jpg', '/images/14.jpg', '/images/15.jpg', '/images/11.jpg'],
+    description: 'Perfect rice every time with our smart fuzzy logic technology.',
+    features: [
+      '10 cup capacity',
+      '15 cooking settings',
+      'Delay timer up to 24 hours'
+    ],
+    rating: 4.7,
+    reviews: 73,
+    colors: ['#ffffff', '#c4c4c4'],
+  },
+  {
+    id: 'product-12',
+    name: 'Electric Grill Indoor',
+    category: 'Grilling & BBQ',
+    price: 159,
+    originalPrice: 199,
+    discount: 20,
+    cover: '/images/12.jpg',
+    gallery: ['/images/12.jpg', '/images/13.jpg', '/images/14.jpg', '/images/15.jpg', '/images/16.jpg', '/images/12.jpg'],
+    description: 'Enjoy grilling year-round with our smokeless indoor electric grill.',
+    features: [
+      'Non-stick grill plates',
+      'Adjustable temperature',
+      'Removable drip tray'
+    ],
+    rating: 4.4,
+    reviews: 58,
+    colors: ['#1a1a1a', '#c4c4c4'],
+  },
+];
+
+// Featured section data
+const featuredItems = [
+  {
+    id: 'featured-1',
+    title: 'New Arrivals',
+    subtitle: 'Discover the latest in kitchen innovation',
+    image: '/images/13.jpg',
+    video: '/videos/sample_vid.mp4',
+    link: '/collections?category=new',
+  },
+  {
+    id: 'featured-2',
+    title: 'Best Sellers',
+    subtitle: 'Top-rated products loved by thousands',
+    image: '/images/14.jpg',
+    video: '/videos/example1.mp4',
+    link: '/collections?category=best-sellers',
+  },
+  {
+    id: 'featured-3',
+    title: 'Kitchen Essentials',
+    subtitle: 'Everything you need for a modern kitchen',
+    image: '/images/15.jpg',
+    video: '/videos/example2.mp4',
+    link: '/collections?category=essentials',
+  },
+  {
+    id: 'featured-4',
+    title: 'Smart Appliances',
+    subtitle: 'Technology meets culinary excellence',
+    image: '/images/16.jpg',
+    video: '/videos/example3.mp4',
+    link: '/collections?category=smart',
   },
 ];
 
@@ -184,8 +477,14 @@ function StoreContent() {
   const [shouldOpenCart, setShouldOpenCart] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
   const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
+  const [specsVisible, setSpecsVisible] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [zoomActive, setZoomActive] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLDivElement>(null);
+  const heroImageRef = useRef<HTMLDivElement>(null);
   
   const cartButtonRef = useRef<HTMLButtonElement>(null);
   const cartRef = useRef<HTMLDivElement>(null);
@@ -452,6 +751,7 @@ function StoreContent() {
     setSelectedProduct(product);
     setMainImageIndex(0);
     setDetailsQuantity(1); // Reset quantity when opening new product
+    setSpecsVisible(false); // Reset specs visibility
     document.body.classList.add('locked');
     setDetailsAnimating(true);
 
@@ -470,6 +770,8 @@ function StoreContent() {
         onComplete: () => {
           setDetailsOpen(true);
           setDetailsAnimating(false);
+          // Trigger specs fade-in animation after panel opens
+          setTimeout(() => setSpecsVisible(true), 300);
         },
       });
       
@@ -510,6 +812,7 @@ function StoreContent() {
     
     document.body.classList.remove('locked');
     setDetailsAnimating(true);
+    setSpecsVisible(false); // Hide specs immediately
 
     const detailsContent = detailsRef.current.querySelector('.details-panel__content');
 
@@ -750,6 +1053,78 @@ function StoreContent() {
     });
   }, []);
 
+  // Handle image change and reset specs animation
+  const handleImageChange = useCallback((index: number) => {
+    setSpecsVisible(false);
+    setMainImageIndex(index);
+    // Trigger fade-in after a small delay
+    setTimeout(() => setSpecsVisible(true), 150);
+  }, []);
+
+  // Handle mouse move for zoom effect
+  const handleZoomMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!heroImageRef.current) return;
+    
+    const rect = heroImageRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    setZoomPosition({ x, y });
+  }, []);
+
+  // Handle mouse enter/leave for zoom
+  const handleZoomMouseEnter = useCallback(() => {
+    setZoomActive(true);
+  }, []);
+
+  const handleZoomMouseLeave = useCallback(() => {
+    setZoomActive(false);
+  }, []);
+
+  // Open lightbox
+  const openLightbox = useCallback((index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+    document.body.classList.add('locked');
+  }, []);
+
+  // Close lightbox
+  const closeLightbox = useCallback(() => {
+    setLightboxOpen(false);
+    document.body.classList.remove('locked');
+  }, []);
+
+  // Navigate lightbox
+  const lightboxPrev = useCallback(() => {
+    if (selectedProduct) {
+      setLightboxIndex((prev) => (prev - 1 + selectedProduct.gallery.length) % selectedProduct.gallery.length);
+    }
+  }, [selectedProduct]);
+
+  const lightboxNext = useCallback(() => {
+    if (selectedProduct) {
+      setLightboxIndex((prev) => (prev + 1) % selectedProduct.gallery.length);
+    }
+  }, [selectedProduct]);
+
+  // Handle keyboard navigation in lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!lightboxOpen) return;
+      
+      if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'ArrowLeft') {
+        lightboxPrev();
+      } else if (e.key === 'ArrowRight') {
+        lightboxNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxOpen, closeLightbox, lightboxPrev, lightboxNext]);
+
   // Add similar product to cart
   const addSimilarProductToCart = useCallback((product: typeof products[0]) => {
     if (!isAuthenticated) {
@@ -908,19 +1283,33 @@ function StoreContent() {
               <li
                 key={product.id}
                 className="product-item products__item"
-                style={{ zIndex: 7 - index }}
+                style={{ zIndex: products.length + 1 - index }}
               >
-                <div className="products__images">
+                <div
+                  className="products__images"
+                  onClick={() => openDetails(product)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <Image
                     src={product.cover}
                     alt={product.name}
                     fill
                     className="products__main-image"
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="(max-width: 768px) 100vw, 25vw"
                   />
                   
-                  {/* Discount badge */}
-                  <div className="products__discount-badge">-{product.discount}%</div>
+                  {/* Quick Add Button - appears on hover */}
+                  <button
+                    type="button"
+                    className="products__quick-add"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const productElement = (e.target as HTMLElement).closest('.product-item') as HTMLElement;
+                      if (productElement) addToCart(product, productElement);
+                    }}
+                  >
+                    Quick Add
+                  </button>
                   
                   {/* Gallery for animation */}
                   <div className="product-gallery products__gallery">
@@ -931,55 +1320,97 @@ function StoreContent() {
                         alt={`${product.name} gallery ${i + 1}`}
                         fill
                         className="product-gallery-item products__gallery-item"
-                        sizes="(max-width: 768px) 100vw, 33vw"
+                        sizes="(max-width: 768px) 100vw, 25vw"
                       />
                     ))}
                   </div>
                 </div>
 
                 <div className="products__info">
-                  <span className="products__name">{product.name}</span>
-                  <div className="products__price-wrap">
+                  {/* Price Row - Green sale price, strikethrough original with discount */}
+                  <div className="products__price-row">
+                    <span className="products__sale-price">${product.price}</span>
                     <span className="products__original-price">${product.originalPrice}</span>
-                  <span className="products__price">${product.price}</span>
+                    <span className="products__discount-tag">-{product.discount}%</span>
                   </div>
-                </div>
-
-                <div className="products__actions">
-                  <button
-                    type="button"
-                    className="products__cta button"
-                    onClick={(e) => {
-                      const productElement = (e.target as HTMLElement).closest('.product-item') as HTMLElement;
-                      if (productElement) addToCart(product, productElement);
-                    }}
-                  >
-                    Add to cart
-                  </button>
-                  <button
-                    type="button"
-                    className="products__details-btn icon-bulge"
-                    onClick={() => openDetails(product)}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="m21 21-4.35-4.35" />
-                    </svg>
-                  </button>
+                  
+                  {/* Product Name */}
+                  <span className="products__name">{product.name}</span>
+                  
+                  {/* Category */}
+                  <span className="products__category">{product.category}</span>
+                  
+                  {/* Color Variants */}
+                  <div className="products__colors">
+                    {product.colors?.map((color, i) => (
+                      <span
+                        key={i}
+                        className="products__color-dot"
+                        style={{ backgroundColor: color }}
+                        title={`Color option ${i + 1}`}
+                      />
+                    ))}
+                  </div>
                 </div>
               </li>
             ))}
           </ul>
         </div>
+
+        {/* Featured Section */}
+        <div id="featured" className="featured-section">
+          <h2 className="featured-section__title">Featured</h2>
+          <div className="featured-section__grid">
+            {featuredItems.map((item) => (
+              <Link key={item.id} href={item.link} className="featured-card">
+                <div className="featured-card__media">
+                  {item.video ? (
+                    <video
+                      className="featured-card__video"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    >
+                      <source src={item.video} type="video/mp4" />
+                    </video>
+                  ) : (
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="featured-card__image"
+                    />
+                  )}
+                  <div className="featured-card__overlay" />
+                </div>
+                <div className="featured-card__content">
+                  <span className="featured-card__subtitle">{item.subtitle}</span>
+                  <h3 className="featured-card__title">{item.title}</h3>
+                  <span className="featured-card__cta">
+                    Shop
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                      <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Product Details Panel */}
+      {/* Product Details Panel - Amazon-style 3-column Layout */}
       <aside ref={detailsRef} className="details-panel">
         <div ref={detailsBgRef} className="details-panel__bg" onClick={closeDetails} />
         
         <div className="details-panel__inner">
           <button ref={detailsCloseRef} className="details-panel__close" onClick={closeDetails}>
-            Close
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
           </button>
           <div ref={detailsInnerBgRef} className="details-panel__inner-bg" />
 
@@ -987,75 +1418,194 @@ function StoreContent() {
             <div className="details-panel__content">
               {/* Breadcrumb */}
               <div className="details-panel__breadcrumb">
-                <span>Product Listing</span>
-                <span className="separator">&gt;</span>
-                <span className="current">Dummy Product Page</span>
+                <Link href="/store">Store</Link>
+                <span className="separator">›</span>
+                <Link href="/collections">Kitchen Appliances</Link>
+                <span className="separator">›</span>
+                <span className="current">{selectedProduct.name}</span>
               </div>
 
-              {/* Product Layout */}
-              <div className="details-panel__layout">
-                {/* Images Section */}
-                <div className="details-panel__images">
-                  {/* Thumbnail Gallery */}
-                  <div className="details-panel__thumbnails">
-                    {selectedProduct.gallery.slice(0, 4).map((img, i) => (
-                      <button
-                        key={i}
-                        className={`details-panel__thumbnail ${mainImageIndex === i ? 'active' : ''}`}
-                        onClick={() => setMainImageIndex(i)}
-                      >
-                        <Image src={img} alt={`Thumbnail ${i + 1}`} fill className="details-panel__thumbnail-img" />
-                      </button>
-                    ))}
-                  </div>
-                  
-                  {/* Main Image */}
-                  <div className="details-panel__main-image">
+              {/* Amazon-style 3-Column Layout */}
+              <div className="details-panel__amazon-layout">
+                {/* Left Column - Vertical Thumbnail Strip */}
+                <div className="details-panel__thumb-column">
+                  {selectedProduct.gallery.slice(0, 6).map((img, i) => (
+                    <button
+                      key={i}
+                      className={`details-panel__thumb-vertical ${mainImageIndex === i ? 'active' : ''}`}
+                      onClick={() => handleImageChange(i)}
+                      onMouseEnter={() => handleImageChange(i)}
+                    >
+                      <Image src={img} alt={`View ${i + 1}`} fill className="details-panel__thumb-img" />
+                    </button>
+                  ))}
+                </div>
+
+                {/* Center Column - Main Product Image with Zoom */}
+                <div className="details-panel__image-column">
+                  <div
+                    ref={heroImageRef}
+                    className={`details-panel__main-image ${zoomActive ? 'zoom-active' : ''}`}
+                    onMouseMove={handleZoomMouseMove}
+                    onMouseEnter={handleZoomMouseEnter}
+                    onMouseLeave={handleZoomMouseLeave}
+                    onClick={() => openLightbox(mainImageIndex)}
+                  >
                     <Image
                       src={selectedProduct.gallery[mainImageIndex]}
                       alt={selectedProduct.name}
                       fill
                       className="details-panel__main-img"
+                      priority
+                      style={zoomActive ? {
+                        transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                        transform: 'scale(2.5)',
+                      } : undefined}
                     />
+                    
+                    {/* Zoom lens indicator */}
+                    {zoomActive && (
+                      <div
+                        className="zoom-lens"
+                        style={{
+                          left: `${zoomPosition.x}%`,
+                          top: `${zoomPosition.y}%`,
+                        }}
+                      />
+                    )}
+                    
+                    {/* Animated Specification Labels - Hidden during zoom */}
+                    {!zoomActive && (
+                      <div className="details-panel__spec-labels">
+                        {(productSpecifications[selectedProduct.id]?.[mainImageIndex] || productSpecifications[selectedProduct.id]?.[0] || []).map((spec, idx) => (
+                          <div
+                            key={`${mainImageIndex}-${idx}`}
+                            className={`spec-label ${specsVisible ? 'visible' : ''}`}
+                            style={{
+                              ...spec.position,
+                              transitionDelay: `${spec.delay}s`,
+                            }}
+                          >
+                            <span className="spec-label__line" />
+                            <span className="spec-label__text">{spec.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Click to zoom hint */}
+                    {!zoomActive && (
+                      <div className="details-panel__zoom-hint">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="11" cy="11" r="8" />
+                          <path d="m21 21-4.35-4.35" />
+                          <line x1="11" y1="8" x2="11" y2="14" />
+                          <line x1="8" y1="11" x2="14" y2="11" />
+                        </svg>
+                        <span>Roll over image to zoom in</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Product Info */}
-                <div className="details-panel__info">
-                  <h2 className="details-panel__title">{selectedProduct.name}</h2>
+                {/* Right Column - Product Details & Buy Box */}
+                <div className="details-panel__info-column">
+                  {/* Product Title */}
+                  <h1 className="details-panel__product-title">{selectedProduct.name}</h1>
                   
-                  <div className="details-panel__price-rating">
-                    <span className="details-panel__price">${selectedProduct.price}</span>
-                    <span className="details-panel__divider">|</span>
-                    <div className="details-panel__rating">
+                  {/* Store/Brand Link */}
+                  <div className="details-panel__store-link">
+                    Visit the <Link href="/store">KBS Store</Link>
+                  </div>
+                  
+                  {/* Ratings Row */}
+                  <div className="details-panel__ratings-row">
+                    <span className="details-panel__rating-number">{selectedProduct.rating}</span>
+                    <div className="details-panel__stars">
                       {renderStars(selectedProduct.rating)}
-                      <span className="details-panel__reviews">( {selectedProduct.reviews} reviews )</span>
+                    </div>
+                    <Link href="#reviews" className="details-panel__rating-link">
+                      {selectedProduct.reviews} ratings
+                    </Link>
+                  </div>
+                  
+                  <div className="details-panel__divider" />
+                  
+                  {/* Price Section */}
+                  <div className="details-panel__price-section">
+                    <div className="details-panel__price-row">
+                      <span className="details-panel__price-label">Deal Price:</span>
+                      <span className="details-panel__price-symbol">$</span>
+                      <span className="details-panel__price-amount">{selectedProduct.price}</span>
+                    </div>
+                    <div className="details-panel__mrp-row">
+                      <span className="details-panel__mrp-label">M.R.P.:</span>
+                      <span className="details-panel__mrp-price">${selectedProduct.originalPrice}</span>
+                      <span className="details-panel__discount-badge">-{selectedProduct.discount}% off</span>
+                    </div>
+                    <div className="details-panel__tax-note">Inclusive of all taxes</div>
+                  </div>
+                  
+                  <div className="details-panel__divider" />
+                  
+                  {/* About This Item */}
+                  <div className="details-panel__about-section">
+                    <h3 className="details-panel__about-title">About this item</h3>
+                    <ul className="details-panel__about-list">
+                      {selectedProduct.features.map((feature, i) => (
+                        <li key={i}>{feature}</li>
+                      ))}
+                      <li>{selectedProduct.description}</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Far Right Column - Buy Box */}
+                <div className="details-panel__buy-box">
+                  {/* Price in Buy Box */}
+                  <div className="details-panel__buybox-price">
+                    <span className="details-panel__buybox-symbol">$</span>
+                    <span className="details-panel__buybox-amount">{selectedProduct.price}</span>
+                  </div>
+                  
+                  {/* Delivery Info */}
+                  <div className="details-panel__delivery-info">
+                    <div className="details-panel__delivery-row">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="1" y="3" width="15" height="13" />
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                        <circle cx="5.5" cy="18.5" r="2.5" />
+                        <circle cx="18.5" cy="18.5" r="2.5" />
+                      </svg>
+                      <div>
+                        <span className="details-panel__delivery-label">FREE delivery</span>
+                        <span className="details-panel__delivery-date">Tomorrow, Jan 5</span>
+                      </div>
+                    </div>
+                    <div className="details-panel__delivery-row">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      <Link href="/shipping">Deliver to your location</Link>
                     </div>
                   </div>
                   
-                  <div className="details-panel__wishlist">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                    </svg>
+                  {/* Stock Status */}
+                  <div className="details-panel__stock-status">
+                    <span className="in-stock">In Stock</span>
                   </div>
-
-                  <p className="details-panel__description">{selectedProduct.description}</p>
-
-                  <ul className="details-panel__features">
-                    {selectedProduct.features.map((feature, i) => (
-                      <li key={i}>{feature}</li>
-                    ))}
-                  </ul>
-
-                  {/* Quantity and Add to Cart */}
-                  <div className="details-panel__cart-section">
-                    <div className="details-panel__quantity">
+                  
+                  {/* Quantity Selector */}
+                  <div className="details-panel__quantity-row">
+                    <label>Qty:</label>
+                    <div className="details-panel__quantity-select">
                       <button
                         className="details-panel__qty-btn"
                         onClick={() => handleDetailsQuantityChange(-1)}
                         disabled={detailsQuantity <= 1}
                       >
-                        -
+                        −
                       </button>
                       <span className="details-panel__qty-value">{detailsQuantity}</span>
                       <button
@@ -1066,32 +1616,46 @@ function StoreContent() {
                         +
                       </button>
                     </div>
-                    <button className="details-panel__add-to-cart" onClick={addToCartFromDetails}>
-                      Add to Cart
-                    </button>
                   </div>
-
-                  <button className="details-panel__buy-now" onClick={buyNowFromDetails}>Buy Now</button>
-
-                  {/* Shipping Info */}
-                  <div className="details-panel__shipping">
-                    <div className="details-panel__shipping-item">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="1" y="3" width="15" height="13" />
-                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                        <circle cx="5.5" cy="18.5" r="2.5" />
-                        <circle cx="18.5" cy="18.5" r="2.5" />
-                      </svg>
-                      <span>Free worldwide shipping on all orders over $500</span>
+                  
+                  {/* Add to Cart Button - Amazon Orange Style */}
+                  <button className="details-panel__add-cart-btn" onClick={addToCartFromDetails}>
+                    Add to Cart
+                  </button>
+                  
+                  {/* Buy Now Button - Amazon Yellow Style */}
+                  <button className="details-panel__buy-now-btn" onClick={buyNowFromDetails}>
+                    Buy Now
+                  </button>
+                  
+                  {/* Secure Transaction */}
+                  <div className="details-panel__secure-row">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <span>Secure transaction</span>
+                  </div>
+                  
+                  {/* Seller Info */}
+                  <div className="details-panel__seller-info">
+                    <div className="details-panel__seller-row">
+                      <span className="label">Ships from</span>
+                      <span className="value">KBS Store</span>
                     </div>
-                    <div className="details-panel__shipping-item">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                        <circle cx="12" cy="10" r="3" />
-                      </svg>
-                      <span>Delivers in: 3-7 Working Days <a href="#">Shipping & Return</a></span>
+                    <div className="details-panel__seller-row">
+                      <span className="label">Sold by</span>
+                      <span className="value">KBS Official</span>
                     </div>
                   </div>
+                  
+                  {/* Add to Wishlist */}
+                  <button className="details-panel__wishlist-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                    Add to Wish List
+                  </button>
                 </div>
               </div>
 
@@ -1163,26 +1727,44 @@ function StoreContent() {
                 </div>
               </div>
 
-              {/* Similar Products */}
+              {/* Combo Items - Accessories for this product */}
               <div className="details-panel__similar">
-                <h3>Similar Products</h3>
+                <h3>Frequently Bought Together</h3>
+                <p className="details-panel__combo-subtitle">Complete your purchase with these accessories</p>
                 <div className="details-panel__similar-grid">
-                  {products.slice(0, 4).map((prod) => (
-                    <div key={prod.id} className="details-panel__similar-item">
+                  {(productComboItems[selectedProduct.id] || []).map((combo) => (
+                    <div key={combo.id} className="details-panel__similar-item">
                       <div className="details-panel__similar-image">
-                        <Image src={prod.cover} alt={prod.name} fill />
-                        <span className="details-panel__similar-discount">-{prod.discount}%</span>
+                        <Image src={combo.cover} alt={combo.name} fill />
+                        <span className="details-panel__similar-discount">-{combo.discount}%</span>
                       </div>
                       <div className="details-panel__similar-info">
-                        <span className="details-panel__similar-name">{prod.name}</span>
+                        <span className="details-panel__similar-name">{combo.name}</span>
+                        <span className="details-panel__combo-desc">{combo.description}</span>
                         <div className="details-panel__similar-price">
-                          <span className="original">${prod.originalPrice}</span>
-                          <span className="current">${prod.price}</span>
+                          <span className="original">${combo.originalPrice}</span>
+                          <span className="current">${combo.price}</span>
                         </div>
                       </div>
                       <button
                         className="details-panel__similar-add icon-bulge"
-                        onClick={() => addSimilarProductToCart(prod)}
+                        onClick={() => {
+                          if (!isAuthenticated) {
+                            setShowLoginPrompt(true);
+                            return;
+                          }
+                          setCartItems(prevItems => {
+                            const existingItem = prevItems.find((item) => item.id === combo.id);
+                            if (existingItem) {
+                              return prevItems.map((item) =>
+                                item.id === combo.id ? { ...item, quantity: item.quantity + 1 } : item
+                              );
+                            } else {
+                              return [...prevItems, { id: combo.id, name: combo.name, price: combo.price, cover: combo.cover, quantity: 1 }];
+                            }
+                          });
+                          cartButtonAnimationEnter();
+                        }}
                         title="Add to Cart"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1291,6 +1873,63 @@ function StoreContent() {
         </div>
       </aside>
 
+    {/* Image Lightbox Modal */}
+    {lightboxOpen && selectedProduct && (
+      <div className="lightbox-overlay" onClick={closeLightbox}>
+        <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+          {/* Close button */}
+          <button className="lightbox-close" onClick={closeLightbox}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+          
+          {/* Navigation arrows */}
+          <button className="lightbox-nav lightbox-prev" onClick={lightboxPrev}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+          
+          <button className="lightbox-nav lightbox-next" onClick={lightboxNext}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+          
+          {/* Main image */}
+          <div className="lightbox-image-container">
+            <Image
+              src={selectedProduct.gallery[lightboxIndex]}
+              alt={`${selectedProduct.name} - View ${lightboxIndex + 1}`}
+              fill
+              className="lightbox-image"
+              priority
+            />
+          </div>
+          
+          {/* Thumbnail strip */}
+          <div className="lightbox-thumbs">
+            {selectedProduct.gallery.map((img, i) => (
+              <button
+                key={i}
+                className={`lightbox-thumb ${lightboxIndex === i ? 'active' : ''}`}
+                onClick={() => setLightboxIndex(i)}
+              >
+                <Image src={img} alt={`View ${i + 1}`} fill className="lightbox-thumb-img" />
+              </button>
+            ))}
+          </div>
+          
+          {/* Image counter */}
+          <div className="lightbox-counter">
+            {lightboxIndex + 1} / {selectedProduct.gallery.length}
+          </div>
+        </div>
+      </div>
+    )}
+
     {/* Login Prompt Modal */}
     {showLoginPrompt && (
       <div className="login-prompt-overlay" onClick={() => setShowLoginPrompt(false)}>
@@ -1338,7 +1977,7 @@ function StoreContent() {
         /* Store Page Styles */
         .store-page {
           min-height: 100vh;
-          background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 25%, #ffffff 50%, #f0f0f0 75%, #e5e5e5 100%);
+          background: #F5F0E6;
           font-family: sans-serif;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
@@ -1358,7 +1997,7 @@ function StoreContent() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 50%, #e5e5e5 100%);
+          background: #F5F0E6;
         }
 
         .store-page.loading::after {
@@ -1455,11 +2094,11 @@ function StoreContent() {
           align-items: center;
           justify-content: space-between;
           padding: clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 20px);
-          background: rgba(255, 255, 255, 0.85);
+          background: rgba(245, 240, 230, 0.95);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           border-radius: 50px;
-          border: 1px solid rgba(255, 255, 255, 0.3);
+          border: 1px solid rgba(229, 224, 214, 0.5);
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
@@ -1648,7 +2287,7 @@ function StoreContent() {
           transform: translateY(0);
         }
 
-        /* Products Grid - Responsive */
+        /* Products Grid - Adidas Style 4-Column Layout */
         .products {
           width: 100%;
         }
@@ -1656,8 +2295,8 @@ function StoreContent() {
         .products__list {
           width: 100%;
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: clamp(16px, 2vw, 24px);
+          grid-template-columns: repeat(4, 1fr);
+          gap: clamp(12px, 1.5vw, 16px);
           list-style: none;
           padding: 0;
           margin: 0;
@@ -1666,35 +2305,61 @@ function StoreContent() {
         .products__item {
           display: flex;
           flex-direction: column;
-          gap: clamp(12px, 1.5vw, 16px);
+          gap: 0;
+          cursor: pointer;
+          transition: transform 0.3s ease;
+        }
+
+        .products__item:hover {
+          transform: translateY(-4px);
+        }
+
+        .products__item:hover .products__quick-add {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         .products__images {
           position: relative;
-          height: clamp(200px, 32vh, 400px);
-          min-height: 200px;
+          aspect-ratio: 1;
           overflow: hidden;
-          border-radius: clamp(12px, 2vw, 16px);
+          background: #f0f0f0;
         }
 
         .products__main-image {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          border-radius: clamp(12px, 2vw, 16px);
+          transition: transform 0.4s ease;
         }
 
-        .products__discount-badge {
+        .products__item:hover .products__main-image {
+          transform: scale(1.05);
+        }
+
+        /* Quick Add Button - Adidas Style */
+        .products__quick-add {
           position: absolute;
-          top: clamp(8px, 1.5vw, 12px);
-          left: clamp(8px, 1.5vw, 12px);
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 14px 20px;
           background: #000;
           color: #fff;
-          padding: clamp(3px, 0.5vw, 4px) clamp(8px, 1vw, 10px);
-          border-radius: 20px;
-          font-size: clamp(10px, 1.2vw, 12px);
-          font-weight: 500;
-          z-index: 2;
+          font-size: 13px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          border: none;
+          cursor: pointer;
+          opacity: 0;
+          transform: translateY(100%);
+          transition: all 0.3s ease;
+          z-index: 5;
+        }
+
+        .products__quick-add:hover {
+          background: #333;
         }
 
         .products__gallery {
@@ -1709,7 +2374,6 @@ function StoreContent() {
           grid-template-areas: 'gallery';
           opacity: 0;
           visibility: hidden;
-          border-radius: clamp(12px, 2vw, 16px);
           pointer-events: none;
           z-index: 10;
         }
@@ -1719,47 +2383,75 @@ function StoreContent() {
           height: 100%;
           object-fit: cover;
           grid-area: gallery;
-          border-radius: clamp(12px, 2vw, 16px);
           will-change: transform, opacity;
         }
 
+        /* Product Info - Adidas Style */
         .products__info {
           display: flex;
-          justify-content: space-between;
+          flex-direction: column;
+          gap: 4px;
+          padding: 12px 0;
+        }
+
+        .products__price-row {
+          display: flex;
           align-items: center;
-          padding: 0 4px;
-          flex-wrap: wrap;
           gap: 8px;
         }
 
-        .products__name {
-          font-size: clamp(14px, 1.6vw, 16px);
-          font-weight: 500;
-          color: #111;
-        }
-
-        .products__price-wrap {
-          display: flex;
-          align-items: center;
-          gap: clamp(4px, 0.8vw, 8px);
+        .products__sale-price {
+          font-size: 14px;
+          font-weight: 700;
+          color: #008a00;
         }
 
         .products__original-price {
-          font-size: clamp(12px, 1.4vw, 14px);
-          color: #999;
+          font-size: 13px;
+          color: #767677;
           text-decoration: line-through;
         }
 
-        .products__price {
-          font-size: clamp(12px, 1.4vw, 14px);
-          color: #111;
+        .products__discount-tag {
+          font-size: 13px;
           font-weight: 600;
+          color: #d9001b;
         }
 
-        .products__actions {
+        .products__name {
+          font-size: 13px;
+          font-weight: 400;
+          color: #000;
+          line-height: 1.4;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .products__category {
+          font-size: 13px;
+          color: #767677;
+          line-height: 1.3;
+        }
+
+        .products__colors {
           display: flex;
-          align-items: center;
-          gap: clamp(8px, 1.2vw, 12px);
+          gap: 6px;
+          margin-top: 8px;
+        }
+
+        .products__color-dot {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          border: 1px solid #e0e0e0;
+          cursor: pointer;
+          transition: transform 0.2s ease;
+        }
+
+        .products__color-dot:hover {
+          transform: scale(1.15);
         }
 
         /* Button Styles - Touch-friendly */
@@ -1785,29 +2477,122 @@ function StoreContent() {
           transform: translateY(0);
         }
 
-        .products__cta {
-          flex: 1;
+        /* ===== FEATURED SECTION - Nike Style ===== */
+        .featured-section {
+          margin-top: clamp(48px, 8vh, 80px);
+          padding-bottom: clamp(32px, 5vh, 60px);
         }
 
-        .products__details-btn {
-          display: flex;
+        .featured-section__title {
+          font-size: clamp(28px, 5vw, 42px);
+          font-weight: 500;
+          color: #000;
+          margin: 0 0 clamp(20px, 3vh, 32px) 0;
+          letter-spacing: -0.02em;
+        }
+
+        .featured-section__grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: clamp(12px, 1.5vw, 20px);
+        }
+
+        .featured-card {
+          position: relative;
+          display: block;
+          aspect-ratio: 16/9;
+          overflow: hidden;
+          text-decoration: none;
+        }
+
+        .featured-card__media {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+
+        .featured-card__video,
+        .featured-card__image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.6s ease;
+        }
+
+        .featured-card:hover .featured-card__video,
+        .featured-card:hover .featured-card__image {
+          transform: scale(1.05);
+        }
+
+        .featured-card__overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.6) 0%,
+            rgba(0, 0, 0, 0.2) 40%,
+            rgba(0, 0, 0, 0) 70%
+          );
+        }
+
+        .featured-card__content {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          padding: clamp(20px, 3vw, 40px);
+          color: #fff;
+          z-index: 2;
+        }
+
+        .featured-card__subtitle {
+          display: block;
+          font-size: clamp(12px, 1.4vw, 14px);
+          color: rgba(255, 255, 255, 0.85);
+          margin-bottom: 8px;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .featured-card__title {
+          font-size: clamp(24px, 4vw, 40px);
+          font-weight: 600;
+          margin: 0 0 clamp(12px, 2vh, 20px) 0;
+          line-height: 1.1;
+          letter-spacing: -0.02em;
+        }
+
+        .featured-card__cta {
+          display: inline-flex;
           align-items: center;
-          justify-content: center;
-          width: 44px;
-          height: 44px;
-          background: #D9D9D9;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          color: #111;
-          transition: background-color 0.3s ease;
+          gap: 8px;
+          font-size: clamp(14px, 1.6vw, 16px);
+          font-weight: 500;
+          color: #fff;
+          background: #000;
+          padding: clamp(10px, 1.5vw, 14px) clamp(20px, 2.5vw, 28px);
+          border-radius: 30px;
+          transition: all 0.3s ease;
         }
 
-        .products__details-btn:hover {
-          background: #C9C9C9;
+        .featured-card:hover .featured-card__cta {
+          background: #333;
+          gap: 12px;
         }
 
-        /* Product Details Panel - Responsive */
+        .featured-card__cta svg {
+          transition: transform 0.3s ease;
+        }
+
+        .featured-card:hover .featured-card__cta svg {
+          transform: translateX(4px);
+        }
+
+        /* ===== PRODUCT DETAILS PANEL - AMAZON STYLE ===== */
         .details-panel {
           position: fixed;
           top: 0;
@@ -1824,8 +2609,7 @@ function StoreContent() {
           left: 0;
           width: 100%;
           height: 100%;
-          background-color: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(10px);
+          background-color: rgba(245, 240, 230, 0.95);
           pointer-events: auto;
           cursor: pointer;
         }
@@ -1834,10 +2618,10 @@ function StoreContent() {
           position: absolute;
           top: 0;
           right: 0;
-          width: min(85%, 1000px);
+          width: 100%;
           height: 100%;
           overflow-y: auto;
-          padding: clamp(20px, 4vw, 40px);
+          padding: clamp(16px, 3vw, 32px);
           pointer-events: auto;
         }
 
@@ -1847,221 +2631,493 @@ function StoreContent() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 50%, #f0f0f0 100%);
+          background: #fff;
           z-index: 0;
         }
 
         .details-panel__close {
-          font-size: clamp(14px, 1.6vw, 16px);
-          position: absolute;
-          top: clamp(12px, 2vw, 20px);
-          right: clamp(12px, 2vw, 20px);
-          text-decoration: underline;
+          position: fixed;
+          top: clamp(16px, 2.5vw, 24px);
+          right: clamp(16px, 2.5vw, 24px);
           cursor: pointer;
-          z-index: 2;
-          background: none;
-          border: none;
-          color: #111;
-          min-width: 44px;
-          min-height: 44px;
+          z-index: 10;
+          background: #fff;
+          border: 1px solid #ddd;
+          color: #333;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          transition: all 0.2s ease;
+        }
+
+        .details-panel__close:hover {
+          background: #f5f5f5;
+          border-color: #999;
+          transform: scale(1.05);
         }
 
         .details-panel__content {
           position: relative;
           z-index: 1;
+          max-width: 1500px;
+          margin: 0 auto;
+          padding-top: 20px;
         }
 
+        /* Breadcrumb */
         .details-panel__breadcrumb {
-          font-size: clamp(11px, 1.3vw, 13px);
-          color: #666;
-          margin-bottom: clamp(16px, 2.5vw, 24px);
+          font-size: 12px;
+          color: #007185;
+          margin-bottom: 16px;
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
           flex-wrap: wrap;
         }
 
+        .details-panel__breadcrumb a {
+          color: #007185;
+          text-decoration: none;
+        }
+
+        .details-panel__breadcrumb a:hover {
+          color: #c45500;
+          text-decoration: underline;
+        }
+
         .details-panel__breadcrumb .separator {
-          color: #999;
+          color: #565959;
         }
 
         .details-panel__breadcrumb .current {
-          color: #111;
-          font-weight: 500;
+          color: #565959;
         }
 
-        .details-panel__layout {
+        /* Amazon-style 4-Column Layout */
+        .details-panel__amazon-layout {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: clamp(20px, 4vw, 40px);
-          margin-bottom: clamp(24px, 4vw, 40px);
+          grid-template-columns: 60px 1fr 1fr 280px;
+          gap: 20px;
+          margin-bottom: 40px;
         }
 
-        .details-panel__images {
-          display: flex;
-          gap: clamp(10px, 1.5vw, 16px);
-          flex-direction: row;
-        }
-
-        .details-panel__thumbnails {
+        /* Left Column - Vertical Thumbnails */
+        .details-panel__thumb-column {
           display: flex;
           flex-direction: column;
-          gap: clamp(8px, 1.2vw, 12px);
+          gap: 8px;
         }
 
-        .details-panel__thumbnail {
+        .details-panel__thumb-vertical {
           position: relative;
-          width: clamp(50px, 8vw, 80px);
-          height: clamp(50px, 8vw, 80px);
-          border: 2px solid transparent;
-          border-radius: 8px;
+          width: 56px;
+          height: 56px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
           overflow: hidden;
           cursor: pointer;
-          background: transparent;
-          padding: 0;
-          transition: border-color 0.3s ease;
+          background: #fff;
+          padding: 2px;
+          transition: all 0.2s ease;
         }
 
-        .details-panel__thumbnail.active {
-          border-color: #111;
+        .details-panel__thumb-vertical:hover {
+          border-color: #007185;
         }
 
-        .details-panel__thumbnail-img {
-          object-fit: cover;
+        .details-panel__thumb-vertical.active {
+          border-color: #007185;
+          border-width: 2px;
+          padding: 1px;
+        }
+
+        .details-panel__thumb-img {
+          object-fit: contain;
+        }
+
+        /* Center Column - Main Image */
+        .details-panel__image-column {
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
         }
 
         .details-panel__main-image {
           position: relative;
-          flex: 1;
-          min-height: clamp(250px, 40vh, 400px);
-          border-radius: 12px;
+          width: 100%;
+          max-width: 500px;
+          aspect-ratio: 1;
+          background: #fff;
+          border: 1px solid #eee;
+          border-radius: 4px;
           overflow: hidden;
+          cursor: crosshair;
+        }
+
+        .details-panel__main-image.zoom-active {
+          cursor: none;
         }
 
         .details-panel__main-img {
-          object-fit: cover;
+          object-fit: contain;
+          transition: transform 0.15s ease-out;
+          will-change: transform;
         }
 
-        .details-panel__info {
-          position: relative;
+        /* Zoom lens indicator */
+        .zoom-lens {
+          position: absolute;
+          width: 120px;
+          height: 120px;
+          border: 2px solid rgba(0, 113, 133, 0.5);
+          border-radius: 50%;
+          pointer-events: none;
+          transform: translate(-50%, -50%);
+          background: rgba(255, 255, 255, 0.15);
+          box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+          z-index: 5;
         }
 
-        .details-panel__title {
-          font-size: clamp(20px, 3vw, 28px);
+        /* Animated Specification Labels */
+        .details-panel__spec-labels {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 2;
+        }
+
+        .spec-label {
+          position: absolute;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          opacity: 0;
+          transform: translateY(8px);
+          transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .spec-label.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .spec-label__line {
+          width: 25px;
+          height: 1px;
+          background: rgba(0, 0, 0, 0.4);
+        }
+
+        .spec-label__text {
+          font-family: 'Courier New', monospace;
+          font-size: 10px;
+          color: #333;
+          letter-spacing: 0.05em;
           font-weight: 500;
-          margin: 0 0 clamp(12px, 1.5vw, 16px) 0;
-          color: #111;
-          padding-right: 40px;
+          white-space: nowrap;
+          background: rgba(255, 255, 255, 0.95);
+          padding: 3px 8px;
+          border-radius: 3px;
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
         }
 
-        .details-panel__price-rating {
+        /* Zoom Hint */
+        .details-panel__zoom-hint {
+          position: absolute;
+          bottom: 12px;
+          left: 50%;
+          transform: translateX(-50%);
           display: flex;
           align-items: center;
-          gap: clamp(8px, 1.2vw, 12px);
-          margin-bottom: clamp(16px, 2vw, 20px);
-          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 12px;
+          color: #007185;
+          background: rgba(255, 255, 255, 0.95);
+          padding: 6px 12px;
+          border-radius: 4px;
+          border: 1px solid #ddd;
         }
 
-        .details-panel__price {
+        .details-panel__zoom-hint svg {
+          color: #007185;
+        }
+
+        /* Info Column - Product Details */
+        .details-panel__info-column {
+          padding-right: 20px;
+        }
+
+        .details-panel__product-title {
           font-size: clamp(18px, 2.5vw, 24px);
-          font-weight: 600;
-          color: #111;
+          font-weight: 400;
+          line-height: 1.4;
+          color: #0f1111;
+          margin: 0 0 8px 0;
         }
 
-        .details-panel__divider {
-          color: #ccc;
+        .details-panel__store-link {
+          font-size: 14px;
+          color: #565959;
+          margin-bottom: 8px;
         }
 
-        .details-panel__rating {
+        .details-panel__store-link a {
+          color: #007185;
+          text-decoration: none;
+        }
+
+        .details-panel__store-link a:hover {
+          color: #c45500;
+          text-decoration: underline;
+        }
+
+        .details-panel__ratings-row {
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 8px;
+          margin-bottom: 12px;
+        }
+
+        .details-panel__rating-number {
+          font-size: 14px;
+          color: #007185;
+          font-weight: 500;
+        }
+
+        .details-panel__stars {
+          display: flex;
+          gap: 1px;
         }
 
         .star {
           color: #ddd;
-          font-size: clamp(14px, 1.6vw, 16px);
+          font-size: 16px;
         }
 
         .star.filled {
-          color: #111;
+          color: #ff9900;
         }
 
-        .details-panel__reviews {
-          font-size: clamp(11px, 1.3vw, 13px);
-          color: #666;
-          margin-left: 4px;
+        .details-panel__rating-link {
+          font-size: 14px;
+          color: #007185;
+          text-decoration: none;
         }
 
-        .details-panel__wishlist {
-          position: absolute;
-          top: 0;
-          right: 0;
-          cursor: pointer;
-          color: #ccc;
-          transition: color 0.3s ease;
-          width: 44px;
-          height: 44px;
+        .details-panel__rating-link:hover {
+          color: #c45500;
+          text-decoration: underline;
+        }
+
+        .details-panel__divider {
+          height: 1px;
+          background: #ddd;
+          margin: 16px 0;
+        }
+
+        /* Price Section */
+        .details-panel__price-section {
+          margin-bottom: 16px;
+        }
+
+        .details-panel__price-row {
+          display: flex;
+          align-items: baseline;
+          gap: 4px;
+          margin-bottom: 4px;
+        }
+
+        .details-panel__price-label {
+          font-size: 14px;
+          color: #565959;
+        }
+
+        .details-panel__price-symbol {
+          font-size: 14px;
+          color: #0f1111;
+          position: relative;
+          top: -6px;
+        }
+
+        .details-panel__price-amount {
+          font-size: 28px;
+          color: #0f1111;
+          font-weight: 400;
+        }
+
+        .details-panel__mrp-row {
           display: flex;
           align-items: center;
-          justify-content: center;
+          gap: 8px;
+          margin-bottom: 4px;
         }
 
-        .details-panel__wishlist:hover {
-          color: #ff4444;
+        .details-panel__mrp-label {
+          font-size: 14px;
+          color: #565959;
         }
 
-        .details-panel__description {
-          font-size: clamp(12px, 1.4vw, 14px);
-          line-height: 1.7;
-          color: #666;
-          margin-bottom: clamp(16px, 2vw, 20px);
+        .details-panel__mrp-price {
+          font-size: 14px;
+          color: #565959;
+          text-decoration: line-through;
         }
 
-        .details-panel__features {
+        .details-panel__discount-badge {
+          font-size: 14px;
+          color: #cc0c39;
+          font-weight: 500;
+        }
+
+        .details-panel__tax-note {
+          font-size: 12px;
+          color: #565959;
+        }
+
+        /* About This Item */
+        .details-panel__about-section {
+          margin-top: 16px;
+        }
+
+        .details-panel__about-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #0f1111;
+          margin: 0 0 12px 0;
+        }
+
+        .details-panel__about-list {
           list-style: disc;
           padding-left: 20px;
-          margin: 0 0 clamp(16px, 2.5vw, 24px) 0;
+          margin: 0;
         }
 
-        .details-panel__features li {
-          font-size: clamp(11px, 1.3vw, 13px);
-          color: #666;
-          margin-bottom: 6px;
+        .details-panel__about-list li {
+          font-size: 14px;
+          color: #333;
+          line-height: 1.6;
+          margin-bottom: 8px;
         }
 
-        .details-panel__cart-section {
+        /* Buy Box - Right Column */
+        .details-panel__buy-box {
+          background: #fff;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          padding: 20px;
           display: flex;
-          gap: clamp(12px, 1.5vw, 16px);
-          margin-bottom: clamp(12px, 1.5vw, 16px);
+          flex-direction: column;
+          gap: 12px;
+          height: fit-content;
+          position: sticky;
+          top: 20px;
         }
 
-        .details-panel__quantity {
+        .details-panel__buybox-price {
+          display: flex;
+          align-items: baseline;
+        }
+
+        .details-panel__buybox-symbol {
+          font-size: 14px;
+          color: #0f1111;
+          position: relative;
+          top: -8px;
+        }
+
+        .details-panel__buybox-amount {
+          font-size: 28px;
+          color: #0f1111;
+        }
+
+        .details-panel__delivery-info {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .details-panel__delivery-row {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          font-size: 14px;
+          color: #0f1111;
+        }
+
+        .details-panel__delivery-row svg {
+          flex-shrink: 0;
+          color: #565959;
+          margin-top: 2px;
+        }
+
+        .details-panel__delivery-row a {
+          color: #007185;
+          text-decoration: none;
+        }
+
+        .details-panel__delivery-row a:hover {
+          color: #c45500;
+          text-decoration: underline;
+        }
+
+        .details-panel__delivery-label {
+          display: block;
+          color: #0f1111;
+        }
+
+        .details-panel__delivery-date {
+          display: block;
+          font-weight: 700;
+          color: #0f1111;
+        }
+
+        .details-panel__stock-status {
+          font-size: 18px;
+        }
+
+        .details-panel__stock-status .in-stock {
+          color: #007600;
+        }
+
+        .details-panel__quantity-row {
           display: flex;
           align-items: center;
-          gap: clamp(8px, 1.2vw, 12px);
-          padding: 0 clamp(12px, 1.5vw, 16px);
-          background: #f5f5f5;
+          gap: 10px;
+        }
+
+        .details-panel__quantity-row label {
+          font-size: 14px;
+          color: #0f1111;
+        }
+
+        .details-panel__quantity-select {
+          display: flex;
+          align-items: center;
+          border: 1px solid #ddd;
           border-radius: 8px;
+          overflow: hidden;
+          background: #f0f2f2;
         }
 
         .details-panel__qty-btn {
-          background: none;
+          background: transparent;
           border: none;
-          font-size: clamp(16px, 1.8vw, 18px);
-          color: #111;
+          font-size: 16px;
+          color: #0f1111;
           cursor: pointer;
-          padding: 8px;
-          min-width: 44px;
-          min-height: 44px;
-          transition: opacity 0.2s ease, color 0.2s ease;
+          padding: 8px 14px;
+          transition: background 0.2s ease;
         }
 
         .details-panel__qty-btn:hover:not(:disabled) {
-          color: #666;
+          background: #e3e6e6;
         }
 
         .details-panel__qty-btn:disabled {
@@ -2070,122 +3126,169 @@ function StoreContent() {
         }
 
         .details-panel__qty-value {
-          font-size: clamp(14px, 1.6vw, 16px);
+          font-size: 14px;
           font-weight: 500;
-          min-width: 24px;
+          min-width: 30px;
           text-align: center;
-          color: #111;
-        }
-
-        .details-panel__add-to-cart {
-          flex: 1;
-          padding: clamp(12px, 1.5vw, 16px) clamp(20px, 3vw, 32px);
-          background: #111;
-          color: #fff;
-          border: none;
-          border-radius: 8px;
-          font-size: clamp(13px, 1.5vw, 15px);
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-          min-height: 44px;
-        }
-
-        .details-panel__add-to-cart:hover {
-          background: #333;
-        }
-
-        .details-panel__buy-now {
-          width: 100%;
-          padding: clamp(12px, 1.5vw, 16px);
+          color: #0f1111;
+          padding: 8px 0;
+          border-left: 1px solid #ddd;
+          border-right: 1px solid #ddd;
           background: #fff;
-          color: #111;
-          border: 2px solid #111;
-          border-radius: 8px;
-          font-size: clamp(13px, 1.5vw, 15px);
-          font-weight: 500;
-          cursor: pointer;
-          margin-bottom: clamp(16px, 2.5vw, 24px);
-          transition: all 0.3s ease;
-          min-height: 44px;
         }
 
-        .details-panel__buy-now:hover {
+        /* Add to Cart Button - Black Style */
+        .details-panel__add-cart-btn {
+          width: 100%;
+          padding: 10px 18px;
+          background: #111;
+          border: 1px solid #111;
+          border-radius: 20px;
+          font-size: 14px;
+          color: #fff;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .details-panel__add-cart-btn:hover {
+          background: #333;
+          border-color: #333;
+        }
+
+        /* Buy Now Button - Black Outline Style */
+        .details-panel__buy-now-btn {
+          width: 100%;
+          padding: 10px 18px;
+          background: transparent;
+          border: 2px solid #111;
+          border-radius: 20px;
+          font-size: 14px;
+          color: #111;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .details-panel__buy-now-btn:hover {
           background: #111;
           color: #fff;
         }
 
-        .details-panel__shipping {
-          display: flex;
-          flex-direction: column;
-          gap: clamp(8px, 1.2vw, 12px);
-        }
-
-        .details-panel__shipping-item {
+        .details-panel__secure-row {
           display: flex;
           align-items: center;
-          gap: clamp(8px, 1.2vw, 12px);
-          font-size: clamp(11px, 1.3vw, 13px);
-          color: #666;
+          gap: 8px;
+          font-size: 12px;
+          color: #007185;
         }
 
-        .details-panel__shipping-item svg {
-          flex-shrink: 0;
-          width: clamp(16px, 2vw, 20px);
-          height: clamp(16px, 2vw, 20px);
+        .details-panel__seller-info {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          font-size: 12px;
         }
 
-        .details-panel__shipping-item a {
-          color: #111;
-          text-decoration: underline;
+        .details-panel__seller-row {
+          display: flex;
+          gap: 8px;
         }
 
-        /* Tabs */
+        .details-panel__seller-row .label {
+          color: #565959;
+        }
+
+        .details-panel__seller-row .value {
+          color: #007185;
+        }
+
+        .details-panel__wishlist-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          padding: 8px;
+          background: transparent;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          font-size: 13px;
+          color: #0f1111;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .details-panel__wishlist-btn:hover {
+          background: #f7f8f8;
+          border-color: #999;
+        }
+
+        .details-panel__wishlist-btn svg {
+          color: #565959;
+        }
+
+        /* Tabs - Updated for Amazon style */
         .details-panel__tabs {
-          border-top: 1px solid #e5e5e5;
-          padding-top: clamp(20px, 3vw, 32px);
-          margin-bottom: clamp(24px, 4vw, 40px);
+          border-top: 1px solid #ddd;
+          padding-top: 24px;
+          margin-bottom: 32px;
+          background: #fff;
+          margin-left: -32px;
+          margin-right: -32px;
+          padding-left: 32px;
+          padding-right: 32px;
         }
 
         .details-panel__tab-headers {
           display: flex;
           align-items: center;
-          gap: clamp(12px, 1.5vw, 16px);
-          margin-bottom: clamp(16px, 2.5vw, 24px);
+          gap: 0;
+          margin-bottom: 20px;
+          border-bottom: 1px solid #ddd;
         }
 
         .details-panel__tab-btn {
           background: none;
           border: none;
-          font-size: clamp(15px, 1.8vw, 18px);
+          font-size: 14px;
           font-weight: 500;
-          color: #999;
+          color: #565959;
           cursor: pointer;
-          transition: color 0.3s ease;
-          min-height: 44px;
-          padding: 8px;
+          transition: color 0.2s ease;
+          padding: 12px 20px;
+          position: relative;
         }
 
         .details-panel__tab-btn.active {
-          color: #111;
+          color: #c45500;
+        }
+
+        .details-panel__tab-btn.active::after {
+          content: '';
+          position: absolute;
+          bottom: -1px;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: #c45500;
         }
 
         .details-panel__tab-btn:hover {
-          color: #666;
+          color: #c45500;
         }
 
         .details-panel__tab-divider {
-          color: #ccc;
+          display: none;
         }
 
         .details-panel__tab-content {
-          font-size: clamp(12px, 1.4vw, 14px);
-          line-height: 1.8;
-          color: #666;
+          font-size: 14px;
+          line-height: 1.7;
+          color: #333;
         }
 
         .details-panel__tab-content p {
-          margin-bottom: clamp(12px, 1.5vw, 16px);
+          margin-bottom: 14px;
+          color: #333;
         }
 
         /* Reviews Section Styles */
@@ -2198,7 +3301,7 @@ function StoreContent() {
           align-items: center;
           gap: clamp(16px, 2vw, 24px);
           padding-bottom: clamp(16px, 2.5vw, 24px);
-          border-bottom: 1px solid #e5e5e5;
+          border-bottom: 1px solid #eee;
           margin-bottom: clamp(16px, 2.5vw, 24px);
         }
 
@@ -2234,7 +3337,7 @@ function StoreContent() {
 
         .review-item {
           padding-bottom: clamp(16px, 2.5vw, 24px);
-          border-bottom: 1px solid #f0f0f0;
+          border-bottom: 1px solid #eee;
         }
 
         .review-item:last-child {
@@ -2305,16 +3408,33 @@ function StoreContent() {
           margin: 0;
         }
 
-        /* Similar Products - Responsive */
+        /* Similar Products */
         .details-panel__similar {
-          padding-top: clamp(20px, 3vw, 32px);
+          padding: clamp(20px, 3vw, 32px);
+          background: #EDE8DE;
+          border-radius: clamp(12px, 2vw, 20px);
+          border: 1px solid #E5E0D6;
         }
 
         .details-panel__similar h3 {
           font-size: clamp(18px, 2.5vw, 24px);
           font-weight: 500;
-          margin-bottom: clamp(16px, 2.5vw, 24px);
+          margin-bottom: 8px;
           color: #111;
+        }
+
+        .details-panel__combo-subtitle {
+          font-size: clamp(12px, 1.4vw, 14px);
+          color: #565959;
+          margin-bottom: clamp(16px, 2.5vw, 24px);
+        }
+
+        .details-panel__combo-desc {
+          font-size: clamp(10px, 1.2vw, 12px);
+          color: #565959;
+          display: block;
+          margin-bottom: 4px;
+          line-height: 1.4;
         }
 
         .details-panel__similar-grid {
@@ -2325,15 +3445,23 @@ function StoreContent() {
 
         .details-panel__similar-item {
           position: relative;
+          background: #F5F0E6;
+          border-radius: clamp(8px, 1.2vw, 12px);
+          padding: 8px;
+          transition: all 0.3s ease;
+        }
+
+        .details-panel__similar-item:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .details-panel__similar-image {
           position: relative;
           aspect-ratio: 1;
-          border-radius: clamp(8px, 1.2vw, 12px);
+          border-radius: clamp(6px, 1vw, 10px);
           overflow: hidden;
           margin-bottom: clamp(8px, 1.2vw, 12px);
-          background: #f5f5f5;
+          background: #EDE8DE;
         }
 
         .details-panel__similar-image img {
@@ -2384,15 +3512,15 @@ function StoreContent() {
 
         .details-panel__similar-add {
           position: absolute;
-          bottom: 0;
-          right: 0;
+          bottom: 8px;
+          right: 8px;
           width: 28px;
           height: 28px;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: none;
-          border: 1px solid #ddd;
+          background: #F5F0E6;
+          border: 1px solid #E5E0D6;
           border-radius: 50%;
           cursor: pointer;
           color: #666;
@@ -2402,6 +3530,7 @@ function StoreContent() {
         .details-panel__similar-add:hover {
           border-color: #111;
           color: #111;
+          background: #EDE8DE;
         }
 
         /* Cart Sidebar - Responsive */
@@ -2421,7 +3550,7 @@ function StoreContent() {
           left: 0;
           width: 100%;
           height: 100%;
-          background-color: rgba(255, 255, 255, 0.8);
+          background-color: rgba(245, 240, 230, 0.9);
           pointer-events: auto;
           cursor: pointer;
         }
@@ -2445,7 +3574,7 @@ function StoreContent() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 50%, #e8e8e8 100%);
+          background: #F5F0E6;
           border-radius: clamp(12px, 1.5vw, 16px);
           z-index: 0;
         }
@@ -2680,8 +3809,20 @@ function StoreContent() {
           opacity: 0.6;
         }
 
-        /* ===== TABLET BREAKPOINT (640px - 1023px) ===== */
-        @media (min-width: 640px) and (max-width: 1023px) {
+        /* ===== LARGE DESKTOP (>1200px) ===== */
+        @media (min-width: 1200px) {
+          .details-panel__amazon-layout {
+            grid-template-columns: 70px 1.2fr 1fr 320px;
+            gap: 30px;
+          }
+          
+          .details-panel__main-image {
+            max-width: 550px;
+          }
+        }
+
+        /* ===== TABLET BREAKPOINT (768px - 1199px) ===== */
+        @media (min-width: 768px) and (max-width: 1199px) {
           .products__list {
             grid-template-columns: repeat(2, 1fr);
           }
@@ -2690,27 +3831,27 @@ function StoreContent() {
             height: clamp(220px, 35vh, 350px);
           }
           
-          .details-panel__inner {
-            width: 90%;
+          .details-panel__amazon-layout {
+            grid-template-columns: 50px 1fr 1fr;
+            gap: 16px;
           }
           
-          .details-panel__layout {
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
+          .details-panel__buy-box {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            position: static;
           }
           
-          .details-panel__images {
-            flex-direction: column-reverse;
-          }
-          
-          .details-panel__thumbnails {
-            flex-direction: row;
-            overflow-x: auto;
-            padding-bottom: 8px;
+          .details-panel__buybox-price,
+          .details-panel__delivery-info,
+          .details-panel__stock-status {
+            grid-column: 1 / -1;
           }
           
           .details-panel__main-image {
-            min-height: 280px;
+            max-width: 400px;
           }
           
           .details-panel__similar-grid {
@@ -2718,8 +3859,8 @@ function StoreContent() {
           }
         }
 
-        /* ===== MOBILE BREAKPOINT (<640px) ===== */
-        @media (max-width: 639px) {
+        /* ===== MOBILE BREAKPOINT (<768px) ===== */
+        @media (max-width: 767px) {
           .store-header__controls {
             gap: 2px;
           }
@@ -2752,9 +3893,8 @@ function StoreContent() {
             flex: 1;
           }
           
-          /* Details Panel - Full screen on mobile */
+          /* Details Panel - Mobile Layout */
           .details-panel__inner {
-            width: 100%;
             padding: 60px 16px 24px;
           }
           
@@ -2763,45 +3903,75 @@ function StoreContent() {
             right: 12px;
           }
           
-          .details-panel__layout {
+          .details-panel__amazon-layout {
             grid-template-columns: 1fr;
-            gap: 24px;
+            gap: 16px;
           }
           
-          .details-panel__images {
-            flex-direction: column-reverse;
-          }
-          
-          .details-panel__thumbnails {
+          .details-panel__thumb-column {
             flex-direction: row;
             overflow-x: auto;
             padding-bottom: 8px;
-            gap: 8px;
+            order: 2;
           }
           
-          .details-panel__thumbnail {
-            width: 60px;
-            height: 60px;
+          .details-panel__thumb-vertical {
+            width: 50px;
+            height: 50px;
             flex-shrink: 0;
           }
           
+          .details-panel__image-column {
+            order: 1;
+          }
+          
           .details-panel__main-image {
-            min-height: 250px;
+            max-width: 100%;
+            aspect-ratio: 1;
           }
           
-          .details-panel__cart-section {
-            flex-direction: column;
+          .details-panel__info-column {
+            order: 3;
+            padding-right: 0;
           }
           
-          .details-panel__quantity {
-            justify-content: center;
-            width: 100%;
-            padding: 8px 16px;
+          .details-panel__buy-box {
+            order: 4;
+            position: static;
+          }
+          
+          .details-panel__product-title {
+            font-size: 18px;
+          }
+          
+          .details-panel__price-amount,
+          .details-panel__buybox-amount {
+            font-size: 22px;
+          }
+          
+          .details-panel__zoom-hint {
+            display: none;
           }
           
           .details-panel__similar-grid {
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
+          }
+          
+          .spec-label__text {
+            font-size: 9px;
+            padding: 3px 6px;
+          }
+          
+          .spec-label__line {
+            width: 20px;
+          }
+          
+          .details-panel__tabs {
+            margin-left: -16px;
+            margin-right: -16px;
+            padding-left: 16px;
+            padding-right: 16px;
           }
           
           /* Cart on mobile */
@@ -2860,6 +4030,11 @@ function StoreContent() {
           
           .details-panel__similar-grid {
             grid-template-columns: 1fr 1fr;
+          }
+          
+          .details-panel__thumb-vertical {
+            width: 45px;
+            height: 45px;
           }
         }
 
@@ -2996,6 +4171,188 @@ function StoreContent() {
         .login-prompt-btn.secondary:hover {
           border-color: #999;
           color: #333;
+        }
+        /* ===== LIGHTBOX STYLES ===== */
+        .lightbox-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.95);
+          z-index: 3000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: fadeIn 0.3s ease;
+        }
+
+        .lightbox-content {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: clamp(40px, 5vh, 80px) clamp(60px, 8vw, 120px);
+        }
+
+        .lightbox-close {
+          position: absolute;
+          top: clamp(16px, 3vh, 32px);
+          right: clamp(16px, 3vw, 32px);
+          width: 48px;
+          height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.1);
+          border: none;
+          border-radius: 50%;
+          cursor: pointer;
+          color: #fff;
+          transition: all 0.3s ease;
+          z-index: 10;
+        }
+
+        .lightbox-close:hover {
+          background: rgba(255, 255, 255, 0.2);
+          transform: scale(1.1);
+        }
+
+        .lightbox-nav {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 56px;
+          height: 56px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.1);
+          border: none;
+          border-radius: 50%;
+          cursor: pointer;
+          color: #fff;
+          transition: all 0.3s ease;
+          z-index: 10;
+        }
+
+        .lightbox-nav:hover {
+          background: rgba(255, 255, 255, 0.2);
+          transform: translateY(-50%) scale(1.1);
+        }
+
+        .lightbox-prev {
+          left: clamp(16px, 3vw, 32px);
+        }
+
+        .lightbox-next {
+          right: clamp(16px, 3vw, 32px);
+        }
+
+        .lightbox-image-container {
+          position: relative;
+          width: 100%;
+          height: calc(100% - 100px);
+          max-width: 1200px;
+        }
+
+        .lightbox-image {
+          object-fit: contain;
+        }
+
+        .lightbox-thumbs {
+          position: absolute;
+          bottom: clamp(16px, 3vh, 32px);
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: clamp(8px, 1vw, 12px);
+          padding: 12px;
+          background: rgba(0, 0, 0, 0.5);
+          border-radius: 12px;
+          backdrop-filter: blur(10px);
+        }
+
+        .lightbox-thumb {
+          position: relative;
+          width: clamp(50px, 8vw, 70px);
+          height: clamp(50px, 8vw, 70px);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 8px;
+          overflow: hidden;
+          cursor: pointer;
+          padding: 0;
+          background: transparent;
+          transition: all 0.3s ease;
+        }
+
+        .lightbox-thumb:hover {
+          border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .lightbox-thumb.active {
+          border-color: #fff;
+          box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        }
+
+        .lightbox-thumb-img {
+          object-fit: cover;
+        }
+
+        .lightbox-counter {
+          position: absolute;
+          top: clamp(16px, 3vh, 32px);
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: clamp(14px, 1.5vw, 16px);
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 500;
+          letter-spacing: 0.1em;
+        }
+
+        /* Lightbox mobile adjustments */
+        @media (max-width: 639px) {
+          .lightbox-content {
+            padding: 60px 16px 120px;
+          }
+          
+          .lightbox-nav {
+            width: 44px;
+            height: 44px;
+          }
+          
+          .lightbox-nav svg {
+            width: 24px;
+            height: 24px;
+          }
+          
+          .lightbox-thumbs {
+            gap: 6px;
+            padding: 8px;
+          }
+          
+          .lightbox-thumb {
+            width: 45px;
+            height: 45px;
+          }
+        }
+
+        /* Disable zoom on touch devices */
+        @media (hover: none) {
+          .details-panel__hero-image {
+            cursor: pointer;
+          }
+          
+          .details-panel__hero-image.zoom-active .details-panel__hero-img {
+            transform: none !important;
+          }
+          
+          .zoom-lens {
+            display: none;
+          }
         }
       `}</style>
     </main>

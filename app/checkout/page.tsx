@@ -617,7 +617,7 @@ function CheckoutContent() {
         /* Checkout Page Styles */
         .checkout-page {
           min-height: 100vh;
-          background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 25%, #ffffff 50%, #f0f0f0 75%, #e5e5e5 100%);
+          background: #F5F0E6;
           font-family: sans-serif;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
@@ -637,7 +637,7 @@ function CheckoutContent() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 50%, #e5e5e5 100%);
+          background: #F5F0E6;
         }
 
         .checkout-page.loading::after {
@@ -686,10 +686,10 @@ function CheckoutContent() {
           width: clamp(40px, 5vw, 48px);
           height: clamp(40px, 5vw, 48px);
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.85);
+          background: rgba(245, 240, 230, 0.95);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.3);
+          border: 1px solid rgba(229, 224, 214, 0.5);
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
           cursor: pointer;
           color: #000;
@@ -709,7 +709,7 @@ function CheckoutContent() {
         }
 
         .checkout-back-btn:hover {
-          background: rgba(255, 255, 255, 1);
+          background: #F5F0E6;
           transform: translateY(0) scale(1.1);
         }
 
@@ -743,10 +743,10 @@ function CheckoutContent() {
           width: clamp(40px, 5vw, 48px);
           height: clamp(40px, 5vw, 48px);
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.85);
+          background: rgba(245, 240, 230, 0.95);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.3);
+          border: 1px solid rgba(229, 224, 214, 0.5);
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
           cursor: pointer;
           color: #000;
@@ -826,11 +826,12 @@ function CheckoutContent() {
 
         /* Checkout Cards - Responsive */
         .checkout-card {
-          background: #fff;
+          background: #F5F0E6;
           border-radius: clamp(12px, 1.5vw, 16px);
           padding: clamp(20px, 3vw, 32px);
           margin-bottom: clamp(16px, 2vw, 24px);
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+          border: 1px solid #E5E0D6;
         }
 
         .checkout-card__title {
@@ -845,16 +846,17 @@ function CheckoutContent() {
           display: flex;
           align-items: center;
           padding: clamp(14px, 2vw, 20px);
-          border: 2px solid #e5e5e5;
+          border: 2px solid #E5E0D6;
           border-radius: clamp(10px, 1.2vw, 12px);
           margin-bottom: clamp(10px, 1.2vw, 12px);
           cursor: pointer;
           transition: all 0.3s ease;
           min-height: 44px;
+          background: #FDFBF7;
         }
 
         .payment-option:hover {
-          border-color: #ccc;
+          border-color: #D8D3C9;
         }
 
         .payment-option.selected {
@@ -897,7 +899,7 @@ function CheckoutContent() {
           gap: clamp(8px, 1.2vw, 12px);
           margin-top: clamp(16px, 2.5vw, 24px);
           padding-top: clamp(16px, 2.5vw, 24px);
-          border-top: 1px solid #eee;
+          border-top: 1px solid #E5E0D6;
           flex-wrap: wrap;
         }
 
@@ -934,11 +936,11 @@ function CheckoutContent() {
         .form-input {
           width: 100%;
           padding: clamp(12px, 1.5vw, 16px);
-          border: 1px solid #e5e5e5;
+          border: 1px solid #E5E0D6;
           border-radius: 8px;
           font-size: clamp(14px, 1.5vw, 15px);
           color: #000;
-          background: #fff;
+          background: #FDFBF7;
           transition: border-color 0.3s ease;
           box-sizing: border-box;
           min-height: 44px;
@@ -996,7 +998,7 @@ function CheckoutContent() {
           align-items: center;
           gap: clamp(12px, 1.5vw, 16px);
           padding: clamp(12px, 1.5vw, 16px);
-          background: #f9f9f9;
+          background: #EDE8DE;
           border-radius: clamp(10px, 1.2vw, 12px);
           position: relative;
         }
@@ -1049,7 +1051,7 @@ function CheckoutContent() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #e5e5e5;
+          background: #E5E0D6;
           border: none;
           border-radius: 6px;
           cursor: pointer;
@@ -1059,7 +1061,7 @@ function CheckoutContent() {
         }
 
         .qty-btn:hover {
-          background: #ddd;
+          background: #D8D3C9;
         }
 
         .qty-value {
@@ -1104,7 +1106,7 @@ function CheckoutContent() {
         }
 
         .summary-row.total {
-          border-top: 1px solid #eee;
+          border-top: 1px solid #E5E0D6;
           margin-top: clamp(8px, 1.2vw, 12px);
           padding-top: clamp(14px, 2vw, 20px);
         }

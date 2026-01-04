@@ -296,7 +296,7 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
               }}
             >
               <Link
-                href="/store"
+                href="/store#featured"
                 className={`section2-explore-btn-mobile ${titleRevealed ? 'revealed' : ''}`}
                 onMouseEnter={() => setIsButtonHovered(true)}
                 onMouseLeave={() => setIsButtonHovered(false)}
@@ -321,6 +321,8 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
               paddingBottom: isTablet ? '32px' : '64px',
               paddingLeft: isTablet ? '24px' : '48px',
               paddingRight: isTablet ? '24px' : '48px',
+              zIndex: 50,
+              pointerEvents: cardsOpacity > 0.5 ? 'auto' : 'none',
             }}
           >
             {isTablet ? (
@@ -354,7 +356,7 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                 
                 {/* Button centered */}
                 <Link
-                  href="/store"
+                  href="/store#featured"
                   className={`section2-explore-btn ${titleRevealed ? 'revealed' : ''}`}
                   onMouseEnter={() => setIsButtonHovered(true)}
                   onMouseLeave={() => setIsButtonHovered(false)}
@@ -362,6 +364,9 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                     backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
                     color: '#000000',
                     borderColor: '#000000',
+                    pointerEvents: titleRevealed ? 'auto' : 'none',
+                    position: 'relative',
+                    zIndex: 100,
                   }}
                 >
                   Explore Us
@@ -411,9 +416,9 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                 </div>
 
                 {/* Center - "Explore Us" button - positioned higher */}
-                <div className="flex justify-center" style={{ marginBottom: '60px' }}>
+                <div className="flex justify-center" style={{ marginBottom: '60px', position: 'relative', zIndex: 100 }}>
                   <Link
-                    href="/store"
+                    href="/store#featured"
                     className={`section2-explore-btn ${titleRevealed ? 'revealed' : ''}`}
                     onMouseEnter={() => setIsButtonHovered(true)}
                     onMouseLeave={() => setIsButtonHovered(false)}
@@ -421,6 +426,7 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                       backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
                       color: '#000000',
                       borderColor: '#000000',
+                      pointerEvents: titleRevealed ? 'auto' : 'none',
                     }}
                   >
                     Explore Us

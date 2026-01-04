@@ -307,7 +307,7 @@ export default function FAQPage() {
       <style jsx global>{`
         .faq-page {
           min-height: 100vh;
-          background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 25%, #ffffff 50%, #f0f0f0 75%, #e5e5e5 100%);
+          background: #F5F0E6;
           font-family: sans-serif;
           -webkit-font-smoothing: antialiased;
           color: #111;

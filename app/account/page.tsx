@@ -443,7 +443,7 @@ function AccountContent() {
         /* Account Page Styles */
         .account-page {
           min-height: 100vh;
-          background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 25%, #ffffff 50%, #f0f0f0 75%, #e5e5e5 100%);
+          background: #F5F0E6;
           font-family: sans-serif;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
@@ -463,7 +463,7 @@ function AccountContent() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 50%, #e5e5e5 100%);
+          background: #F5F0E6;
         }
 
         .account-page.loading::after {
@@ -512,10 +512,10 @@ function AccountContent() {
           width: clamp(40px, 5vw, 48px);
           height: clamp(40px, 5vw, 48px);
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.85);
+          background: rgba(245, 240, 230, 0.95);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.3);
+          border: 1px solid rgba(229, 224, 214, 0.5);
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
           cursor: pointer;
           color: #000;
@@ -535,7 +535,7 @@ function AccountContent() {
         }
 
         .account-back-btn:hover {
-          background: rgba(255, 255, 255, 1);
+          background: #F5F0E6;
           transform: translateY(0) scale(1.1);
         }
 
@@ -569,10 +569,10 @@ function AccountContent() {
           width: clamp(40px, 5vw, 48px);
           height: clamp(40px, 5vw, 48px);
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.85);
+          background: rgba(245, 240, 230, 0.95);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.3);
+          border: 1px solid rgba(229, 224, 214, 0.5);
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
           cursor: pointer;
           color: #000;
@@ -653,10 +653,11 @@ function AccountContent() {
 
         /* Account Cards - Responsive */
         .account-card {
-          background: #fff;
+          background: #F5F0E6;
           border-radius: clamp(12px, 1.5vw, 16px);
           padding: clamp(20px, 3vw, 32px);
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+          border: 1px solid #E5E0D6;
         }
 
         /* Auth Tabs - Responsive */
@@ -683,7 +684,7 @@ function AccountContent() {
           gap: clamp(4px, 0.8vw, 8px);
           margin-bottom: clamp(20px, 3vw, 32px);
           padding: 4px;
-          background: #f5f5f5;
+          background: #EDE8DE;
           border-radius: clamp(10px, 1.2vw, 12px);
         }
 
@@ -706,7 +707,7 @@ function AccountContent() {
         }
 
         .auth-tab.active {
-          background: #fff;
+          background: #FDFBF7;
           color: #000;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
@@ -738,11 +739,11 @@ function AccountContent() {
         .form-input {
           width: 100%;
           padding: clamp(12px, 1.5vw, 16px);
-          border: 1px solid #e5e5e5;
+          border: 1px solid #E5E0D6;
           border-radius: 8px;
           font-size: clamp(14px, 1.5vw, 15px);
           color: #000;
-          background: #fff;
+          background: #FDFBF7;
           transition: border-color 0.3s ease;
           box-sizing: border-box;
           min-height: 44px;
@@ -845,7 +846,7 @@ function AccountContent() {
           content: '';
           flex: 1;
           height: 1px;
-          background: #eee;
+          background: #E5E0D6;
         }
 
         /* Social Login Options - Responsive */
@@ -861,8 +862,8 @@ function AccountContent() {
           justify-content: center;
           gap: clamp(6px, 0.8vw, 8px);
           padding: clamp(12px, 1.4vw, 14px) clamp(16px, 2vw, 24px);
-          background: #f5f5f5;
-          border: 1px solid #e5e5e5;
+          background: #EDE8DE;
+          border: 1px solid #E5E0D6;
           border-radius: clamp(10px, 1.2vw, 12px);
           font-size: clamp(12px, 1.4vw, 14px);
           font-weight: 500;
@@ -878,8 +879,8 @@ function AccountContent() {
         }
 
         .social-btn:hover {
-          background: #eee;
-          border-color: #ddd;
+          background: #E5E0D6;
+          border-color: #D8D3C9;
         }
 
         /* Info Card - Responsive */
@@ -894,7 +895,7 @@ function AccountContent() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%);
+          background: linear-gradient(135deg, #EDE8DE 0%, #E5E0D6 100%);
           border-radius: 50%;
           margin-bottom: clamp(16px, 2.5vw, 24px);
           color: #333;
