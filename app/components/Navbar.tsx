@@ -298,13 +298,13 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
             {/* User Login/Signup Icon - Direct Navigation (no dropdown) */}
             <Link
               href={isAuthenticated ? "/dashboard" : "/account"}
-              className={`${isMobile ? 'p-1.5' : 'p-2'} hover:opacity-70 transition-opacity relative`}
+              className={`${isMobile ? 'p-1.5' : 'p-2'} hover:opacity-70 transition-opacity relative flex items-center justify-center`}
               title={isAuthenticated ? "My Dashboard" : "Login / Sign up"}
               aria-label={isAuthenticated ? "Go to dashboard" : "Login or sign up"}
             >
               {isAuthenticated && user ? (
                 <div
-                  className={`${isMobile ? 'w-6 h-6 text-[10px]' : 'w-7 h-7 text-xs'} rounded-full flex items-center justify-center font-medium`}
+                  className={`${isMobile ? 'w-5 h-5 text-[9px]' : 'w-7 h-7 text-xs'} rounded-full flex items-center justify-center font-medium`}
                   style={{
                     background: 'linear-gradient(135deg, #4A90D9 0%, #357abd 100%)',
                     color: '#fff',
@@ -323,6 +323,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  style={{ display: 'block' }}
                 >
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
