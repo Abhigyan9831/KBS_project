@@ -3924,6 +3924,11 @@ function StoreContent() {
             font-size: 24px;
           }
           
+          /* Hide Breadcrumb on Mobile */
+          .details-panel__breadcrumb {
+            display: none;
+          }
+          
           /* Details Panel - Mobile Layout */
           .details-panel__inner {
             padding: 60px 16px 24px;
