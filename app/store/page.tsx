@@ -3893,6 +3893,37 @@ function StoreContent() {
             flex: 1;
           }
           
+          /* Featured Section - Full Width on Mobile */
+          .featured-section__grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+          
+          .featured-card {
+            aspect-ratio: 16/10;
+          }
+          
+          .featured-card__content {
+            padding: 20px;
+          }
+          
+          .featured-card__title {
+            font-size: 24px;
+          }
+          
+          /* Breadcrumb - Single Line on Mobile */
+          .details-panel__breadcrumb {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
+            padding-bottom: 4px;
+          }
+          
+          .details-panel__breadcrumb::-webkit-scrollbar {
+            display: none;
+          }
+          
           /* Details Panel - Mobile Layout */
           .details-panel__inner {
             padding: 60px 16px 24px;
