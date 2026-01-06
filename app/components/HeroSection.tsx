@@ -138,7 +138,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
             className="w-full h-full object-cover"
             poster="/videos/hero-poster.jpg"
           >
-            <source src="/videos/sample_vid.mp4" type="video/mp4" />
+            <source src="/videos/Hero.mp4" type="video/mp4" />
             <source src="/videos/hero-video.webm" type="video/webm" />
             Your browser does not support the video tag.
           </video>

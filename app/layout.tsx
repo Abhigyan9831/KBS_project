@@ -3,7 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 
 export const metadata: Metadata = {
-  title: "KBS Project - Go Further",
+  title: "KBS Store",
   description: "Experience innovation with our cutting-edge solutions",
 };
 
