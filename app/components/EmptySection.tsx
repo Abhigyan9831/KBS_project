@@ -4,9 +4,7 @@ import React, { useState, useRef, useCallback, useEffect, useLayoutEffect } from
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface EmptySectionProps {
-  // No props needed for static version
-}
+// No props interface needed for static version
 
 // Responsive hook for device detection
 const useResponsive = () => {
@@ -155,7 +153,7 @@ const ArrowControl: React.FC<ArrowControlProps> = ({ direction, onClick }) => {
   );
 };
 
-const EmptySection: React.FC<EmptySectionProps> = () => {
+const EmptySection: React.FC = () => {
   const [current, setCurrent] = useState(0);
   const [titleRevealed, setTitleRevealed] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -440,22 +438,24 @@ const EmptySection: React.FC<EmptySectionProps> = () => {
         }
 
         .indicator-dot {
-          width: 10px;
-          height: 10px;
+          width: 6px;
+          height: 6px;
           border-radius: 50%;
-          background-color: rgba(0, 0, 0, 0.3);
+          background-color: rgba(0, 0, 0, 0.2);
           border: none;
           cursor: pointer;
-          transition: background-color 0.3s ease, transform 0.2s ease;
+          transition: background-color 0.3s ease;
+          padding: 0;
+          margin: 0;
         }
 
         .indicator-dot:hover {
-          background-color: rgba(0, 0, 0, 0.5);
+          background-color: rgba(0, 0, 0, 0.4);
         }
 
         .indicator-dot--active {
           background-color: #000000;
-          transform: scale(1.2);
+          transform: scale(1);
         }
 
         /* Responsive Styles */
@@ -570,8 +570,8 @@ const EmptySection: React.FC<EmptySectionProps> = () => {
           }
           
           .indicator-dot {
-            width: 8px;
-            height: 8px;
+            width: 5px;
+            height: 5px;
           }
         }
 

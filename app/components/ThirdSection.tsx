@@ -60,7 +60,7 @@ const ThirdSection: React.FC<ThirdSectionProps> = () => {
       style={{
         background: 'rgb(245, 240, 230)',
         minHeight: isMobile ? 'auto' : '100vh',
-        paddingTop: isMobile ? '40px' : '80px',
+        paddingTop: isMobile ? '10px' : '80px',
         paddingBottom: isMobile ? '40px' : '80px',
       }}
     >

@@ -151,8 +151,8 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
         <div
           className="w-full"
           style={{
-            paddingTop: isMobile ? '40px' : '48px',
-            paddingBottom: isMobile ? '24px' : isTablet ? '32px' : '48px',
+            paddingTop: isMobile ? '20px' : '48px',
+            paddingBottom: isMobile ? '10px' : isTablet ? '32px' : '48px',
             paddingLeft: isMobile ? '20px' : isTablet ? '24px' : '48px',
             paddingRight: isMobile ? '20px' : isTablet ? '24px' : '48px',
           }}

@@ -80,9 +80,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
           // Clean fade out effect like Hamilton Company website
           // Fade out as we scroll from Hero to Section 2
           opacity: Math.max(0, 1 - Math.max(0, scrollProgress - 0.05) * 1.5),
-          filter: `blur(${Math.max(0, scrollProgress - 0.1) * 10}px)`,
-          transform: `scale(${1 - scrollProgress * 0.05})`,
-          transition: 'opacity 0.1s linear, filter 0.1s linear, transform 0.1s linear',
+          transition: 'opacity 0.1s linear',
           pointerEvents: scrollProgress > 0.8 ? 'none' : 'auto',
         }}
       >
