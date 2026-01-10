@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import NextSection from './components/NextSection';
+import DualPanelSection from './components/DualPanelSection';
 import EmptySection from './components/EmptySection';
 import ThirdSection from './components/ThirdSection';
 import FourthSection from './components/FourthSection';
@@ -16,94 +17,115 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// Scroll Fade Section wrapper component
+interface ScrollFadeSectionProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+const ScrollFadeSection: React.FC<ScrollFadeSectionProps> = ({ children, className = '' }) => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [visibility, setVisibility] = useState<'hidden' | 'entering' | 'visible' | 'exiting'>('hidden');
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    // Create intersection observer for fade-in (entering viewport)
+    const enterObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibility('visible');
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
+    );
+
+    // Create intersection observer for fade-out (leaving viewport at top)
+    const exitObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // Only trigger exit when section is leaving from the top
+          if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+            setVisibility('exiting');
+          } else if (entry.isIntersecting) {
+            setVisibility('visible');
+          } else if (!entry.isIntersecting && entry.boundingClientRect.top > 0) {
+            setVisibility('hidden');
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '50px 0px 0px 0px' }
+    );
+
+    enterObserver.observe(section);
+    exitObserver.observe(section);
+
+    return () => {
+      enterObserver.disconnect();
+      exitObserver.disconnect();
+    };
+  }, []);
+
+  const getClassName = () => {
+    const baseClass = 'scroll-fade-container';
+    switch (visibility) {
+      case 'visible':
+        return `${baseClass} fade-in`;
+      case 'exiting':
+        return `${baseClass} fade-out`;
+      default:
+        return baseClass;
+    }
+  };
+
+  return (
+    <div ref={sectionRef} className={`${getClassName()} ${className}`}>
+      {children}
+    </div>
+  );
+};
+
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const section2TriggerRef = useRef<HTMLDivElement>(null);
-  const section3TriggerRef = useRef<HTMLDivElement>(null);
-  const section4TriggerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [section2to3Progress, setSection2to3Progress] = useState(0);
-  const [section3to4Progress, setSection3to4Progress] = useState(0);
-  const [section4to5Progress, setSection4to5Progress] = useState(0);
   
   // Shutter navigation state
   const [isShutterAnimating, setIsShutterAnimating] = useState(false);
 
   useEffect(() => {
-    // Create scroll trigger for the hero to second section transition
-    // This happens during the first 100vh of scroll (0-100vh scroll position)
+    // Create scroll trigger for the hero fade-out transition
     const trigger1 = ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top top',
-      end: '+=100%', // One viewport height of scroll
-      scrub: 0.5, // Smooth scrubbing
+      end: '+=100%',
+      scrub: 0.5,
       onUpdate: (self) => {
         setScrollProgress(self.progress);
       },
     });
 
-    // Create scroll trigger for section 2 to section 3 transition (empty section)
-    // This happens during the second 100vh of scroll (100vh-200vh scroll position)
-    const trigger2 = ScrollTrigger.create({
-      trigger: section2TriggerRef.current,
-      start: 'top top',
-      end: '+=100%', // One viewport height of scroll
-      scrub: 0.5,
-      onUpdate: (self) => {
-        setSection2to3Progress(self.progress);
-      },
-    });
-
-    // Create scroll trigger for section 3 to section 4 transition (Why Us? section)
-    // This happens during the third 100vh of scroll (200vh-300vh scroll position)
-    const trigger3 = ScrollTrigger.create({
-      trigger: section3TriggerRef.current,
-      start: 'top top',
-      end: '+=100%', // One viewport height of scroll
-      scrub: 0.5,
-      onUpdate: (self) => {
-        setSection3to4Progress(self.progress);
-      },
-    });
-
-    // Create scroll trigger for section 4 to section 5 transition (empty section)
-    // This happens during the fourth 100vh of scroll (300vh-400vh scroll position)
-    const trigger4 = ScrollTrigger.create({
-      trigger: section4TriggerRef.current,
-      start: 'top top',
-      end: '+=100%', // One viewport height of scroll
-      scrub: 0.5,
-      onUpdate: (self) => {
-        setSection4to5Progress(self.progress);
-      },
-    });
-
     return () => {
       trigger1.kill();
-      trigger2.kill();
-      trigger3.kill();
-      trigger4.kill();
     };
   }, []);
 
-  // Called when shutter closes - scroll to Section 5
+  // Called when shutter closes - scroll to footer/contact/bottom
   const handleShutterComplete = useCallback(() => {
-    // Section 5 (FourthSection/About Us) is at around 700vh scroll position
-    // The section becomes visible when section4to5Progress > 0.5
-    // Scroll to position where Section 5 is fully visible (after the shutter opens)
     window.scrollTo({
-      top: window.innerHeight * 7, // 700vh - where Section 5 is fully visible
-      behavior: 'instant' // Instant scroll while shutters are closed
+      top: document.documentElement.scrollHeight,
+      behavior: 'instant'
     });
     
-    // Reset the animating flag after a delay to allow shutter to open
     setTimeout(() => {
       setIsShutterAnimating(false);
     }, 700);
   }, []);
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative min-h-screen">
       {/* Shutter Overlay for navigation animations */}
       <ShutterOverlay
         isAnimating={isShutterAnimating}
@@ -113,60 +135,61 @@ export default function Home() {
       {/* Navbar - transforms from full-width to pill shape */}
       <Navbar scrollProgress={scrollProgress} />
       
-      {/* Hero Section with Video Background that shrinks */}
-      <HeroSection scrollProgress={scrollProgress} section2to3Progress={section2to3Progress} />
+      {/* Fixed Hero Section - Fades out as you scroll */}
+      <div className="fixed inset-0 w-full h-screen" style={{ zIndex: 1 }}>
+        <HeroSection scrollProgress={scrollProgress} section2to3Progress={0} />
+      </div>
       
-      {/* Section 2 - Cream background with image cards (fixed position) */}
-      <NextSection scrollProgress={scrollProgress} section2to3Progress={section2to3Progress} />
+      {/* Spacer for the fixed hero area */}
+      <div style={{ height: '100vh' }} />
       
-      {/* Section 3 - Empty section with shutter animation (same cream as section 2) */}
-      <EmptySection
-        transitionProgress={section2to3Progress}
-        nextTransitionProgress={section3to4Progress}
-        zIndexBase={10}
-        shutterZIndex={100}
-        bgColorStyle="rgb(245, 240, 230)"
-      />
-      
-      {/* Section 4 - "Why Us?" section with background image */}
-      <ThirdSection transitionProgress={section3to4Progress} section3to4Progress={section4to5Progress} />
-      
-      {/* Section 5 - Empty section with shutter animation */}
-      <FourthSection transitionProgress={section4to5Progress} />
-      
-      {/* Section 2 to 3 scroll trigger anchor - positioned at 200vh */}
-      {/* Each section gets 100vh of viewing + 100vh of transition */}
-      <div
-        ref={section2TriggerRef}
-        className="absolute left-0 w-full"
-        style={{
-          top: '200vh',
-          height: '100vh',
-        }}
-      />
-      
-      {/* Section 3 to 4 scroll trigger anchor - positioned at 400vh */}
-      <div
-        ref={section3TriggerRef}
-        className="absolute left-0 w-full"
-        style={{
-          top: '400vh',
-          height: '100vh',
-        }}
-      />
-      
-      {/* Section 4 to 5 scroll trigger anchor - positioned at 600vh */}
-      <div
-        ref={section4TriggerRef}
-        className="absolute left-0 w-full"
-        style={{
-          top: '600vh',
-          height: '100vh',
-        }}
-      />
-      
-      {/* Spacer for total scroll height - 8 viewport heights for 5 sections with viewing time */}
-      <div style={{ height: '800vh' }} />
+      {/* All sections scroll normally after hero fade-out - One Page Scroll with fade animations */}
+      <div className="relative" style={{ zIndex: 10, background: '#f5f0e6' }}>
+        {/* Section 2 - Products Grid */}
+        <ScrollFadeSection>
+          <NextSection scrollProgress={scrollProgress} section2to3Progress={0} />
+        </ScrollFadeSection>
+        
+        {/* Section 3 - Dual Panel (Allbirds style) */}
+        <ScrollFadeSection>
+          <DualPanelSection
+            leftPanel={{
+              type: 'image',
+              src: '/images/5_1.jpg',
+              headline: 'Made Easy For home',
+              subheadline: 'Made From Nature',
+              overlayPosition: 'center',
+              textColor: '#000000'
+            }}
+            rightPanel={{
+              type: 'image',
+              src: '/images/10_1.jpg',
+              headline: 'Precision Crafted',
+              subheadline: 'Never Looked So Good',
+              buttons: [
+                { label: 'Shop', href: '/store' }
+              ],
+              overlayPosition: 'center',
+              textColor: '#000000'
+            }}
+          />
+        </ScrollFadeSection>
+        
+        {/* Section 4 - New Arrivals Slider */}
+        <ScrollFadeSection>
+          <EmptySection />
+        </ScrollFadeSection>
+        
+        {/* Section 5 - Why Us? */}
+        <ScrollFadeSection>
+          <ThirdSection />
+        </ScrollFadeSection>
+        
+        {/* Section 6 - About Us */}
+        <ScrollFadeSection>
+          <FourthSection />
+        </ScrollFadeSection>
+      </div>
     </div>
   );
 }

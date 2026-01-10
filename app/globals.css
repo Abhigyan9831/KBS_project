@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Custom Font - new-science-extended */
+
 @font-face {
   font-family: 'new-science-extended';
   src: url('/fonts/new-science-extended.woff2') format('woff2'),
@@ -16,7 +16,7 @@
   --cream: #F5F0E6;
   --font-new-science: 'new-science-extended', sans-serif;
   
-  /* Responsive Spacing Variables */
+  
   --spacing-xs: clamp(4px, 1vw, 8px);
   --spacing-sm: clamp(8px, 2vw, 16px);
   --spacing-md: clamp(16px, 3vw, 24px);
@@ -178,6 +178,20 @@ body {
   animation: bounce 2s infinite;
 }
 
+/* Floating Up/Down Animation for Explore Arrow */
+@keyframes floatUpDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.floating-arrow {
+  animation: floatUpDown 2s ease-in-out infinite;
+}
+
 /* Section 3 Text Reveal Animation */
 .section3-heading {
   font-family: 'new-science-extended', sans-serif;
@@ -215,6 +229,52 @@ body {
 .section3-reveal-inner.revealed {
   opacity: 1;
 }
+
+/* ============================================
+   SCROLL-BASED TEXT FADE IN/OUT ANIMATIONS
+   ============================================ */
+
+/* Container for scroll-triggered sections */
+.scroll-fade-container {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.scroll-fade-container.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-fade-container.fade-out {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+
+/* Individual text element fade animation */
+.scroll-text-fade {
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-text-fade.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-text-fade.exiting {
+  opacity: 0.2;
+  transform: translateY(-15px);
+}
+
+/* Staggered delay classes for text elements */
+.scroll-delay-0 { transition-delay: 0s; }
+.scroll-delay-1 { transition-delay: 0.1s; }
+.scroll-delay-2 { transition-delay: 0.2s; }
+.scroll-delay-3 { transition-delay: 0.3s; }
+.scroll-delay-4 { transition-delay: 0.4s; }
+.scroll-delay-5 { transition-delay: 0.5s; }
 
 /* Mobile-specific section 3 styles */
 .section3-title-mobile {

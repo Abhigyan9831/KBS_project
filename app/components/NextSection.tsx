@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useLayoutEffect, useState, useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 
 const cardImages = {
-  // Left Column Cards
+  
   leftCard1: '/images/5_1.jpg',
   leftCard2: '/images/6_2.jpg',
-  // Right Column Cards
+  
   rightCard1: '/images/10_1.jpg',
   rightCard2: '/images/16_2.jpg',
 };
@@ -27,9 +27,7 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
     isMobile: false,
     isTablet: false,
   });
-  const [titleRevealed, setTitleRevealed] = useState(false);
   const [isButtonHovered, setIsButtonHovered] = useState(false);
-  const titleRevealedRef = useRef(false);
 
   useLayoutEffect(() => {
     const updateDimensions = () => {
@@ -47,282 +45,160 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
-  const { vh, isMobile, isTablet } = dimensions;
-
-  
-  // For mobile: reveal title immediately when section 2 starts (scrollProgress > 0.1)
-  // For desktop/tablet: use original delayed reveal
-  useEffect(() => {
-    if (isMobile) {
-      // On mobile, reveal immediately when section 2 appears
-      if (scrollProgress > 0.1 && !titleRevealedRef.current) {
-        titleRevealedRef.current = true;
-        setTitleRevealed(true);
-      }
-      if (scrollProgress < 0.05 && titleRevealedRef.current) {
-        titleRevealedRef.current = false;
-        queueMicrotask(() => setTitleRevealed(false));
-      }
-    } else {
-      // Desktop/tablet: original behavior
-      if (scrollProgress > 0.6 && !titleRevealedRef.current) {
-        const timer = setTimeout(() => {
-          titleRevealedRef.current = true;
-          setTitleRevealed(true);
-        }, 200);
-        return () => clearTimeout(timer);
-      }
-      if (scrollProgress < 0.3 && titleRevealedRef.current) {
-        titleRevealedRef.current = false;
-        queueMicrotask(() => setTitleRevealed(false));
-      }
-    }
-  }, [scrollProgress, isMobile]);
-
-  
-  const cardsOpacity = Math.min(Math.max((scrollProgress - 0.3) / 0.4, 0), 1);
-  const cardsVisible = scrollProgress > 0.4;
-
-  
-  const bgOpacity = Math.min(scrollProgress * 1.5, 1);
-
-  // Hide section 2 when transitioning to section 3
-  // Scale and rotate effect during transition (like slideshow)
-  const transitionScale = 1 + (0.1 * section2to3Progress);
-  const transitionRotation = 2 * section2to3Progress;
-  const sectionOpacity = 1 - section2to3Progress;
-
-  // Hide completely when transition is complete
-  if (section2to3Progress >= 1) {
-    return null;
-  }
-
-  // Calculate mobile content opacity - appears when scrollProgress > 0.3 (video shrunk enough)
-  const mobileContentOpacity = isMobile ? Math.min(Math.max((scrollProgress - 0.3) / 0.4, 0), 1) : 0;
+  const { isMobile, isTablet } = dimensions;
 
   return (
     <>
       <section
-        className="fixed inset-0 w-full h-screen overflow-hidden"
+        className="relative w-full overflow-hidden"
         style={{
-          background: `rgba(245, 240, 230, ${bgOpacity})`,
-          zIndex: 0,
-          pointerEvents: scrollProgress > 0.1 && section2to3Progress < 0.5 ? 'auto' : 'none',
-          transform: `scale(${transitionScale}) rotate(${transitionRotation}deg)`,
-          transformOrigin: 'center center',
-          opacity: sectionOpacity,
+          background: 'rgb(245, 240, 230)',
+          minHeight: '100vh',
+          paddingTop: '80px',
+          paddingBottom: '80px',
         }}
       >
-        {/* Cards Grid Layout - Only for Desktop/Tablet, NO cards on mobile */}
+        {/* Cards Grid Layout - 4 columns side by side for Desktop/Tablet */}
         {!isMobile && (
           <div
-            className="absolute inset-0 flex items-start justify-center"
+            className="w-full flex items-center justify-center"
             style={{
-              opacity: cardsOpacity,
-              paddingTop: isTablet ? '100px' : '80px',
-              paddingLeft: isTablet ? '24px' : '32px',
-              paddingRight: isTablet ? '24px' : '32px',
-              overflowY: 'hidden',
-              overflowX: 'hidden',
+              paddingLeft: isTablet ? '16px' : '40px',
+              paddingRight: isTablet ? '16px' : '40px',
             }}
           >
-            <div className="w-full max-w-[1400px] mx-auto">
-              {/* Desktop/Tablet Layout - 3 column grid */}
+            {/* Rounded Corner Container with #C9B59C background */}
+            <div
+              className="w-full max-w-[1800px] mx-auto"
+              style={{
+                backgroundColor: '#C9B59C',
+                borderRadius: isTablet ? '32px' : '48px',
+                padding: isTablet ? '28px' : '48px',
+                boxShadow: '0 12px 48px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.25)',
+              }}
+            >
+              {/* 4 Column Grid - All cards side by side, taller cards */}
               <div
-                className="grid gap-4 items-start"
+                className="grid items-stretch"
                 style={{
-                  gridTemplateColumns: isTablet ? '1fr 1.2fr 1fr' : '1fr 1fr 1fr',
-                  gap: isTablet ? '16px' : '20px',
+                  gridTemplateColumns: isTablet ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+                  gap: isTablet ? '12px' : '20px',
                 }}
               >
-                {/* Left Column */}
+                {/* Card 1 */}
                 <div
-                  className="flex flex-col"
+                  className="product-card-hover overflow-hidden shadow-xl relative"
                   style={{
-                    gap: isTablet ? '16px' : '20px',
-                    paddingTop: isTablet ? '60px' : '96px',
+                    minHeight: isTablet ? '300px' : '60vh',
                   }}
                 >
-                  {/* Left Card 1 */}
-                  <div
-                    className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
-                    style={{
-                      opacity: cardsVisible ? 1 : 0,
-                      transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
-                      transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
-                    }}
-                  >
-                    <Image
-                      src={cardImages.leftCard1}
-                      alt="Product Card 1"
-                      fill
-                      sizes="(max-width: 1024px) 33vw, 400px"
-                      style={{ objectFit: 'cover' }}
-                    />
-                    <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8b9aad 0%, #6b7d8c 50%, #4a5a6a 100%)' }} />
-                  </div>
-                  
-                  {/* Left Card 2 */}
-                  <div
-                    className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
-                    style={{
-                      opacity: cardsVisible ? 1 : 0,
-                      transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
-                      transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s',
-                    }}
-                  >
-                    <Image
-                      src={cardImages.leftCard2}
-                      alt="Product Card 2"
-                      fill
-                      sizes="(max-width: 1024px) 33vw, 400px"
-                      style={{ objectFit: 'cover' }}
-                    />
-                    <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #c4b8a8 0%, #a89888 50%, #8c7868 100%)' }} />
-                  </div>
+                  <Image
+                    src={cardImages.leftCard1}
+                    alt="Product Card 1"
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    style={{ objectFit: 'cover' }}
+                  />
+                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8b9aad 0%, #6b7d8c 50%, #4a5a6a 100%)' }} />
                 </div>
-
-                {/* Center Column - Space for video card */}
-                <div className="flex flex-col items-center pt-0">
-                  <div style={{ height: `${Math.min(isTablet ? 500 : 650, vh * 0.72) + (isTablet ? 80 : 120)}px` }} />
-                </div>
-
-                {/* Right Column */}
+                
+                {/* Card 2 */}
                 <div
-                  className="flex flex-col"
+                  className="product-card-hover overflow-hidden shadow-xl relative"
                   style={{
-                    gap: isTablet ? '16px' : '20px',
-                    paddingTop: isTablet ? '120px' : '192px',
+                    minHeight: isTablet ? '300px' : '60vh',
                   }}
                 >
-                  {/* Right Card 1 */}
-                  <div
-                    className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
-                    style={{
-                      opacity: cardsVisible ? 1 : 0,
-                      transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
-                      transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.15s',
-                    }}
-                  >
-                    <Image
-                      src={cardImages.rightCard1}
-                      alt="Product Card 3"
-                      fill
-                      sizes="(max-width: 1024px) 33vw, 400px"
-                      style={{ objectFit: 'cover' }}
-                    />
-                    <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #87CEEB 0%, #FFB366 50%, #FF6B6B 75%, #2c3e50 100%)' }} />
-                  </div>
-                  
-                  {/* Right Card 2 */}
-                  <div
-                    className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg relative"
-                    style={{
-                      opacity: cardsVisible ? 1 : 0,
-                      transform: cardsVisible ? 'translateY(0)' : 'translateY(50px)',
-                      transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s',
-                    }}
-                  >
-                    <Image
-                      src={cardImages.rightCard2}
-                      alt="Product Card 4"
-                      fill
-                      sizes="(max-width: 1024px) 33vw, 400px"
-                      style={{ objectFit: 'cover' }}
-                    />
-                    <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8B7355 0%, #D2B48C 50%, #654321 100%)' }} />
-                  </div>
+                  <Image
+                    src={cardImages.leftCard2}
+                    alt="Product Card 2"
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    style={{ objectFit: 'cover' }}
+                  />
+                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #c4b8a8 0%, #a89888 50%, #8c7868 100%)' }} />
+                </div>
+
+                {/* Card 3 */}
+                <div
+                  className="product-card-hover overflow-hidden shadow-xl relative"
+                  style={{
+                    minHeight: isTablet ? '300px' : '60vh',
+                  }}
+                >
+                  <Image
+                    src={cardImages.rightCard1}
+                    alt="Product Card 3"
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    style={{ objectFit: 'cover' }}
+                  />
+                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #87CEEB 0%, #FFB366 50%, #FF6B6B 75%, #2c3e50 100%)' }} />
+                </div>
+                
+                {/* Card 4 */}
+                <div
+                  className="product-card-hover overflow-hidden shadow-xl relative"
+                  style={{
+                    minHeight: isTablet ? '300px' : '60vh',
+                  }}
+                >
+                  <Image
+                    src={cardImages.rightCard2}
+                    alt="Product Card 4"
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    style={{ objectFit: 'cover' }}
+                  />
+                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8B7355 0%, #D2B48C 50%, #654321 100%)' }} />
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Mobile Content - Title/Description BELOW video (BLACK text on cream bg), Button at bottom */}
+        {/* Mobile Content - Title/Description and Button */}
         {isMobile && (
-          <>
-            {/* Title and Description - Positioned BELOW the video area */}
-            <div
-              className="absolute left-0 right-0 flex flex-col items-center px-4"
-              style={{
-                // Position below video: video top (80px) + video height (~55vh or 400px max)
-                top: `calc(80px + min(55vh, 400px) + 24px)`,
-                opacity: mobileContentOpacity,
-                transform: `translateY(${mobileContentOpacity > 0 ? 0 : 20}px)`,
-                transition: 'opacity 0.5s ease-out, transform 0.5s ease-out',
-              }}
-            >
-              <div className="flex flex-col items-center gap-3 text-center">
-                {/* Title in BLACK */}
-                <h2 className="section2-title-container-mobile text-center">
-                  <span className="section2-word-reveal">
-                    <span
-                      className={`section2-word-reveal-inner section2-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
-                      style={{ color: '#000000' }}
-                    >
-                      Our
-                    </span>
-                  </span>
-                  {' '}
-                  <span className="section2-word-reveal">
-                    <span
-                      className={`section2-word-reveal-inner section2-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
-                      style={{ color: '#000000' }}
-                    >
-                      Products
-                    </span>
-                  </span>
-                </h2>
-                
-                {/* Description in BLACK */}
-                <p
-                  className={`section2-description-mobile section2-word-reveal-inner section2-word-delay-2 text-center max-w-[300px] ${titleRevealed ? 'revealed' : ''}`}
-                  style={{ color: '#333333' }}
-                >
-                  We believe in creating products that transform everyday moments into extraordinary experiences.
-                </p>
-              </div>
-            </div>
-            
-            {/* Explore Us Button - At the bottom with black borders only */}
-            <div
-              className="absolute left-0 right-0 flex justify-center"
-              style={{
-                bottom: '12%',
-                opacity: mobileContentOpacity,
-                transform: `translateY(${mobileContentOpacity > 0 ? 0 : 10}px)`,
-                transition: 'opacity 0.5s ease-out 0.2s, transform 0.5s ease-out 0.2s',
-                pointerEvents: mobileContentOpacity > 0.5 ? 'auto' : 'none',
-              }}
-            >
+          <div className="flex flex-col items-center justify-center px-4 py-12 min-h-[60vh]">
+            <div className="flex flex-col items-center gap-4 text-center">
+              {/* Title in BLACK */}
+              <h2 className="section2-title-container-mobile text-center" style={{ color: '#000000' }}>
+                Our Products
+              </h2>
+              
+              {/* Description in BLACK */}
+              <p className="section2-description-mobile text-center max-w-[300px]" style={{ color: '#333333' }}>
+                We believe in creating products that transform everyday moments into extraordinary experiences.
+              </p>
+              
+              {/* Explore Us Button */}
               <Link
                 href="/store#featured"
-                className={`section2-explore-btn-mobile ${titleRevealed ? 'revealed' : ''}`}
+                className="section2-explore-btn-static"
                 onMouseEnter={() => setIsButtonHovered(true)}
                 onMouseLeave={() => setIsButtonHovered(false)}
                 style={{
-                  backgroundColor: 'transparent',
+                  backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
                   color: '#000000',
                   borderColor: '#000000',
+                  marginTop: '16px',
                 }}
               >
                 Explore Us
               </Link>
             </div>
-          </>
+          </div>
         )}
 
-        {/* Desktop/Tablet Content - Original layout */}
+        {/* Desktop/Tablet Content - Bottom Section */}
         {!isMobile && (
           <div
-            className="absolute bottom-0 left-0 right-0"
+            className="w-full"
             style={{
-              opacity: cardsOpacity,
-              paddingBottom: isTablet ? '32px' : '64px',
+              paddingTop: '48px',
+              paddingBottom: isTablet ? '32px' : '48px',
               paddingLeft: isTablet ? '24px' : '48px',
               paddingRight: isTablet ? '24px' : '48px',
-              zIndex: 50,
-              pointerEvents: cardsOpacity > 0.5 ? 'auto' : 'none',
             }}
           >
             {isTablet ? (
@@ -330,26 +206,12 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
               <div className="flex flex-col items-center gap-5">
                 <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
                   {/* Title */}
-                  <h2 className="section2-title-container">
-                    <span className="section2-word-reveal">
-                      <span
-                        className={`section2-word-reveal-inner section2-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
-                      >
-                        Our
-                      </span>
-                    </span>
-                    {' '}
-                    <span className="section2-word-reveal">
-                      <span
-                        className={`section2-word-reveal-inner section2-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
-                      >
-                        Products
-                      </span>
-                    </span>
+                  <h2 className="section2-title-container" style={{ color: '#000000' }}>
+                    Our Products
                   </h2>
                   
                   {/* Description */}
-                  <p className={`section2-description section2-word-reveal-inner section2-word-delay-2 max-w-[360px] text-right ${titleRevealed ? 'revealed' : ''}`}>
+                  <p className="section2-description max-w-[360px] text-right" style={{ color: '#000000' }}>
                     We believe in creating products that transform everyday moments into extraordinary experiences.
                   </p>
                 </div>
@@ -357,82 +219,46 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                 {/* Button centered */}
                 <Link
                   href="/store#featured"
-                  className={`section2-explore-btn ${titleRevealed ? 'revealed' : ''}`}
+                  className="section2-explore-btn-static"
                   onMouseEnter={() => setIsButtonHovered(true)}
                   onMouseLeave={() => setIsButtonHovered(false)}
                   style={{
                     backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
                     color: '#000000',
                     borderColor: '#000000',
-                    pointerEvents: titleRevealed ? 'auto' : 'none',
-                    position: 'relative',
-                    zIndex: 100,
                   }}
                 >
                   Explore Us
                 </Link>
               </div>
             ) : (
-              /* Desktop Layout - Original layout with absolute positioning */
-              <>
+              /* Desktop Layout - Flexbox layout */
+              <div className="flex items-end justify-between">
                 {/* Left - "Our Products" title */}
-                <div
-                  className="absolute"
+                <h2 className="section2-title-container" style={{ color: '#000000' }}>
+                  Our Products
+                </h2>
+
+                {/* Center - "Explore Us" button */}
+                <Link
+                  href="/store#featured"
+                  className="section2-explore-btn-static"
+                  onMouseEnter={() => setIsButtonHovered(true)}
+                  onMouseLeave={() => setIsButtonHovered(false)}
                   style={{
-                    left: '48px',
-                    bottom: '112px',
+                    backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
+                    color: '#000000',
+                    borderColor: '#000000',
                   }}
                 >
-                  <h2 className="section2-title-container">
-                    <span className="section2-word-reveal">
-                      <span
-                        className={`section2-word-reveal-inner section2-word-delay-0 ${titleRevealed ? 'revealed' : ''}`}
-                      >
-                        Our
-                      </span>
-                    </span>
-                    {' '}
-                    <span className="section2-word-reveal">
-                      <span
-                        className={`section2-word-reveal-inner section2-word-delay-1 ${titleRevealed ? 'revealed' : ''}`}
-                      >
-                        Products
-                      </span>
-                    </span>
-                  </h2>
-                </div>
+                  Explore Us
+                </Link>
 
                 {/* Right - Description text */}
-                <div
-                  className="absolute max-w-[420px] text-right"
-                  style={{
-                    right: '48px',
-                    bottom: '112px',
-                  }}
-                >
-                  <p className={`section2-description section2-word-reveal-inner section2-word-delay-2 ${titleRevealed ? 'revealed' : ''}`}>
-                    We believe in creating products that transform everyday moments into extraordinary experiences. Our vision is to bring innovation and quality to every kitchen.
-                  </p>
-                </div>
-
-                {/* Center - "Explore Us" button - positioned higher */}
-                <div className="flex justify-center" style={{ marginBottom: '60px', position: 'relative', zIndex: 100 }}>
-                  <Link
-                    href="/store#featured"
-                    className={`section2-explore-btn ${titleRevealed ? 'revealed' : ''}`}
-                    onMouseEnter={() => setIsButtonHovered(true)}
-                    onMouseLeave={() => setIsButtonHovered(false)}
-                    style={{
-                      backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
-                      color: '#000000',
-                      borderColor: '#000000',
-                      pointerEvents: titleRevealed ? 'auto' : 'none',
-                    }}
-                  >
-                    Explore Us
-                  </Link>
-                </div>
-              </>
+                <p className="section2-description max-w-[420px] text-right" style={{ color: '#000000' }}>
+                  We believe in creating products that transform everyday moments into extraordinary experiences. Our vision is to bring innovation and quality to every kitchen.
+                </p>
+              </div>
             )}
           </div>
         )}
@@ -440,6 +266,21 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
 
       {/* Section 2 Styles */}
       <style jsx global>{`
+        /* Product Card Hover - Oval/Pill Shape Effect */
+        .product-card-hover {
+          border-radius: 16px;
+          transition: border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                      transform 0.3s ease,
+                      box-shadow 0.3s ease;
+          cursor: pointer;
+        }
+
+        .product-card-hover:hover {
+          border-radius: 50% / 45%;
+          transform: scale(1.02);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
         /* Section 2 Title Styles - "Our Products" */
         .section2-title-container {
           font-family: sans-serif;
@@ -459,42 +300,8 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           font-weight: 400;
         }
 
-        /* Word by Word Reveal Animation for Section 2 */
-        .section2-word-reveal {
-          display: inline-block;
-          overflow: hidden;
-          vertical-align: bottom;
-        }
-
-        .section2-word-reveal-inner {
-          display: inline-block;
-          transform: translateY(100%);
-          opacity: 0;
-        }
-
-        .section2-word-reveal-inner.revealed {
-          transform: translateY(0);
-          opacity: 1;
-        }
-
-        /* Staggered animation delays for Section 2 */
-        .section2-word-delay-0 {
-          transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1) 0.2s,
-                      opacity 0.8s ease-out 0.2s;
-        }
-
-        .section2-word-delay-1 {
-          transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1) 0.4s,
-                      opacity 0.8s ease-out 0.4s;
-        }
-
-        .section2-word-delay-2 {
-          transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1) 0.5s,
-                      opacity 0.8s ease-out 0.5s;
-        }
-
-        /* Explore Us Button */
-        .section2-explore-btn {
+        /* Static Explore Us Button - always visible */
+        .section2-explore-btn-static {
           font-family: sans-serif;
           font-size: 16px;
           font-weight: 500;
@@ -505,26 +312,17 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           color: #000000;
           cursor: pointer;
           transition: background-color 0.3s ease, transform 0.2s ease;
-          opacity: 0;
-          transform: translateY(20px);
-          /* Touch-friendly tap target */
           min-height: 48px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
         }
 
-        .section2-explore-btn.revealed {
-          opacity: 1;
-          transform: translateY(0);
-          transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.8s ease-out 0.6s;
-        }
-
-        .section2-explore-btn:hover {
+        .section2-explore-btn-static:hover {
           background-color: #ffffff !important;
         }
 
-        .section2-explore-btn:active {
+        .section2-explore-btn-static:active {
           transform: translateY(2px);
         }
 
@@ -546,31 +344,6 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           font-weight: 400;
         }
 
-        /* Mobile Explore Us Button - black border only */
-        .section2-explore-btn-mobile {
-          font-family: sans-serif;
-          font-size: 14px;
-          font-weight: 500;
-          padding: 12px 28px;
-          border: 2px solid #000000;
-          border-radius: 50px;
-          background-color: transparent;
-          color: #000000;
-          cursor: pointer;
-          transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.5s ease-out;
-          opacity: 0;
-          transform: translateY(10px);
-          min-height: 48px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .section2-explore-btn-mobile.revealed {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
         /* Responsive styles */
         @media (max-width: 1024px) {
           .section2-title-container {
@@ -590,7 +363,7 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
             font-size: 17px;
             max-width: 320px;
           }
-          .section2-explore-btn {
+          .section2-explore-btn-static {
             font-size: 15px;
             padding: 12px 28px;
           }

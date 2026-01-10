@@ -110,10 +110,10 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
     const currentTop = startTop + (targetTop - startTop) * progress;
     const currentBorderRadius = startBorderRadius + (targetBorderRadius - startBorderRadius) * progress;
 
-    // Background: transparent -> glassmorphic
-    const bgOpacity = progress * 0.15;
-    const backdropBlur = progress * 20;
-    const borderOpacity = progress * 0.15;
+    // Background: always white
+    const bgOpacity = 1;
+    const backdropBlur = 0;
+    const borderOpacity = 0.1;
 
     return {
       width: currentWidth,
@@ -129,9 +129,8 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
 
   const styles = getNavbarStyles();
   
-  // Text/icon color: white on video -> dark on cream background
-  const textColorValue = Math.round(255 - (255 - 26) * progress);
-  const textColor = `rgb(${textColorValue}, ${textColorValue}, ${textColorValue})`;
+  // Text/icon color: always black
+  const textColor = '#000000';
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -287,8 +286,8 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
               <span
                 className={`absolute ${isMobile ? '-top-0.5 -right-0.5 w-3.5 h-3.5 text-[10px]' : '-top-1 -right-1 w-4 h-4 text-xs'} rounded-full flex items-center justify-center`}
                 style={{
-                  backgroundColor: progress > 0.5 ? '#1a1a1a' : '#fff',
-                  color: progress > 0.5 ? '#fff' : '#1a1a1a',
+                  backgroundColor: '#1a1a1a',
+                  color: '#ffffff',
                 }}
               >
                 0
@@ -335,7 +334,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrollProgress }) => {
                   className={`absolute ${isMobile ? 'bottom-0.5 right-0.5 w-2 h-2' : 'bottom-1 right-1 w-2.5 h-2.5'} rounded-full border-2`}
                   style={{
                     backgroundColor: '#4ade80',
-                    borderColor: progress > 0.5 ? '#f5f0e6' : '#0a0a0a'
+                    borderColor: '#ffffff'
                   }}
                 />
               )}

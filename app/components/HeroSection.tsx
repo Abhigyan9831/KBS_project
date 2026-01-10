@@ -50,55 +50,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
   const isMobile = dimensions?.isMobile ?? false;
   const isTablet = dimensions?.isTablet ?? false;
 
-  // Calculate video container styles based on scroll progress - RESPONSIVE
-  const getVideoStyles = () => {
-    // Responsive target dimensions for the shrunk video card
-    let targetWidth: number;
-    let targetHeight: number;
-    let targetTop: number;
-    let targetBorderRadius: number;
-    
-    if (isMobile) {
-      // Mobile: video card takes more screen width, less height
-      targetWidth = Math.min(vw - 24, vw * 0.92);
-      targetHeight = Math.min(vh * 0.55, 400);
-      targetTop = 80;
-      targetBorderRadius = 16;
-    } else if (isTablet) {
-      // Tablet: medium sizing
-      targetWidth = Math.min(450, vw * 0.55);
-      targetHeight = Math.min(550, vh * 0.65);
-      targetTop = 100;
-      targetBorderRadius = 18;
-    } else {
-      // Desktop: original behavior
-      targetWidth = Math.min(550, vw * 0.38);
-      targetHeight = Math.min(650, vh * 0.72);
-      targetTop = 120;
-      targetBorderRadius = 20;
-    }
-    
-    const targetLeft = (vw - targetWidth) / 2;
-
-    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-    const progress = easeOutCubic(scrollProgress);
-
-    const currentWidth = vw - (vw - targetWidth) * progress;
-    const currentHeight = vh - (vh - targetHeight) * progress;
-    const currentTop = 0 + targetTop * progress;
-    const currentLeft = 0 + targetLeft * progress;
-    const currentBorderRadius = 0 + targetBorderRadius * progress;
-
-    return {
-      width: currentWidth,
-      height: currentHeight,
-      top: currentTop,
-      left: currentLeft,
-      borderRadius: currentBorderRadius,
-    };
+  // Keep video full screen, no shrinking
+  const videoStyles = {
+    width: vw,
+    height: vh,
+    top: 0,
+    left: 0,
+    borderRadius: 0,
   };
-
-  const videoStyles = getVideoStyles();
   
   
   const titleOpacity = Math.max(0, 1 - scrollProgress * 2.5);
@@ -107,13 +66,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
   return (
     <>
       {}
-      <div className="h-[200vh] relative" style={{ zIndex: 1 }}>
-        {/* This creates scroll space */}
-      </div>
-
-      {/* Fixed Video Container */}
+      {/* Video Container - positioned within fixed parent */}
       <div
-        className="fixed overflow-hidden"
+        className="absolute overflow-hidden"
         style={{
           top: `${videoStyles.top}px`,
           left: `${videoStyles.left}px`,
@@ -121,10 +76,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
           height: `${videoStyles.height}px`,
           borderRadius: `${videoStyles.borderRadius}px`,
           zIndex: 5,
-          willChange: 'transform, width, height, top, left, border-radius',
-          opacity: 1 - section2to3Progress,
-          transform: `scale(${1 + 0.1 * section2to3Progress}) rotate(${2 * section2to3Progress}deg)`,
-          pointerEvents: section2to3Progress > 0.5 ? 'none' : 'auto',
+          willChange: 'transform, width, height, top, left, border-radius, opacity',
+          // Clean fade out effect like Hamilton Company website
+          // Fade out as we scroll from Hero to Section 2
+          opacity: Math.max(0, 1 - scrollProgress * 1.2), // Fade out slightly faster than scroll
+          transform: 'none',
+          transition: 'opacity 0.1s linear',
+          pointerEvents: scrollProgress > 0.8 ? 'none' : 'auto',
         }}
       >
         {/* Video Background */}
@@ -153,16 +111,25 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
           />
         </div>
 
-        {/* Title Container - Responsive positioning */}
+        {/* Title Container - Bottom centered positioning */}
         <div
-          className={`absolute left-0 ${isMobile ? 'bottom-[12%] px-4' : isTablet ? 'bottom-[14%] px-[4%]' : 'bottom-[15%] px-[5%]'}`}
+          className={`absolute left-0 right-0 ${isMobile ? 'bottom-[8%]' : isTablet ? 'bottom-[10%]' : 'bottom-[12%]'} flex flex-col items-center`}
           style={{
             opacity: titleOpacity,
             transform: `translateY(${scrollProgress * (isMobile ? 20 : 30)}px)`,
             pointerEvents: titleOpacity < 0.3 ? 'none' : 'auto',
           }}
         >
-          <h1 className={`hero-title flex ${isMobile ? 'flex-col gap-0' : 'flex-row items-baseline gap-[0.3em]'}`}>
+          <h1
+            className={`hero-title flex ${isMobile ? 'flex-col gap-0' : 'flex-row items-baseline gap-[0.3em]'} justify-center text-center`}
+            style={{
+              fontFamily: '"Chewy", system-ui',
+              color: '#ffffff',
+              WebkitTextStroke: isMobile ? '2px #000000' : '3px #000000',
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)',
+              paintOrder: 'stroke fill',
+            }}
+          >
             {/* "Go" word */}
             <span className="word-reveal">
               <span
@@ -181,6 +148,40 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
               </span>
             </span>
           </h1>
+          
+          {/* Floating Arrow - Explore More */}
+          <div
+            className={`flex flex-col items-center ${isMobile ? 'mt-4' : 'mt-6'} floating-arrow`}
+            style={{
+              animation: 'floatUpDown 2s ease-in-out infinite',
+            }}
+          >
+            <span
+              className={`text-white ${isMobile ? 'text-xs' : 'text-sm'} tracking-widest uppercase mb-2`}
+              style={{
+                textShadow: '1px 1px 3px rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              Explore More
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width={isMobile ? "24" : "32"}
+              height={isMobile ? "24" : "32"}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{
+                filter: 'drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5))',
+              }}
+            >
+              <path d="M12 5v14"></path>
+              <path d="M19 12l-7 7-7-7"></path>
+            </svg>
+          </div>
         </div>
       </div>
 

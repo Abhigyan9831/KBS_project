@@ -23,6 +23,9 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Chewy&family=Knewave&family=Lavishly+Yours&family=Sarina&display=swap" rel="stylesheet" />
       </head>
       <body className="antialiased">
         <AuthProvider>
