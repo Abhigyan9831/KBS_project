@@ -5,14 +5,38 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 
-const cardImages = {
-  
-  leftCard1: '/images/5_1.jpg',
-  leftCard2: '/images/6_2.jpg',
-  
-  rightCard1: '/images/10_1.jpg',
-  rightCard2: '/images/16_2.jpg',
-};
+// PRODUCT DATA CONFIGURATION
+// You can add your YouTube or TikTok links in the 'videoLink' field below.
+const products = [
+  {
+    id: 1,
+    title: 'Product 1',
+    image: '/images/5_1.jpg',
+    gradient: 'linear-gradient(180deg, #8b9aad 0%, #6b7d8c 50%, #4a5a6a 100%)',
+    videoLink: 'https://youtu.be/-ueUb6PNwbs?si=fIry_xhw-GI-otr3', // <--- Add your link here
+  },
+  {
+    id: 2,
+    title: 'Product 2',
+    image: '/images/6_2.jpg',
+    gradient: 'linear-gradient(180deg, #c4b8a8 0%, #a89888 50%, #8c7868 100%)',
+    videoLink: 'https://youtu.be/XOBE3FCyaqU?si=jOIrqixg2ZHVjrO1', // <--- Add your link here
+  },
+  {
+    id: 3,
+    title: 'Product 3',
+    image: '/images/10_1.jpg',
+    gradient: 'linear-gradient(180deg, #87CEEB 0%, #FFB366 50%, #FF6B6B 75%, #2c3e50 100%)',
+    videoLink: 'https://youtu.be/4e5DgSrN3E4?si=G_wy4Y7GuwktrMZh', // <--- Add your link here
+  },
+  {
+    id: 4,
+    title: 'Product 4',
+    image: '/images/16_2.jpg',
+    gradient: 'linear-gradient(180deg, #8B7355 0%, #D2B48C 50%, #654321 100%)',
+    videoLink: 'https://youtu.be/h6CwwHyQxKI?si=94tDOLnmV3QbKb4u', // <--- Add your link here
+  },
+];
 
 
 interface NextSectionProps {
@@ -85,73 +109,41 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                   gap: isTablet ? '12px' : '20px',
                 }}
               >
-                {/* Card 1 */}
-                <div
-                  className="product-card-hover overflow-hidden shadow-xl relative"
-                  style={{
-                    minHeight: isTablet ? '300px' : '60vh',
-                  }}
-                >
-                  <Image
-                    src={cardImages.leftCard1}
-                    alt="Product Card 1"
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 25vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8b9aad 0%, #6b7d8c 50%, #4a5a6a 100%)' }} />
-                </div>
-                
-                {/* Card 2 */}
-                <div
-                  className="product-card-hover overflow-hidden shadow-xl relative"
-                  style={{
-                    minHeight: isTablet ? '300px' : '60vh',
-                  }}
-                >
-                  <Image
-                    src={cardImages.leftCard2}
-                    alt="Product Card 2"
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 25vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #c4b8a8 0%, #a89888 50%, #8c7868 100%)' }} />
-                </div>
+                {products.map((product) => (
+                  <div
+                    key={product.id}
+                    className="product-card-hover overflow-hidden shadow-xl relative group"
+                    style={{
+                      minHeight: isTablet ? '300px' : '60vh',
+                    }}
+                  >
+                    <Image
+                      src={product.image}
+                      alt={product.title}
+                      fill
+                      sizes="(max-width: 1024px) 50vw, 25vw"
+                      style={{ objectFit: 'cover' }}
+                    />
+                    <div className="absolute inset-0 -z-10" style={{ background: product.gradient }} />
+                    
+                    {/* Product Title - Visible initially */}
+                    <div className="absolute bottom-8 left-0 right-0 text-center z-10 transition-opacity duration-300 group-hover:opacity-0">
+                      <h3 className="card-title-text">{product.title}</h3>
+                    </div>
 
-                {/* Card 3 */}
-                <div
-                  className="product-card-hover overflow-hidden shadow-xl relative"
-                  style={{
-                    minHeight: isTablet ? '300px' : '60vh',
-                  }}
-                >
-                  <Image
-                    src={cardImages.rightCard1}
-                    alt="Product Card 3"
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 25vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #87CEEB 0%, #FFB366 50%, #FF6B6B 75%, #2c3e50 100%)' }} />
-                </div>
-                
-                {/* Card 4 */}
-                <div
-                  className="product-card-hover overflow-hidden shadow-xl relative"
-                  style={{
-                    minHeight: isTablet ? '300px' : '60vh',
-                  }}
-                >
-                  <Image
-                    src={cardImages.rightCard2}
-                    alt="Product Card 4"
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 25vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                  <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, #8B7355 0%, #D2B48C 50%, #654321 100%)' }} />
-                </div>
+                    {/* Hover Overlay - Slides up from bottom */}
+                    <div className="absolute inset-0 glass-overlay translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-20 flex items-center justify-center">
+                      <a
+                        href={product.videoLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="view-details-btn"
+                      >
+                        View details
+                      </a>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -387,6 +379,45 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           .section2-description-mobile {
             font-size: 13px;
           }
+        }
+
+        /* Card Text Styles matching 'New arrivals' font style */
+        .card-title-text {
+          font-family: sans-serif;
+          font-size: 32px;
+          color: #ffffff;
+          font-weight: 300;
+          letter-spacing: -0.02em;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .view-details-btn {
+          display: inline-block;
+          font-family: sans-serif;
+          font-size: 20px;
+          color: #ffffff;
+          font-weight: 300;
+          letter-spacing: -0.02em;
+          padding: 12px 32px;
+          background: transparent;
+          border: 2px solid #ffffff;
+          border-radius: 50px;
+          cursor: pointer;
+          text-decoration: none;
+          transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .view-details-btn:hover {
+          background-color: #ffffff;
+          color: #000000;
+        }
+
+        /* Black Glassmorphism Overlay Style */
+        .glass-overlay {
+          background: rgba(0, 0, 0, 0.5); /* Black semi-transparent */
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border-top: 1px solid rgba(255, 255, 255, 0.15);
         }
       `}</style>
     </>

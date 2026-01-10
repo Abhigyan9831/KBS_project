@@ -79,9 +79,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
           willChange: 'transform, width, height, top, left, border-radius, opacity',
           // Clean fade out effect like Hamilton Company website
           // Fade out as we scroll from Hero to Section 2
-          opacity: Math.max(0, 1 - scrollProgress * 1.2), // Fade out slightly faster than scroll
-          transform: 'none',
-          transition: 'opacity 0.1s linear',
+          opacity: Math.max(0, 1 - Math.max(0, scrollProgress - 0.05) * 1.5),
+          filter: `blur(${Math.max(0, scrollProgress - 0.1) * 10}px)`,
+          transform: `scale(${1 - scrollProgress * 0.05})`,
+          transition: 'opacity 0.1s linear, filter 0.1s linear, transform 0.1s linear',
           pointerEvents: scrollProgress > 0.8 ? 'none' : 'auto',
         }}
       >
@@ -102,11 +103,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
           </video>
 
           {}
-          <div 
+          <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%)',
-              opacity: 1 - scrollProgress,
+              background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)',
+              opacity: 1, // Keep gradient strictly for text legibility, fade entire container instead
             }}
           />
         </div>
