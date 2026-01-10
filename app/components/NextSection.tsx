@@ -82,118 +82,101 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           paddingBottom: '80px',
         }}
       >
-        {/* Cards Grid Layout - 4 columns side by side for Desktop/Tablet */}
-        {!isMobile && (
+        {/* Cards Grid Layout - Responsive for All Devices */}
+        <div
+          className="w-full flex items-center justify-center"
+          style={{
+            paddingLeft: isMobile ? '16px' : isTablet ? '16px' : '40px',
+            paddingRight: isMobile ? '16px' : isTablet ? '16px' : '40px',
+          }}
+        >
+          {/* Rounded Corner Container with #C9B59C background */}
           <div
-            className="w-full flex items-center justify-center"
+            className="w-full max-w-[1800px] mx-auto"
             style={{
-              paddingLeft: isTablet ? '16px' : '40px',
-              paddingRight: isTablet ? '16px' : '40px',
+              backgroundColor: '#C9B59C',
+              borderRadius: isMobile ? '24px' : isTablet ? '32px' : '48px',
+              padding: isMobile ? '20px' : isTablet ? '28px' : '48px',
+              boxShadow: '0 12px 48px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.25)',
             }}
           >
-            {/* Rounded Corner Container with #C9B59C background */}
+            {/* Grid - 1 col mobile, 2 col tablet, 4 col desktop */}
             <div
-              className="w-full max-w-[1800px] mx-auto"
+              className="grid items-stretch"
               style={{
-                backgroundColor: '#C9B59C',
-                borderRadius: isTablet ? '32px' : '48px',
-                padding: isTablet ? '28px' : '48px',
-                boxShadow: '0 12px 48px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.25)',
+                gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+                gap: isMobile ? '16px' : isTablet ? '12px' : '20px',
               }}
             >
-              {/* 4 Column Grid - All cards side by side, taller cards */}
-              <div
-                className="grid items-stretch"
-                style={{
-                  gridTemplateColumns: isTablet ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
-                  gap: isTablet ? '12px' : '20px',
-                }}
-              >
-                {products.map((product) => (
-                  <div
-                    key={product.id}
-                    className="product-card-hover overflow-hidden shadow-xl relative group"
-                    style={{
-                      minHeight: isTablet ? '300px' : '60vh',
-                    }}
-                  >
-                    <Image
-                      src={product.image}
-                      alt={product.title}
-                      fill
-                      sizes="(max-width: 1024px) 50vw, 25vw"
-                      style={{ objectFit: 'cover' }}
-                    />
-                    <div className="absolute inset-0 -z-10" style={{ background: product.gradient }} />
-                    
-                    {/* Product Title - Visible initially */}
-                    <div className="absolute bottom-8 left-0 right-0 text-center z-10 transition-opacity duration-300 group-hover:opacity-0">
-                      <h3 className="card-title-text">{product.title}</h3>
-                    </div>
-
-                    {/* Hover Overlay - Slides up from bottom */}
-                    <div className="absolute inset-0 glass-overlay translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-20 flex items-center justify-center">
-                      <a
-                        href={product.videoLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="view-details-btn"
-                      >
-                        View details
-                      </a>
-                    </div>
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="product-card-hover overflow-hidden shadow-xl relative group"
+                  style={{
+                    minHeight: isMobile ? '300px' : isTablet ? '300px' : '60vh',
+                  }}
+                >
+                  <Image
+                    src={product.image}
+                    alt={product.title}
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    style={{ objectFit: 'cover' }}
+                  />
+                  <div className="absolute inset-0 -z-10" style={{ background: product.gradient }} />
+                  
+                  {/* Product Title - Visible initially */}
+                  <div className="absolute bottom-8 left-0 right-0 text-center z-10 transition-opacity duration-300 group-hover:opacity-0">
+                    <h3 className="card-title-text">{product.title}</h3>
                   </div>
-                ))}
-              </div>
+
+                  {/* Hover Overlay - Slides up from bottom */}
+                  <div className="absolute inset-0 glass-overlay translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-20 flex items-center justify-center">
+                    <a
+                      href={product.videoLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="view-details-btn"
+                    >
+                      View details
+                    </a>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Mobile Content - Title/Description and Button */}
-        {isMobile && (
-          <div className="flex flex-col items-center justify-center px-4 py-12 min-h-[60vh]">
-            <div className="flex flex-col items-center gap-4 text-center">
-              {/* Title in BLACK */}
-              <h2 className="section2-title-container-mobile text-center" style={{ color: '#000000' }}>
-                Our Products
-              </h2>
-              
-              {/* Description in BLACK */}
-              <p className="section2-description-mobile text-center max-w-[300px]" style={{ color: '#333333' }}>
-                We believe in creating products that transform everyday moments into extraordinary experiences.
-              </p>
-              
-              {/* Explore Us Button */}
+        {/* Bottom Section - Title/Desc/Button - Visible on All Devices */}
+        <div
+          className="w-full"
+          style={{
+            paddingTop: isMobile ? '40px' : '48px',
+            paddingBottom: isMobile ? '24px' : isTablet ? '32px' : '48px',
+            paddingLeft: isMobile ? '20px' : isTablet ? '24px' : '48px',
+            paddingRight: isMobile ? '20px' : isTablet ? '24px' : '48px',
+          }}
+        >
+          {isMobile ? (
+             /* Mobile Layout - Stacked */
+             <div className="flex flex-col items-center gap-5">
+              <div className="flex flex-col items-center justify-center w-full gap-3 text-center">
+                <h2 className="section2-title-container-mobile" style={{ color: '#000000' }}>
+                  Our Products
+                </h2>
+                <p className="section2-description-mobile max-w-[300px]" style={{ color: '#000000' }}>
+                  We believe in creating products that transform everyday moments into extraordinary experiences.
+                </p>
+              </div>
               <Link
                 href="/store#featured"
                 className="section2-explore-btn-static"
-                onMouseEnter={() => setIsButtonHovered(true)}
-                onMouseLeave={() => setIsButtonHovered(false)}
-                style={{
-                  backgroundColor: isButtonHovered ? '#ffffff' : 'transparent',
-                  color: '#000000',
-                  borderColor: '#000000',
-                  marginTop: '16px',
-                }}
+                style={{ color: '#000000', borderColor: '#000000' }}
               >
                 Explore Us
               </Link>
-            </div>
-          </div>
-        )}
-
-        {/* Desktop/Tablet Content - Bottom Section */}
-        {!isMobile && (
-          <div
-            className="w-full"
-            style={{
-              paddingTop: '48px',
-              paddingBottom: isTablet ? '32px' : '48px',
-              paddingLeft: isTablet ? '24px' : '48px',
-              paddingRight: isTablet ? '24px' : '48px',
-            }}
-          >
-            {isTablet ? (
+             </div>
+          ) : isTablet ? (
               /* Tablet Layout - Title and description stacked, button below */
               <div className="flex flex-col items-center gap-5">
                 <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
@@ -252,8 +235,7 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
                 </p>
               </div>
             )}
-          </div>
-        )}
+        </div>
       </section>
 
       {/* Section 2 Styles */}
@@ -378,6 +360,7 @@ const NextSection: React.FC<NextSectionProps> = ({ scrollProgress, section2to3Pr
           }
           .section2-description-mobile {
             font-size: 13px;
+            max-width: 360px;
           }
         }
 

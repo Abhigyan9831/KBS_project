@@ -114,7 +114,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
 
         {/* Title Container - Bottom centered positioning */}
         <div
-          className={`absolute left-0 right-0 ${isMobile ? 'bottom-[8%]' : isTablet ? 'bottom-[10%]' : 'bottom-[12%]'} flex flex-col items-center`}
+          className={`absolute left-0 right-0 ${isMobile ? 'bottom-[12%]' : isTablet ? 'bottom-[10%]' : 'bottom-[12%]'} flex flex-col items-center`}
           style={{
             opacity: titleOpacity,
             transform: `translateY(${scrollProgress * (isMobile ? 20 : 30)}px)`,
@@ -126,9 +126,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollProgress, section2to3Pr
             style={{
               fontFamily: '"Chewy", system-ui',
               color: '#ffffff',
-              WebkitTextStroke: isMobile ? '2px #000000' : '3px #000000',
+              // Responsive text stroke
+              WebkitTextStroke: isMobile ? '1.5px #000000' : '3px #000000',
               textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)',
               paintOrder: 'stroke fill',
+              // Use fluid typography
+              fontSize: 'clamp(64px, 15vw, 160px)',
+              lineHeight: isMobile ? '0.9' : '1',
             }}
           >
             {/* "Go" word */}
