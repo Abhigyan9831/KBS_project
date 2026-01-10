@@ -59,9 +59,9 @@ const ThirdSection: React.FC<ThirdSectionProps> = () => {
       className="relative w-full overflow-hidden"
       style={{
         background: 'rgb(245, 240, 230)',
-        minHeight: '100vh',
-        paddingTop: '80px',
-        paddingBottom: '80px',
+        minHeight: isMobile ? 'auto' : '100vh',
+        paddingTop: isMobile ? '40px' : '80px',
+        paddingBottom: isMobile ? '40px' : '80px',
       }}
     >
       {/* Main Content Container */}
